@@ -1,8 +1,8 @@
 // Generated on 2013-12-02 using generator-angular 0.6.0-rc.2
 'use strict';
 
-var server = require('./server')
-  , config = require('./config')
+var server = require('../server')
+  , config = require('../priv/config')
   , port = config.port
   , lrPort = 37926
   , lrSnippet = require('connect-livereload')({ port: lrPort })
