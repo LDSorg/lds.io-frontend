@@ -40,7 +40,10 @@
             label(for="password") Passphrase
             span &nbsp;&nbsp;&nbsp;
             label.checkbox-inline
-              input.checkbox(type="checkbox", ng-model="A.showSecret", ng-click="A.showSecret = !A.showSecret")
+              input.checkbox(
+                type="checkbox"
+                ng-model="A.showSecret"
+              )
               span Show
             input.form-control(
               ng-if="!A.showSecret"
@@ -96,7 +99,6 @@
               input.checkbox(
                 type="checkbox"
                 ng-model="A.showSecret"
-                ng-click="A.showSecret = !A.showSecret"
               )
               span Show
             input.form-control(
