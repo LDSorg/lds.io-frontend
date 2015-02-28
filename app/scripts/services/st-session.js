@@ -1,7 +1,14 @@
 'use strict';
 
 angular.module('yololiumApp')
-  .service('StSession', ['$http', '$q', '$timeout', 'StLogin', 'StAccount', 'StApi', function StSession($http, $q, $timeout, StLogin, StAccount, StApi) {
+  .service('StSession', [
+    '$http'
+  , '$q'
+  , '$timeout'
+  , 'StLogin'
+  , 'StAccount'
+  , 'StApi'
+  , function StSession($http, $q, $timeout, StLogin, StAccount, StApi) {
     // AngularJS will instantiate a singleton by calling "new" on this function
     var me = this || {}
       , shared = { session: null, touchedAt: 0 }

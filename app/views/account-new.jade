@@ -1,11 +1,11 @@
 //- modal-dialog & model-content are containers for this template
 .auth-modal(ng-init="A.showSecret = true;")
   .modal-header
-    h4.modal-title Welcome
+    h4.modal-title Login or Create Account
     .alert(ng-if="A.alertMessage", ng-class="{{A.alertType}}")
       span(ng-bind="A.alertMessage")
 
-    ul.nav.nav-tabs
+    //-ul.nav.nav-tabs
       //- TODO make RESTful (in url bar)
       li(ng-if="A.account.id", ng-class="{ active: 'update' == A.accountAction }")
         a(ng-click="A.accountAction = 'update'") Update Account
@@ -19,49 +19,109 @@
       //- NOTE: upgrading from one role to another may prompt this modal to show
     //- Create account means show all required fields (same as update)
     //- Link account means show only login fields, this may go back to update account
-    form(ng-submit="A.updateAccount()", ng-if="'update' == A.accountAction || 'create' == A.accountAction")
+    form(ng-submit="A.updateAccount()")
       .row
         .col-xs-12
-          p(ng-if="'create' == A.accountAction")
-            span Since this is your first time logging in we just need a few details from you.
-
-          p(ng-if="'update' == A.accountAction")
-            span We're missing a few pieces of information necessary to continue using your account.
-
-          .form-group(ng-if="!A.account.localLoginId")
-            label(for="username") Username
-            input.form-control(ng-model="A.delta.localLogin.uid", type='text', placeholder="ex: johndoe")
-
-          .form-group(ng-if="!A.account.email")
-            label(for="email") Email
-            input.form-control(type="email", placeholder="ex: john.doe@gmail.com", ng-model="A.delta.email")
-
-          .form-group(ng-if="!A.account.localLoginId")
-            label(for="password") Passphrase
-            span &nbsp;&nbsp;&nbsp;
-            label.checkbox-inline
-              input.checkbox(
-                type="checkbox"
-                ng-model="A.showSecret"
+          span(ng-if="'codes' == A.accountAction")
+            .form-group(ng-if="A.deltaPhone.node")
+              label(for="phonecode") SMS verification for {{ A.deltaPhone.node }}. (send by +1 (801) 788-4599)
+              input.form-control(
+                type="text"
+                placeholder="ex: SMS 098-765"
+                ng-model="A.deltaPhone.code"
               )
-              span Show
-            input.form-control(
-              ng-if="!A.showSecret"
-              ng-model="A.delta.localLogin.secret"
-              type='password'
-              placeholder="ex: ************"
-            )
-            input.form-control(
-              ng-if="A.showSecret"
-              ng-model="A.delta.localLogin.secret"
-              type='text'
-              placeholder="ex: my secret phrase"
-            )
+
+            .form-group
+              //- TODO switch to HRI for either email or text (probably email)
+              label(for="emailcode") EMAIL verification code for {{ A.deltaEmail.node }}. (sent by woof@hellabit.com)
+              input.form-control(
+                type="text"
+                placeholder="ex: EMAIL 123-456"
+                ng-model="A.deltaEmail.code"
+              )
+
+          span(ng-if="'codes' != A.accountAction")
+            .form-group(ng-if="!A.account.localLoginId")
+              label(for="username") Username
+              input.form-control(
+                ng-model="A.delta.localLogin.uid"
+                ng-change="A.checkLogin()"
+                type="text"
+                placeholder="ex: johndoe"
+              )
+              span &#32;
+              span(ng-bind="A.message")
+
+            .form-group(ng-if="!A.account.localLoginId")
+              label(for="password") Passphrase
+              span &nbsp;&nbsp;&nbsp;
+              label.checkbox-inline
+                input.checkbox(
+                  type="checkbox"
+                  ng-model="A.showSecret"
+                )
+                span Show
+              input.form-control(
+                ng-if="!A.showSecret"
+                ng-model="A.delta.localLogin.secret"
+                type='password'
+                placeholder="ex: ************"
+              )
+              input.form-control(
+                ng-if="A.showSecret"
+                ng-model="A.delta.localLogin.secret"
+                type='text'
+                placeholder="ex: my secret phrase"
+              )
+
+          span(ng-if="'create' == A.accountAction")
+            .form-group
+              label(for="email") Recovery Email Address (required)
+              input.form-control(
+                type="email"
+                placeholder="ex: john.doe@gmail.com"
+                ng-model="A.deltaEmail.node"
+                ng-change="A.checkEmail(A.deltaEmail)"
+              )
+              span
+                span This address will be used &#32;
+                strong ONLY
+                span &#32;for account recovery and critically important messages,&#32;
+                strong NOT ads
+                span , news, notifacations,&#32;
+                strong NOR any other junk
+                span .
+            span(ng-bind="A.deltaEmail.message")
+
+            .form-group
+              label(for="tel") Recovery Phone Number (optional)&#32;
+              label.checkbox-inline
+                input.checkbox(
+                  type="checkbox"
+                  ng-model="A.smsAuth"
+                )
+                span Require SMS code if I login from a new device
+              input.form-control(
+                type="tel"
+                placeholder="ex: +1 (555) 222-3456"
+                ng-model="A.deltaPhone.node"
+                ng-change="A.checkPhone(A.deltaPhone)"
+              )
+              span
+                span Whenever you sign in on a new deviceThis number will be used &#32;
+                strong ONLY
+                span &#32;for account authorization and recovery,&#32;
+                strong NOT lists
+                span &#32; or promotions.
+            span(ng-bind="A.deltaPhone.message")
+
+
       .row
-        .col-xs-12
-          label This account will be accessible via
+        .col-xs-12(ng-if="'codes' != A.accountAction")
+          label You will be able to login to this account through
           ul
             li(ng-repeat="login in A.logins", ng-if="login.link")
+              //- TODO {{ provider }} ({{ username }})
               span {{ login.comment || (login | json) }}
 
           //-div(ng-repeat="login in A.logins")
@@ -78,11 +138,13 @@
         .row
           .col-xs-12
             .form-group
-              input.btn.btn-primary(ng-if="'update' == A.accountAction" type='submit' value="Update Account")
+              input.btn.btn-primary(ng-if="!A.accountAction" type='submit' disabled value="Enter Username")
+              input.btn.btn-primary(ng-if="'login' == A.accountAction" type='submit' value="Login")
               input.btn.btn-primary(ng-if="'create' == A.accountAction" type='submit' value="Create Account")
-              a.btn.btn-default.pull-right(href='') Help
+              input.btn.btn-primary(ng-if="'codes' == A.accountAction" type='submit' value="Verify Account")
+              //-a.btn.btn-default.pull-right(href='') Help
 
-    form(ng-submit="A.updateAccount()", ng-if="'link' === A.accountAction")
+    //-form(ng-submit="A.updateAccount()", ng-if="'link' === A.accountAction")
       .row
         .col-xs-12
           p Link your Existing Account
@@ -104,12 +166,14 @@
             input.form-control(
               ng-if="!A.showSecret"
               ng-model="A.delta.localLogin.secret"
+              ng-minlength="8"
               type="password"
               placeholder="ex: ************"
             )
             input.form-control(
               ng-if="A.showSecret"
               ng-model="A.delta.localLogin.secret"
+              ng-minlength="8"
               type="text"
               placeholder="ex: my secret phrase"
             )

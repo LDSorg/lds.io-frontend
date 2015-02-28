@@ -1,9 +1,15 @@
 'use strict';
 
 angular.module('yololiumApp')
-  .service('StLogin', ['$timeout', '$q', '$modal', function StLogin($timeout, $q, $modal) {
-    var me = this
-      ;
+  .service('StLogin', [
+    '$timeout'
+  , '$q'
+  , '$http'
+  , '$modal'
+  , 'StApi'
+  , function StLogin($timeout, $q, $http, $modal, StApi) {
+    var me = this;
+    var apiPrefix = StApi.apiPrefix;
 
     me.showLoginModal = function (opts) {
       return $modal.open({
@@ -34,8 +40,7 @@ angular.module('yololiumApp')
       }
 
       return me.showLoginModal(opts).then(function (newSession) {
-        var error
-          ;
+        var error;
 
         console.log('[st-login.js] showLoginModal callback');
         if (hasLogin(newSession)) {
@@ -52,6 +57,50 @@ angular.module('yololiumApp')
         console.log("[st-login.js]", error.message);
         throw error;
       });
+    };
+
+    me.check = function (type, node) {
+      return $http.get(apiPrefix + '/logins/check/' + type + '/' + node).success(function (exists) {
+        console.log('StLogins.check result', exists);
+      }).then(function (result) {
+        return result.data;
+      });
+    };
+
+    me.create = function (username, secret, nodes) {
+      var request = { secret: secret , nodes: nodes };
+      nodes.push({ type: 'username', node: username });
+
+      return $http.post(apiPrefix + '/logins/create', request).success(function (data) {
+        console.log('StLogins.create result', data);
+      }).then(function (result) {
+        return result.data;
+      });
+    };
+
+    me.getCodes = function (nodes) {
+      return $http.post(apiPrefix + '/logins/codes', nodes).success(function (data) {
+        console.log('StLogins.getCodes result', data);
+      }).then(function (result) {
+        return result.data;
+      });
+    };
+
+    me.validateCodes = function (codes) {
+      return $http.post(apiPrefix + '/logins/codes/validate', codes).success(function (data) {
+        console.log('StLogins.getCodes result', data);
+      }).then(function (result) {
+        return result.data;
+      });
+    };
+
+    me.login = function (type, node) {
+    };
+
+    me.addLoginNode = function (id, type, node) {
+    };
+
+    me.addRecoveryNode = function (id, type, node) {
     };
 
     return me;
