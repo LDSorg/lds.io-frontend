@@ -5,10 +5,11 @@ angular.module('yololiumApp')
     '$http'
   , '$q'
   , '$timeout'
+  , 'StOauthProviders'
   , 'StLogin'
   , 'StAccount'
   , 'StApi'
-  , function StSession($http, $q, $timeout, StLogin, StAccount, StApi) {
+  , function StSession($http, $q, $timeout, StOauthProviders, StLogin, StAccount, StApi) {
     // AngularJS will instantiate a singleton by calling "new" on this function
     var me = this || {}
       , shared = { session: null, touchedAt: 0 }
@@ -16,7 +17,7 @@ angular.module('yololiumApp')
       , noopts = {}
       , notifier = $q.defer()
       , apiPrefix = StApi.apiPrefix
-      , allLogins = {}
+      //, allLogins = {}
       ;
 
     // TODO move this to server (and make it real)
@@ -214,153 +215,36 @@ angular.module('yololiumApp')
       return d.promise;
     }
 
-    // TODO if a login is successful, don't we always want to replace the current session?
-    // TODO if a login fails, don't we always want to keep the previous session?
-    //  guest -> guest
-    //  user -> user
-    function makeLogins(scope, cb) {
-      Object.keys(StApi.loginProviders).forEach(function (strategyName) {
-        makeLogin(scope, strategyName, StApi.oauthPrefix + StApi.loginProviders[strategyName], cb);
-      });
-    }
-    function makeLogin(scope, strategyName, authUrl, cb) {
-      var upperCamelName = strategyName.replace(/(^.)/, function ($1) { return $1.toUpperCase(); })
-        , loginWithPromise = promiseLogin(strategyName, authUrl)
-        ;
+    // app/scripts/client-config.js
 
-      // TODO code smell - this sholud be a directive
-      scope['loginWith' + upperCamelName + ''] = function (scopes) {
-        loginWithPromise(scopes).then(function (data) {
-          cb(null, data);
-        }, function (err) {
-          cb(err);
-        });
-      };
-    }
-
-    function promiseLoginsInScope(scope, prefix, resolve, reject) {
-      promiseLogins().forEach(function (login) {
-        var uKey = login.strategyName.replace(/(^.)/, function ($1) { return $1.toUpperCase(); })
-          ;
-
-        scope[prefix + uKey] = function (scopes) {
-          login.login(scopes).then(resolve, reject);
-        };
-      });
-    }
-    function promiseLogins() {
-      var logins = []
-        ;
-
-      Object.keys(StApi.loginProviders).forEach(function (strategyName) {
-        logins.push({
-          strategyName: strategyName
-          // TODO remove 'key'
-        , key: strategyName
-        , login: promiseLogin(strategyName, StApi.oauthPrefix + StApi.loginProviders[strategyName])
-        });
-      });
-
-      return logins;
-    }
-    function attachWindowCompleteLogin() {
-      if (window.completeLogin) {
-        return;
-      }
-
-      window.completeLogin = function (strategyName, url) {
-        var err = null;
-        var myLogin = allLogins[strategyName];
-
-        if (/deny|denied/i.test(url)) {
-          err = new Error('Access Denied: ' + url);
-        } else if (/error/i.test(url)) {
-          err = new Error('Auth Error: ' + url);
-        }
-
-        console.log('[debug]', 'completeLogin("' + strategyName + '")');
-        clearInterval(myLogin._pollInt);
-        window.localStorage.removeItem(strategyName + 'Status');
-        myLogin.loginCallback(err);
-
-        console.log('accessed parent function completeLogin');
-        //jQuery('body').append('<p>' + url + '</p>');
-        myLogin.loginWindow.close();
-        delete myLogin.loginWindow;
-      };
-    }
-    function attachCompleteLogin(strategyName, oneLogin) {
-      oneLogin.strategyName = strategyName;
-      allLogins[strategyName] = oneLogin;
-      attachWindowCompleteLogin();
-    }
-    function promiseLogin(strategyName, authUrl) {
-      var d = $q.defer()
-        , login = {}
-        ;
-
-      attachCompleteLogin(strategyName, login);
-
-      login._pollLogin = function () {
-        //jQuery('body').append('<p>' + 'heya' + '</p>');
-        console.log('[debug]', strategyName + '._pollLogin');
-        if (!window.localStorage) {
-          clearInterval(login._pollInt);
-          // doomed!
-          return;
-        }
-
-        if (localStorage.getItem(strategyName + 'Status')) {
-          window.completeLogin(strategyName, localStorage.getItem(strategyName + 'Status'));
-        }
-      };
-
-      function tryToLogin(scopes) {
-        var defaultScope = 'me:phone::';
-        scopes = scopes || [defaultScope];
-        console.warn('TODO: remove default scope \'' + defaultScope + '\'');
-        console.log('[debug]', 'loginWith ' + strategyName + '');
-        login.loginCallback = function (err) {
-          console.log('[st-session.js] promiseLogin loginCallback');
-          if (err) {
-            d.reject(err);
-            return;
-          }
-
-          console.log('[st-session.js] promiseLogin StSession.read()');
-          read({ expire: true }).then(function (session) {
-            console.log('[st-session.js] promiseLogin StSession.read() callback');
-            if (session.error) {
-              console.error('error in session');
-              console.error(session);
-              destroy();
-            }
-            d.resolve(session);
-          });
-        };
-
-        console.info('[TODO] allow arbitrary scope requests on login and permission upgrade');
-        login.loginWindow = login.loginWindow || window.open(authUrl + '?scope=' + scopes.join('%20'));
-        login._pollInt = setInterval(login._pollLogin, 300);
-
-        return d.promise;
-      }
-
-      return tryToLogin;
-    }
+    // TODO make sure that if a login is successful, we update the session
+    // and if it fails we catch the error, but we don't logout
 
     function ensureSession(opts) {
+      if (!opts) {
+        opts = {};
+      }
+
+      if (!opts.login) {
+        opts.login = { force: opts.force };
+      }
+      if (!opts.account) {
+        opts.account = {};
+      }
+
       // TODO 'admin' -> 'You must be an admin to access this page'
       // TODO such a login should not link to the current account, if any
       function checkSession(session) {
         //console.log('[st-session.js] checkSession', session);
         // pass in just login?
-        return StLogin.ensureLogin(session, opts).then(function (session2) {
+        return StLogin.ensureLogin(session, opts.login).then(function (session2) {
           console.log('[st-session.js] ensureLogin callback');
           update(session2);
           console.log('[st-session.js] ensureLogin update', shared.session);
           // pass in just account?
-          return StAccount.ensureAccount(shared.session, opts).then(function () {
+          return StAccount.ensureAccount(shared.session, opts.account).then(function () {
+            // TODO an account may provide a limited amount of information if its login requirements
+            // have not been met (i.e. it requires multi-factor auth)
             console.log('[st-session.js] ensureAccount callback');
             return shared.session;
           });
@@ -377,14 +261,26 @@ angular.module('yololiumApp')
     , update: update
     , destroy: destroy
     , subscribe: subscribe
-    , oauthPrefix: StApi.oauthPrefix
     , ensureSession: ensureSession
-    , makeLoginsInScope: makeLogins
-    , makeLogins: makeLogins
-    , promiseLogins: promiseLogins
-    , promiseLoginsInScope: promiseLoginsInScope
-    , makeLogin: makeLogin
     };
+
+    x.oauthPromises = StOauthProviders.create(function (resolve, reject) {
+      console.log('[st-session.js] promiseLogin StSession.read()');
+      read({ expire: true }).then(function (session) {
+        console.log('[st-session.js] promiseLogin StSession.read() callback');
+        if (session.error) {
+          console.error('error in session');
+          console.error(session);
+          //destroy();
+          reject(session.error);
+        }
+
+        resolve(session);
+      });
+    });
+
+    x.oauthProviders = x.oauthPromises.promiseLoginsMap();
+    x.promiseLoginsInScope = x.oauthPromises.promiseLoginsInScope;
 
     Object.keys(x).forEach(function (k) {
       me[k] = x[k];

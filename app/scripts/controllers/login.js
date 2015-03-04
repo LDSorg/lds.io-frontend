@@ -51,6 +51,7 @@ angular.module('yololiumApp')
         scope.alertType = 'alert-danger';
       }
     }
+
     scope.auth = {};
     scope.loginOrCreate = function () {
       if ('login' === scope.authType) {

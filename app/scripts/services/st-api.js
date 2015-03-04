@@ -9,13 +9,13 @@
  */
 (function () {
 
-  window.googleAnalyticsToken = 'UA-XXXXXXXX-1';
-  // window.StApi
-
   var x = window.StClientConfig
     ;
 
-  // TODO move to initialization for mian
+  x.googleAnalyticsToken = window.googleAnalyticsToken || 'UA-XXXXXXXX-1';
+  // window.StApi
+
+  // TODO move to initialization for main
   x.business = {
     "title": "ACME Crop"
   , "tagline": "Family-friendly goods and services from a company that makes everything."
@@ -45,6 +45,9 @@
     ]
   };
   x.payInvoiceTitle = "Pay Part or All of your Invoice";
+
+  x.loginConfig = x.loginConfig || { requireLocalLogin: true, minLogins: 1  };
+  x.accountConfig = x.accountConfig || {};
 
   angular.module('steve', [])
     .constant('stConfig', x)

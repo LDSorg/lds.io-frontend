@@ -9,54 +9,106 @@ angular.module('yololiumApp')
   , 'StApi'
   , function StLogin($timeout, $q, $http, $modal, StApi) {
     var me = this;
+    var config = StApi.loginConfig;
     var apiPrefix = StApi.apiPrefix;
 
-    me.showLoginModal = function (opts) {
+    me.showLoginModal = function (session, opts) {
       return $modal.open({
-        templateUrl: '/views/login.html'
-      , controller: 'LoginCtrl as L'
+      //  templateUrl: '/views/login.html'
+      //, controller: 'LoginCtrl as L'
+        templateUrl: '/views/login-v2.html'
+      , controller: 'LoginController as LC'
       , backdrop: 'static'
       , keyboard: true
       , resolve: {
           // so that we could add an explanation or something
-          stLoginOptions: [function () {
+          myStLogin: [function () {
+            return me;
+          }]
+        , stLoginConfig: [function () {
+            return config;
+          }]
+        , stLoginSession: [function () {
+            return session;
+          }]
+        , stLoginOptions: [function () {
             return opts;
           }]
         }
       }).result;
     };
 
+    function hasLogin(session) {
+      // TODO session.mostRecentLoginId
+      return session.logins.length >= 1;
+    }
+
+    function hasUnmetRequirements(session, opts) {
+      var reqs = [];
+      var meetsReq;
+
+      if (!session) {
+        session = {};
+      }
+
+      if (!session.logins) {
+        session.logins = [];
+      }
+
+      if (!hasLogin(session)) {
+        console.error('[ERROR] !hasLogin(session)');
+        console.error(session);
+        reqs.push({ code: 'nologin', message: "requires login" });
+      }
+
+      if (opts.force) {
+        opts.force = null;
+        reqs.push({ code: 'force', message: "requires revalidation" });
+      }
+      
+      if (config.minLogins) {
+        meetsReq = config.minLogins <= session.logins.length;
+        if (!meetsReq) {
+          reqs.push({ code: 'minlogins', message: "requires more logins" });
+        }
+      }
+
+      if (config.requireLocalLogin) {
+        meetsReq = session.logins.filter(function (l) {
+          return 'local' === l.type;
+        }).length;
+        if (!meetsReq) {
+          reqs.push({ code: 'locallogin', message: "requires localLogin" });
+        }
+      }
+
+      return reqs.length && reqs;
+    }
+
+    function loginHelper(session, opts) {
+      var reqs;
+
+      reqs = hasUnmetRequirements(session, opts);
+      console.log('[LOG] reqs', reqs);
+
+      if (!(reqs && reqs.length)) {
+        return $q.when(session);
+      }
+
+      return me.showLoginModal(session, opts).then(function (newSession) {
+        // only force once, if at all
+        if (opts.force) {
+          opts.force = null;
+        }
+
+        return loginHelper(newSession, opts);
+      });
+    }
+
     me.ensureLogin = function (currentSession, opts) {
       opts = opts || {};
 
-      // TODO this probably belongs in StSession?
-      function hasLogin(session) {
-        // BUG a new user won't have an account yet
-        return session && session.mostRecentLoginId && session.logins && session.logins.length >= 1;
-      }
-
-      if (!opts.force && hasLogin(currentSession)) {
-        return $q.when(currentSession);
-      }
-
-      return me.showLoginModal(opts).then(function (newSession) {
-        var error;
-
-        console.log('[st-login.js] showLoginModal callback');
-        if (hasLogin(newSession)) {
-          return newSession;
-        }
-
-        error = {
-          name: "UnensuredLogin"
-        , message: "Didn't do a very good job of ensuring the login..."
-        , toString: function () {
-            return this.message;
-          }
-        };
-        console.log("[st-login.js]", error.message);
-        throw error;
-      });
+      return loginHelper(currentSession, opts);
     };
 
     me.check = function (type, node) {
@@ -67,8 +119,9 @@ angular.module('yololiumApp')
       });
     };
 
-    me.create = function (username, secret, nodes) {
-      var request = { secret: secret , nodes: nodes };
+    me.create = function (username, secret, multifactor, nodes) {
+      // TODO integrate google auth https://github.com/markbao/speakeasy
+      var request = { secret: secret, multifactor: { nodes: multifactor || [] }, nodes: nodes };
       nodes.push({ type: 'username', node: username });
 
       return $http.post(apiPrefix + '/logins/create', request).success(function (data) {
@@ -94,14 +147,28 @@ angular.module('yololiumApp')
       });
     };
 
-    me.login = function (type, node) {
+    me.login = function (type, node, secret) {
+      if (/:/.test(node)) {
+        throw new Error("cannot have ':' in username");
+      }
+
+      var auth = { 'Authorization': 'Basic ' + btoa(node + ':' + secret) }
+        , form = null
+        ;
+
+      // TODO UI needs spinner
+      return $http.post(apiPrefix + '/session/basic', form, { headers: auth }).then(function (resp) {
+        return resp.data;
+      });
     };
 
+    /*
     me.addLoginNode = function (id, type, node) {
     };
 
     me.addRecoveryNode = function (id, type, node) {
     };
+    */
 
     return me;
   }]);

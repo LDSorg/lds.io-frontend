@@ -96,17 +96,38 @@ angular.module('yololiumApp')
       });
     }
 
-    function create(updates) {
-      var logins = updates.logins || []
-        , loginsMap = {}
-        ;
+    function create(account, myLogins) {
+      var logins = myLogins.map(function (l) {
+        if (!l.id) {
+          console.error("Create login before attempting to attach to account");
+          console.error(l);
+          throw new Error("Cannot create new logins via account routes. Create login first.");
+        }
+        return { id: l.id };
+      });
 
-      if (updates.id) {
-        return update(updates.id, updates);
+      if (account.id) {
+        return update(account, logins);
       }
 
       console.log('st-account.create updates');
-      console.log(updates);
+      console.log(account, myLogins);
+
+      return $http.post(StApi.apiPrefix + '/accounts', {
+        account: account
+      , logins: logins
+      }).then(function (resp) {
+        console.log('CREATE account');
+        console.log(resp);
+        return resp.data;
+      }, function (err) {
+        console.error('[ERROR] CREATE account');
+        console.error(err);
+        return err;
+      })
+      ;
+
+      /*
       return ensureLocalLogin(updates).then(function () {
         if (updates.localLogin) {
           logins.push(updates.localLogin);
@@ -124,14 +145,8 @@ angular.module('yololiumApp')
           }
           return false;
         });
-
-        return $http.post(StApi.apiPrefix + '/accounts', updates)
-          .then(function (resp) {
-            console.log('CREATE account');
-            console.log(resp);
-            return resp.data;
-          });
       });
+      */
     }
 
     me.update = update;
