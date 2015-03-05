@@ -90,8 +90,10 @@ angular.module('yololiumApp')
     scope.showLoginModal = function () {
       StSession.ensureSession().then(function (session) {
         updateSession(session);
-      }, function () {
-        // nada
+      }, function (err) {
+        console.error(err);
+        window.alert(err.message || err.toString());
+        throw err;
       });
     };
 

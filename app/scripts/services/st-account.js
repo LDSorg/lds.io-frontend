@@ -8,12 +8,16 @@
  * Service in the yololiumApp.
  */
 angular.module('yololiumApp')
-  .service('StAccount', ['$q', '$http', '$modal', 'StApi', function StAccount($q, $http, $modal, StApi) {
+  .service('StAccount', [
+    '$q'
+  , '$http'
+  , '$modal'
+  , 'StApi'
+  , function StAccount($q, $http, $modal, StApi) {
     // AngularJS will instantiate a singleton by calling "new" on this function
 
-    var me = this
-      , required = ['localLoginId']
-      ;
+    var me = this;
+    var config = StApi.loginConfig;
 
     me.showAccountModal = function (session, opts) {
       console.log('opening the account update');
@@ -23,28 +27,92 @@ angular.module('yololiumApp')
       , backdrop: 'static'
       , keyboard: false
       , resolve: {
-          mySession: function () {
+          myStAccount: function () {
+            return me;
+          }
+        , stAccountSession: function () {
             return session;
           }
         , stAccountOptions: function () {
             return opts;
           }
-        , stAccountRequired: function () {
-            return required;
+        , stAccountConfig: function () {
+            return config;
           }
         }
       }).result;
     };
 
-    me.ensureAccount = function (session, opts) {
-      // TODO move this logic to StAccount
+    function attachLogins(account, logins) {
+      var url = StApi.apiPrefix + '/accounts/' + account.id + '/logins';
+
+      return $http.post(
+        url
+      , { logins: logins.map(function (l) { return { id: l.id }; }) }
+      ).then(function (resp) {
+        return resp.data;
+      });
+    }
+
+    // Find the primary account (if any)
+    // Check for logins that don't have accounts
+    // If the latest login didn't have an account, create a new one
+    // If the latest login did have an account, attach the lonely logins to it
+    me.linkNewLogins = function (session/*, opts*/) {
+      // find the most recent login
+      // find the primary account
+      // add linkable logins to that account
+      var mostRecentLogin = session.logins[0];
+      var accountlessLogins;
+      var primaryAccount;
+
+      console.log(session);
+      // TODO accounts containing id
+      if (mostRecentLogin.accountIds.length) {
+        mostRecentLogin.primaryAccountId = mostRecentLogin.primaryAccountId || mostRecentLogin.accountIds[0];
+        if (!session.accounts.some(function (a) {
+          if (a.id === mostRecentLogin.primaryAccountId) {
+            primaryAccount = a;
+            return true;
+          }
+        })) {
+          throw new Error("[INSANITY] most recent login has accounts, but no primary");
+        }
+        // nothing to link to
+      } else {
+        primaryAccount = null;
+      }
+
+      // only link new logins by default
+      accountlessLogins = session.logins.filter(function (login) {
+        return !login.accounts.length;
+      });
+
+      if (!accountlessLogins.length) {
+        return $q.when(session);
+      } else {
+        if (!primaryAccount) {
+          throw new Error("[INSANITY] no accountlessLogins, but no primary account... what?");
+        }
+      }
+
+      if (!primaryAccount) {
+        return create({}, accountlessLogins);
+      }
+
+      return attachLogins(primaryAccount, accountlessLogins);
+    };
+
+
+    function hasUnmetRequirements() {
+      return [];
+      /*
       function hasField(field) {
         console.log('hasField', field, session.account[field], !!session.account[field]);
         return !!session.account[field];
       }
 
       // TODO remap accounts and logins to eachother on session update
-      session.account.logins = session.account.logins || [];
       session.account.logins.some(function (login) {
         // TODO make configurable
         if ('local' === (login.type || login.provider)) {
@@ -61,7 +129,22 @@ angular.module('yololiumApp')
       // TODO check if the account is up-to-date (no missing fields)
       console.log("open UpdateSession modal", required, required.every(hasField));
       console.log(session.account);
-      return me.showAccountModal(session, opts);
+      */
+    }
+
+    me.ensureAccount = function (session, opts) {
+      return me.linkNewLogins(session, opts).then(function (newSession) { 
+        var reqs;
+
+        session = newSession;
+
+        reqs = hasUnmetRequirements(session, opts);
+        if (reqs.length) {
+          return me.showAccountModal(session, opts);
+        }
+
+        return $q.when(session);
+      });
     };
 
     function ensureLocalLogin(updates) {

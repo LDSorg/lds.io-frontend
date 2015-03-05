@@ -56,33 +56,35 @@ angular.module('yololiumApp')
       }
 
       if (!hasLogin(session)) {
-        console.error('[ERROR] !hasLogin(session)');
-        console.error(session);
         reqs.push({ code: 'nologin', message: "requires login" });
+        return reqs;
+      }
+
+      if (!session.accounts.length && config.requireLocalLogin) {
+        meetsReq = session.logins.filter(function (l) {
+          return 'local' === l.type;
+        }).length;
+        if (!meetsReq) {
+          reqs.push({ code: 'locallogin', message: "requires localLogin" });
+          return reqs;
+        }
       }
 
       if (opts.force) {
         opts.force = null;
         reqs.push({ code: 'force', message: "requires revalidation" });
+        return reqs;
       }
       
       if (config.minLogins) {
         meetsReq = config.minLogins <= session.logins.length;
         if (!meetsReq) {
           reqs.push({ code: 'minlogins', message: "requires more logins" });
+          return reqs;
         }
       }
 
-      if (config.requireLocalLogin) {
-        meetsReq = session.logins.filter(function (l) {
-          return 'local' === l.type;
-        }).length;
-        if (!meetsReq) {
-          reqs.push({ code: 'locallogin', message: "requires localLogin" });
-        }
-      }
-
-      return reqs.length && reqs;
+      return reqs;
     }
 
     function loginHelper(session, opts) {

@@ -379,6 +379,10 @@ angular.module('yololiumApp')
 
       if (nodeObj.exists) {
         console.log('Proceeding to login');
+        stLoginSession.logins.forEach(function (l) {
+          // TODO checkboxes in UI
+          l.linkable = true;
+        });
         promise = scope.login(nodeObj);
       } else {
         console.log('Proceeding to create login');

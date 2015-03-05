@@ -154,8 +154,11 @@ angular.module('yololiumApp')
     function update(session) {
       gettingSession = null;
 
-      shared.session = mangle(session);
-      shared.touchedAt = Date.now();
+      if (shared.session !== session) {
+        shared.session = mangle(session);
+        shared.touchedAt = Date.now();
+      }
+
       // TODO Object.freeze (Mozilla's deepFreeze example)
       notifier.notify(shared.session);
       return shared.session;
@@ -242,7 +245,8 @@ angular.module('yololiumApp')
           update(session2);
           console.log('[st-session.js] ensureLogin update', shared.session);
           // pass in just account?
-          return StAccount.ensureAccount(shared.session, opts.account).then(function () {
+          return StAccount.ensureAccount(shared.session, opts.account).then(function (session3) {
+            update(session3);
             // TODO an account may provide a limited amount of information if its login requirements
             // have not been met (i.e. it requires multi-factor auth)
             console.log('[st-session.js] ensureAccount callback');
