@@ -76,6 +76,7 @@ angular.module('yololiumApp')
             return true;
           }
         })) {
+          console.error(session);
           throw new Error("[INSANITY] most recent login has accounts, but no primary");
         }
         // nothing to link to
@@ -88,18 +89,17 @@ angular.module('yololiumApp')
         return !login.accounts.length;
       });
 
+      // Every Login has an Account
       if (!accountlessLogins.length) {
         return $q.when(session);
-      } else {
-        if (!primaryAccount) {
-          throw new Error("[INSANITY] no accountlessLogins, but no primary account... what?");
-        }
       }
 
+      // No login has an account / There is no primary account
       if (!primaryAccount) {
         return create({}, accountlessLogins);
       }
 
+      // Some logins are missing accounts, they should get the primary
       return attachLogins(primaryAccount, accountlessLogins);
     };
 

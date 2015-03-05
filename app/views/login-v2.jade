@@ -10,7 +10,7 @@
     //- NOTE: upgrading from one role to another may prompt this modal to show
     //- Create account means show all required fields (same as update)
     //- Link account means show only login fields, this may go back to update account
-    form(ng-submit="LC.submitLogin()" ng-if="'codes' == LC.formAction")
+    form(ng-submit="LC.submitCodes()" ng-if="'codes' == LC.formAction")
       .row
         .col-xs-12
           span(ng-if="'codes' == LC.formAction")

@@ -135,7 +135,7 @@ angular.module('yololiumApp')
 
     scope.checkSecret = function (nodeObj) {
       var len = (nodeObj.secret||'').length;
-      var meetsLen = len >= 12;
+      var meetsLen = (len >= 12);
 
       if (meetsLen) {
         nodeObj.secretMessage = '';
@@ -148,7 +148,7 @@ angular.module('yololiumApp')
     scope.checkLogin = function (nodeObj) {
       scope.formAction = '';
       nodeObj.claimable = false;
-      nodeObj.exists = true;
+      nodeObj.exists = false;
       nodeObj.node = nodeObj.uid;
       nodeObj.message = '';
 
@@ -355,14 +355,6 @@ angular.module('yololiumApp')
         }
 
         return stLoginSession;
-      }).then(function (session) {
-        scope.validationDefer.resolve(session);
-      }, function (err) {
-        // TODO if error is one of the codes, instruct user to try again
-        console.error(err);
-        scope.validationDefer.reject(err);
-      }).then(function () {
-        scope.validationDefer = null;
       });
     };
 
@@ -392,9 +384,27 @@ angular.module('yololiumApp')
       return promise;
     }
 
+    scope.submitCodes = function () {
+      scope.validateCodes().then(function (session) {
+        if (session.error) {
+          throw session.error;
+        }
+        scope.validationDefer.resolve(session);
+        scope.validationDefer = null;
+        return session;
+      }).then(function (session) {
+        return session;
+      }, function (err) {
+        scope.validationErrorMessage = err.message || 'Code validation failed, Double check and try again';
+        console.error(err);
+      });
+      // TODO allow the user to cancel / skip validation and handle
+      // scope.validationDefer.reject(err);
+    };
+
     scope.submitLogin = function () {
       if ('codes' === scope.formAction) {
-        scope.validateCodes();
+        scope.submitCodes();
         return;
       }
 
