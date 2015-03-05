@@ -1,15 +1,19 @@
 'use strict';
 
 angular.module('yololiumApp', [
-  'ngCookies',
-  'ngResource',
-  'ngSanitize',
-  'duScroll',
-  'ui.router',
-  'ui.bootstrap',
-  'steve'
+  'ngCookies'
+, 'ngResource'
+, 'ngSanitize'
+, 'duScroll'
+, 'ui.router'
+, 'ui.bootstrap'
+, 'steve'
 ])
-  .config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($stateProvider, $urlRouterProvider, $httpProvider/*, stConfig*/) {
+  .config([
+    '$stateProvider'
+  , '$urlRouterProvider'
+  , '$httpProvider'
+  , function ($stateProvider, $urlRouterProvider, $httpProvider/*, stConfig*/) {
     var nav
       , footer
       ;
@@ -23,7 +27,7 @@ angular.module('yololiumApp', [
     // See https://github.com/yeoman/generator-angular#minification-safe
     nav = {
       templateUrl: '/views/nav.html'
-    , controller: 'NavCtrl as N'
+    , controller: 'NavController as NC'
     , resolve: {
         mySession: ['StSession', function (StSession) {
           return StSession.get();

@@ -66,7 +66,6 @@ angular.module('yololiumApp')
       var accountlessLogins;
       var primaryAccount;
 
-      console.log(session);
       // TODO accounts containing id
       if (mostRecentLogin.accountIds.length) {
         mostRecentLogin.primaryAccountId = mostRecentLogin.primaryAccountId || mostRecentLogin.accountIds[0];

@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('yololiumApp')
-  .controller('NavCtrl', [
+  .controller('NavController', [
     '$rootScope'
   , '$scope'
   , '$state'

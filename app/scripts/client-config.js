@@ -43,4 +43,7 @@ window.StClientConfig = {
     , "redirectUrl": "http://local.foobar3000.com:4005/loopback-close.html"
     }
   ]
+, "facebook": {
+    "appId": 469409949781454
+  }
 };
