@@ -1,13 +1,13 @@
 window.StClientConfig = {
-  "webhookPrefix": "/webhooks",
-  "oauthPrefix": "/oauth",
-  "sessionPrefix": "/session",
-  "apiPrefix": "/api",
-  "snakeApi": true,
-  "superUserApi": "/api/superuser",
-  "adminApi": "/api/admin",
-  "userApi": "/api/user",
-  "publicApi": "/api/public"
+  "webhookPrefix": "/webhooks"
+, "oauthPrefix": "/oauth"
+, "sessionPrefix": "/session"
+, "apiPrefix": "/api"
+, "snakeApi": true
+, "superUserApi": "/api/superuser"
+, "adminApi": "/api/admin"
+, "userApi": "/api/user"
+, "publicApi": "/api/public"
 , "testProfiles": [
     { "role": "superuser"
     , "token": "xxxxxxxx-test-xxxx-xxxx-root-xxxxxx"
@@ -39,8 +39,8 @@ window.StClientConfig = {
     { "provider": "loopback"
     , "id": "pub_test_key_1"
     , "explicitUrl": "/loopback/connect"
-    , "authorizeUrl": "http://local.ldsconnect.org:4004/oauth/dialog/authorize"
-    , "redirectUrl": "http://local.foobar3000.com:4005/loopback-close.html"
+    , "authorizeUrl": "https://local.daplie.com:4443/oauth/dialog/authorize"
+    , "redirectUrl": "https://local.foobar3000.com:4443/loopback-close.html"
     }
   ]
 , "facebook": {
