@@ -37,6 +37,32 @@ angular.module('yololiumApp')
       };
     });
 
+    scope.loginStrategies = [
+      { label: 'Facebook'
+      , faImage: ""
+      , faClass: "fa-facebook"
+      , btnClass: "btn-facebook"
+      , login: scope.loginWithFacebook
+      }
+    , { label: 'Google+'
+      , faImage: ""
+      , faClass: "fa-google-plus"
+      , btnClass: "btn-google-plus"
+      , login: scope.loginWithGooglePlus
+      }
+
+    /*
+    , { label: 'LDS.org Account'
+      , faImage: "images/moroni-128px.png"
+      , faClass: ""
+      , btnClass: "openid"
+      , login: scope.loginWithLdsconnect
+      }
+    */
+    ];
+
+
+
     scope.config = stLoginConfig;
 
     // TODO calculate missing
@@ -138,7 +164,7 @@ angular.module('yololiumApp')
       var meetsLen = (len >= 12);
 
       if (meetsLen) {
-        nodeObj.secretMessage = '';
+        nodeObj.secretMessage = 'Login when ready, captain!';
         return;
       }
 

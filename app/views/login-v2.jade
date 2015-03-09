@@ -51,6 +51,7 @@
               )
               span &#32;
               span(ng-bind="LC.delta.localLogin.message")
+              span(ng-if="!LC.delta.localLogin.message") Enter your existing username or the username you would like to create.
 
             .form-group(ng-if="!LC.account.localLoginId")
               label(for="password") Passphrase
@@ -75,7 +76,8 @@
                 type='text'
                 placeholder="ex: my secret phrase"
               )
-              span(ng-bind="LC.delta.localLogin.secretMessage")
+              span(ng-if="LC.delta.localLogin.secret.length" ng-bind="LC.delta.localLogin.secretMessage")
+              span(ng-if="!LC.delta.localLogin.secret.length") Enter a passphrase with 12 or more characters.
 
           span(ng-if="'create' == LC.formAction && !LC.recoverable")
             .form-group
@@ -146,7 +148,22 @@
               input.btn.btn-primary(ng-if="'create' == LC.formAction" type='submit' value="Create Account")
               //-a.btn.btn-default.pull-right(href='') Help
 
-    .social.signin-option(ng-if="!LC.hideSocial")
+    .social.signin-option(ng-if="LC.loginStrategies.length")
+      hr
+      h3 Or Connect with...
+      .row
+        .col-md-6(ng-repeat="strategy in LC.loginStrategies")
+          .option
+            button(
+              type="button"
+              ng-click="strategy.login()"
+              ng-class="[ 'btn', 'btn-block', 'btn-social', strategy.btnClass ]"
+            )
+              i(ng-class="[ 'fa', strategy.faClass ]")
+              //-  img(ng-if="strategy.faImage" ng-src="{{ strategy.faImage }}")
+              span.signin {{ strategy.label }}
+
+    //-.social.signin-option(ng-if="!LC.hideSocial")
       hr
       .row
         .col-md-6
