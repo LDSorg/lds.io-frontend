@@ -8,6 +8,10 @@ window.StClientConfig = {
 , "adminApi": "/api/admin"
 , "userApi": "/api/user"
 , "publicApi": "/api/public"
+, "loginConfig": {
+    "usernameMinLen": 1
+  , "secretMinLen": 12
+  }
 , "testProfiles": [
     { "role": "superuser"
     , "token": "xxxxxxxx-test-xxxx-xxxx-root-xxxxxx"

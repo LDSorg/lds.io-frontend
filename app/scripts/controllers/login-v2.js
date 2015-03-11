@@ -23,6 +23,8 @@ angular.module('yololiumApp')
     //, stLoginOptions
     ) {
     var scope = this;
+    var secretMinLen = stLoginConfig.secretMinLen || 12;
+    var usernameMinLen = stLoginConfig.usernameMinLen || 1;
 
     Object.keys(StSession.oauthProviders).forEach(function (key) {
       var provider = StSession.oauthProviders[key];
@@ -161,14 +163,17 @@ angular.module('yololiumApp')
 
     scope.checkSecret = function (nodeObj) {
       var len = (nodeObj.secret||'').length;
-      var meetsLen = (len >= 12);
+      var meetsLen = (len >= secretMinLen);
 
       if (meetsLen) {
         nodeObj.secretMessage = 'Login when ready, captain!';
         return;
       }
 
-      nodeObj.secretMessage = 'Passphrase is too short ' + len + '/12 (needs to be 12+ characters)';
+      nodeObj.secretMessage = 'Passphrase is too short '
+        + len + '/' + secretMinLen 
+        + ' (needs to be ' + secretMinLen + '+ characters)'
+        ;
     };
 
     scope.checkLogin = function (nodeObj) {
@@ -188,6 +193,12 @@ angular.module('yololiumApp')
       if (!/^[0-9a-z\-_]+$/i.test(nodeObj.node)) {
         // TODO validate this is true on the server
         nodeObj.message = 'Only alphanumeric characters are allowed in usernames.';
+        return;
+      }
+
+      if (nodeObj.node.length < usernameMinLen) {
+        // TODO validate this is true on the server
+        nodeObj.message = 'Username too short. Use at least ' + usernameMinLen + ' characters.';
         return;
       }
 
@@ -435,12 +446,12 @@ angular.module('yololiumApp')
       }
 
       var nodeObj = scope.delta.localLogin;
-      var meetsSecretLen = (nodeObj.secret||'').length >= 8;
+      var meetsSecretLen = (nodeObj.secret||'').length >= secretMinLen;
       var meetsNameLen = (nodeObj.node||'').length >= 1;
 
       if (!meetsSecretLen) {
         // TODO where should this really go?
-        nodeObj.secretMessage = 'Password is too short. Try something 12+ characters long.';
+        nodeObj.secretMessage = 'Password is too short. Try something ' + secretMinLen + '+ characters long.';
         window.alert(nodeObj.secretMessage);
         return;
       }

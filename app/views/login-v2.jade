@@ -77,7 +77,7 @@
                 placeholder="ex: my secret phrase"
               )
               span(ng-if="LC.delta.localLogin.secret.length" ng-bind="LC.delta.localLogin.secretMessage")
-              span(ng-if="!LC.delta.localLogin.secret.length") Enter a passphrase with 12 or more characters.
+              span(ng-if="!LC.delta.localLogin.secret.length") Enter a passphrase with {{ LC.secretMinLen }} or more characters.
 
           span(ng-if="'create' == LC.formAction && !LC.recoverable")
             .form-group
