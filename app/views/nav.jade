@@ -6,12 +6,14 @@
         img.navbar-logo.img-circle(ng-src="http://beta.images.coolaj86.com/api/resize/height/100?url={{ NC.logo }}"
           style="border: 2px solid white; height: 54px; width: 106px;")
       a.navbar-brand(href="/" style="padding-top: 23px; padding-left: 25px;") {{ NC.business.title }}
+      //- this is a hack to get the logo to show up centered
       div(style="padding-top: 9px;")
         button.navbar-toggle(type='button', ng-init="navCollapsed = true", ng-click="navCollapsed = !navCollapsed")
           span.icon-bar
           span.icon-bar
           span.icon-bar
     #navbar-main.navbar-collapse.collapse(ng-class="!navCollapsed && 'in'")
+      //- this is a hack to match the logo (as mentioned above)
       ul.nav.navbar-nav(style="padding-top: 9px;")
         //-li.dropdown
           a#themes.dropdown-toggle(data-toggle='dropdown', href='')
