@@ -11,14 +11,13 @@ angular.module('yololiumApp')
   , 'StApi'
   , function StSession($http, $q, $timeout, StOauthProviders, StLogin, StAccount, StApi) {
     // AngularJS will instantiate a singleton by calling "new" on this function
-    var me = this || {}
-      , shared = { session: null, touchedAt: 0 }
-      , gettingSession = null
-      , noopts = {}
-      , notifier = $q.defer()
-      , apiPrefix = StApi.apiPrefix
-      //, allLogins = {}
-      ;
+    var me = this || {};
+    var shared = { session: null, touchedAt: 0 };
+    var gettingSession = null;
+    var noopts = {};
+    var notifier = $q.defer();
+    var apiPrefix = StApi.apiPrefix;
+    var middleware = [];
 
     // TODO move this to server (and make it real)
     function mangle(data) {
@@ -75,10 +74,9 @@ angular.module('yololiumApp')
       data.connected = {};
       data.account.loginIds = data.account.loginIds || [];
       data.account.loginIds.forEach(function (typedUid) {
-        var parts = typedUid.split(':')
-          , type = parts.shift()
-          , uid = parts.join(':')
-          ;
+        var parts = typedUid.split(':');
+        var type = parts.shift();
+        var uid = parts.join(':');
 
         // TODO carry more info about logins in account
         data.connected[type] = data.connected[type] || {};
@@ -99,11 +97,11 @@ angular.module('yololiumApp')
 
     function read(opts) {
       opts = opts || noopts;
-      var d = $q.defer()
-        , staletime = 5 * 60 * 60 * 1000
-        ;
+      var d = $q.defer();
+      var staletime = 5 * 60 * 60 * 1000;
 
-      if (opts.expire || (Date.now() - shared.touchedAt > staletime)) { // also try Date.now() - shared.session.touchedAt
+      if (opts.expire || (Date.now() - shared.touchedAt > staletime)) {
+        // also try Date.now() - shared.session.touchedAt
         gettingSession = null;
         shared.session = null;
       }
@@ -137,8 +135,7 @@ angular.module('yololiumApp')
     }
 
     function create(email, passphrase) {
-      var d = $q.defer()
-        ;
+      var d = $q.defer();
 
       $http.post(apiPrefix + '/session', {
         email: email
@@ -202,8 +199,7 @@ angular.module('yololiumApp')
     }
 
     function destroy() {
-      var d = $q.defer()
-        ;
+      var d = $q.defer();
 
       console.log('DESTROYING SESSION');
       console.log(shared);
@@ -235,27 +231,37 @@ angular.module('yololiumApp')
         opts.account = {};
       }
 
-      // TODO 'admin' -> 'You must be an admin to access this page'
-      // TODO such a login should not link to the current account, if any
-      function checkSession(session) {
-        //console.log('[st-session.js] checkSession', session);
-        // pass in just login?
+      return read().then(function (session) {
         return StLogin.ensureLogin(session, opts.login).then(function (session2) {
           console.log('[st-session.js] ensureLogin callback');
           update(session2);
           console.log('[st-session.js] ensureLogin update', shared.session);
           // pass in just account?
-          return StAccount.ensureAccount(shared.session, opts.account).then(function (session3) {
-            update(session3);
-            // TODO an account may provide a limited amount of information if its login requirements
-            // have not been met (i.e. it requires multi-factor auth)
-            console.log('[st-session.js] ensureAccount callback');
-            return shared.session;
-          });
         });
-      }
+      }).then(function () {
+        var promise = $q.when(shared.session);
 
-      return read().then(checkSession, checkSession);
+        middleware.forEach(function (wares) {
+          promise = promise.then(function (session2a) {
+            update(session2a);
+            return wares[0](shared.session, opts);
+          }, wares[1]);
+        });
+
+        return promise;
+      }).then(function () {
+        return StAccount.ensureAccount(shared.session, opts.account).then(function (session3) {
+          update(session3);
+          // TODO an account may provide a limited amount of information if its login requirements
+          // have not been met (i.e. it requires multi-factor auth)
+          console.log('[st-session.js] ensureAccount callback');
+          return shared.session;
+        });
+      });
+    }
+
+    function useMiddleware(cb, eb) {
+      middleware.push([cb, eb]);
     }
 
     var x = {
@@ -266,6 +272,7 @@ angular.module('yololiumApp')
     , destroy: destroy
     , subscribe: subscribe
     , ensureSession: ensureSession
+    , use: useMiddleware
     };
 
     x.oauthPromises = StOauthProviders.create(function (resolve, reject) {

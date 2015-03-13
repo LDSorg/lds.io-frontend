@@ -1,0 +1,92 @@
+//- modal-dialog & model-content are containers for this template
+.auth-modal
+  .modal-header
+    h2.modal-title Verify Membership Record
+    div(ng-if="LAC.flashMessage")
+      br
+      .alert(ng-class="[ LAC.flashMessageClass ]")
+        span(ng-bind="LAC.flashMessage")
+
+  .modal-body(ng-init="LAC.profile = LAC.login.me")
+    h3 {{ LAC.profile.name }} {{ LAC.profile.surnames.join(" ") }}
+
+    span(ng-if="1 == LAC.login.callings.length") {{ LAC.login.callings[0].title }}
+    span(ng-if="LAC.login.callings.length > 1")
+      span(ng-repeat="calling in LAC.login.callings") {{ calling.title }}
+    span(ng-if="!LAC.login.callings.length")
+      i (no ward calling assigned)
+    br
+
+    span(ng-if="LAC.profile.phones.length > 1")
+      span(ng-repeat="phone in LAC.profile.phones")
+        a(ng-href="tel:{{ phone.value }}") {{ phone.value }}
+        br
+    span(ng-if="LAC.profile.phones.length <= 1")
+      span
+        a(ng-href="tel:{{ LAC.profile.phones[0].value }}") {{ LAC.profile.phones[0].value }}
+    span(ng-if="!LAC.profile.phones.length") &lt;&lt; No Phone Number >>
+    span(ng-if="LAC.profile.phones.length <= 1")
+      br
+
+    span(ng-if="LAC.profile.emails.length > 1")
+      span(ng-repeat="email in LAC.profile.emails")
+        a(ng-href="mailto:{{ email.value }}") {{ email.value }}
+        br
+    span(ng-if="1 == LAC.profile.emails.length")
+      span
+        a(ng-href="mailto:{{ LAC.profile.emails[0].value }}") {{ LAC.profile.emails[0].value }}
+    span(ng-if="!LAC.profile.emails.length") &lt;&lt; No Email Address >>
+    span(ng-if="LAC.profile.emails.length <= 1")
+      br
+
+    span {{ LAC.login.home.lines[0] || "<< No Street Address >>" }}
+    br
+    span(ng-if="LAC.login.home.lines[1]")
+      span {{ LAC.login.home.lines[1] }}
+      br
+    span {{ LAC.login.home.city || "<< No City >>" }}, {{ LAC.login.home.state || "<< No State >>" }} {{ LAC.login.home.postalCode || "<< No Postal Code >>" }}
+    br
+
+
+    h4 {{ LAC.login.meetinghouse.name }}
+    p
+      span ({{ LAC.login.stakecenter.name }})
+      br
+      span {{ LAC.login.meetinghouse.address.street }} {{ LAC.login.meetinghouse.address.city }}, {{ LAC.login.meetinghouse.address.state }}
+      br
+      i.small Sunday Services start at {{ LAC.login.meetinghouse.hours }}
+      br
+      span.small
+        i Bishop {{ LAC.login.leaders.bishop.name }} {{ LAC.login.leaders.bishop.surnames.join(' ') }}
+        span &#32;•&#32;
+        span(ng-if="LAC.login.leaders.bishop.phones[0].value")
+          a(href="tel:{{ LAC.login.leaders.bishop.phones[0].value }}") {{ LAC.login.leaders.bishop.phones[0].value }}
+        span(ng-if="!LAC.login.leaders.bishop.phones[0].value") &lt;&lt; No Phone Number >>
+        span &#32;•&#32;
+        span(ng-if="LAC.login.leaders.bishop.emails[0].value")
+          a(href="mailto:{{ LAC.login.leaders.bishop.emails[0].value }}") {{ LAC.login.leaders.bishop.emails[0].value }}
+        span(ng-if="!LAC.login.leaders.bishop.emails[0].value") &lt;&lt; No Email Address >>
+
+
+    .modal-footer
+      .row
+        .col-xs-12(style="text-align: left;")
+          p 
+            span If any of the above information is
+            span &#32;
+            strong missing or incorrect
+            span , please contact your ward clerk:
+          i {{ LAC.login.leaders.clerk.name }} {{ LAC.login.leaders.clerk.surnames.join(' ') }}
+          br
+          span(ng-if="LAC.login.leaders.clerk.phones[0].value")
+            a(href="tel:{{ LAC.login.leaders.clerk.phones[0].value }}") {{ LAC.login.leaders.clerk.phones[0].value }}
+          span(ng-if="!LAC.login.leaders.clerk.phones[0].value") &lt;&lt; No Phone Number >>
+          br
+          span(ng-if="LAC.login.leaders.clerk.emails[0].value")
+            a(href="mailto:{{ LAC.login.leaders.clerk.emails[0].value }}") {{ LAC.login.leaders.clerk.emails[0].value }}
+          span(ng-if="!LAC.login.leaders.clerk.emails[0].value") &lt;&lt; No Email Address >>
+
+        form(ng-submit="LAC.markAsChecked()")
+          .col-xs-12
+            .form-group
+              input.btn.btn-primary(type='submit' value="Continue")

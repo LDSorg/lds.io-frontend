@@ -20,7 +20,7 @@ angular.module('yololiumApp')
     , myStLogin
     , stLoginConfig
     , stLoginSession
-    //, stLoginOptions
+    , opts
     ) {
     var scope = this;
     var secretMinLen = stLoginConfig.secretMinLen || 12;
@@ -41,12 +41,14 @@ angular.module('yololiumApp')
 
     scope.loginStrategies = [
       { label: 'Facebook'
+      , name: 'facebook'
       , faImage: ""
       , faClass: "fa-facebook"
       , btnClass: "btn-facebook"
       , login: scope.loginWithFacebook
       }
     , { label: 'Google+'
+      , name: 'google-plus'
       , faImage: ""
       , faClass: "fa-google-plus"
       , btnClass: "btn-google-plus"
@@ -63,6 +65,10 @@ angular.module('yololiumApp')
     */
     ];
 
+    console.log('opts', opts);
+    scope.hideSocial = opts.hideSocial;
+    scope.flashMessage = opts.flashMessage;
+    scope.flashMessageClass = opts.flashMessageClass;
 
 
     scope.config = stLoginConfig;
@@ -145,9 +151,11 @@ angular.module('yololiumApp')
         scope.checkPhone(scope.deltaPhone, { immediate: true });
       }
 
+      /*
       if (stLoginSession.logins.length) {
         scope.formAction = 'create';
       }
+      */
 
       // TODO check stLoginSession
       if (stLoginSession.logins.length >= 2) {
@@ -226,8 +234,10 @@ angular.module('yololiumApp')
       // TODO test and assign
       nodeObj.type = null;
       return myStLogin.login(nodeObj.type, nodeObj.node, nodeObj.secret).then(function (session) {
-        stLoginSession = session;
-        return stLoginSession;
+        if (session && !session.error) {
+          stLoginSession = session;
+        }
+        return session;
       });
     };
 
