@@ -9,8 +9,8 @@ window.StClientConfig = {
 , "userApi": "/api/user"
 , "publicApi": "/api/public"
 , "loginConfig": {
-    "usernameMinLen": 1
-  , "secretMinLen": 12
+    "usernameMinLen": 4
+  , "secretMinLen": 8
   }
 , "testProfiles": [
     { "role": "superuser"
@@ -48,6 +48,6 @@ window.StClientConfig = {
     }
   ]
 , "facebook": {
-    "appId": 469409949781454
+    "appId": 1592518370979179
   }
 };
