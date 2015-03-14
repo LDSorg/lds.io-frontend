@@ -9,7 +9,8 @@ angular.module('yololiumApp')
   , 'mySession'
   , 'StPayInvoice'
   , 'StApi'
-  , function ($rootScope, $scope, $state, StSession, mySession, StPayInvoice, StApi) {
+  , '$http'
+  , function ($rootScope, $scope, $state, StSession, mySession, StPayInvoice, StApi, $http) {
     var scope = this
       , allTabs
       ;
@@ -89,6 +90,22 @@ angular.module('yololiumApp')
 
     scope.showLoginModal = function () {
       StSession.ensureSession().then(function (session) {
+        if (!session.accounts.length) {
+          window.alert("Sanity check fail: No accounts.");
+        }
+        if (session.accounts.length > 1) {
+          window.alert("Account Switching not yet Implemented. Please log out and log back in with only one account");
+        }
+        var account = session.accounts[0];
+        $http.get(StApi.apiPrefix + '/ldsconnect/' + account.id + '/me').then(function (resp) {
+          console.log(resp);
+          console.log(resp.data);
+          if (resp.data.error) {
+            window.alert("Server Error: " + resp.data.error.message);
+            return;
+          }
+          window.alert("Got account data. Check the console!");
+        });
         updateSession(session);
       }, function (err) {
         console.error(err);

@@ -14,7 +14,8 @@ angular.module('yololiumApp')
   , '$modal'
   , 'StApi'
   , 'StLogin'
-  , function LdsAccount($q, $http, $modal, StApi, StLogin) {
+  , 'StAccount'
+  , function LdsAccount($q, $http, $modal, StApi, StLogin, StAccount) {
     // AngularJS will instantiate a singleton by calling "new" on this function
 
     var me = this;
@@ -56,19 +57,32 @@ angular.module('yololiumApp')
     me.ensureAccount = function (session, opts) {
       // about 3 months
       var recheckTime = (3 * 30 * 24 * 60 * 60 * 1);
+      var ldsLogins;
+      var hasLdsAccount;
 
       console.log('session');
       console.log(session);
       console.log('opts');
       console.log(opts);
 
+      // the server must reject account creation with no local login present
+      // TODO inspect account for freshness / validation?
+      session.logins.some(function (login) {
+        if (login.accounts.length) {
+          hasLdsAccount = true;
+          return true;
+        }
+      });
+
       // if there isn't an account associated with a current login
       // go back to the login step
-      if (!session.logins.some(function (login) {
+      ldsLogins = session.logins.filter(function (login) {
         if ('local' === login.type) {
           return true;
         }
-      })) {
+      });
+
+      if (!ldsLogins.length && !hasLdsAccount) {
         opts.hideSocial = true;
         opts.flashMessage = "Login with your LDS Account at least once before linking other accounts.";
         opts.flashMessageClass = "alert-warning";
@@ -81,7 +95,7 @@ angular.module('yololiumApp')
       }
 
       // if any of the logins are stale, destalinize them
-      if (session.logins.some(function (login) {
+      if (ldsLogins.some(function (login) {
         var fresh;
         
         if ('local' !== login.type) {
@@ -101,7 +115,93 @@ angular.module('yololiumApp')
         });
       }
 
-      return $q.when(session);
+      return me.createAccount(session, opts);
+    };
+
+    me.createAccount = function (session, opts) {
+      // TODO this could change to allow for a bishop having
+      // separate accounts for home ward/stake and serving ward/stake
+
+      var logins;
+      var ldsLogins;
+      var ldsAccounts = session.accounts;
+      // this should never happen, in theory, just a sanity check
+      var hasCorruptAccount;
+      var incompleteLdsLogins = {};
+      var incompleteLogins = {};
+      var promises;
+
+      ldsLogins = session.logins.filter(function (login) {
+        return 'local' === login.provider;
+      });
+      logins = session.logins.filter(function (login) {
+        return 'local' !== login.provider;
+      });
+
+      // ensure that each ldsLogin has exactly one account
+      // (This is just a sanity check. The server guarantees this condition.)
+      ldsLogins.forEach(function (login) {
+        if (login.accounts.length < 1) {
+          incompleteLdsLogins[login.id] = { id: login.id };
+        }
+        if (login.accounts.length > 1) {
+          // TODO automatic failure condition reporting
+          hasCorruptAccount = true;
+        }
+      });
+
+      logins.forEach(function (login) {
+        if (login.accounts.length < 1) {
+          incompleteLogins[login.id] = { id: login.id };
+        }
+        // NOTE: Unlike the scenario above, multiple Lds Accounts
+        // can be linked to a single non-lds login.
+      });
+
+      ldsAccounts.forEach(function (account) {
+        var logins = account.logins.filter(function (login) {
+          if ('local' === login.provider) {
+            return true;
+          }
+        });
+        // (This is just a sanity check. The server guarantees this condition.)
+        if (logins.length < 1) {
+          hasCorruptAccount = true;
+        }
+        if (logins.length > 1) {
+          hasCorruptAccount = true;
+        }
+      });
+
+      if (hasCorruptAccount) {
+        // TODO give the user the option to delete the accounts
+        // (which would make it impossible to access those accounts on apps)
+        // (... unless the id were deterministic... hmm....)
+        return $q.reject(new Error("Your account has become corrupted and must be recovered manually."
+          + " It's not your fault. It's just a thing that happened. Please contact support@ldsconnect.org."));
+      }
+
+      if (Object.keys(incompleteLdsLogins).length > 1 && Object.keys(incompleteLogins).length) {
+        return $q.reject(new Error("You have logged into 2 or more LDS Accounts and are associating another"
+          + " login (such as Facebook or Google+), which is not yet supported."
+          + " Please log out and then log back in with only the LDS Account you wish to associate with the social login."
+          + " TODO: ask the user which social account should be linked to which LDS Account."));
+      }
+
+      promises = Object.keys(incompleteLdsLogins).map(function (key) {
+        var login = incompleteLdsLogins[key];
+        // NOTE: see condition above, which prevents linking all social logins to all accounts
+        var otherLogins = Object.keys(incompleteLogins).map(function (k) { return incompleteLogins[k]; });
+
+        // TODO reverse accounts so that the empty object is optional
+        return StAccount.create({}, [login].concat(otherLogins), opts);
+      });
+
+      // ensure that no ldsAccount has more than one ldsLogin
+      // using PromiseA.all instead of forEachAsync because of the limited and finite nature of the list
+      return $q.all(promises).then(function () {
+        return session;
+      });
     };
 
     return me;

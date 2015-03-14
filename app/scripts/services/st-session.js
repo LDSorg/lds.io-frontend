@@ -233,6 +233,9 @@ angular.module('yololiumApp')
 
       return read().then(function (session) {
         return StLogin.ensureLogin(session, opts.login).then(function (session2) {
+          if (session2.error) {
+            return $q.reject(session2.error);
+          }
           console.log('[st-session.js] ensureLogin callback');
           update(session2);
           console.log('[st-session.js] ensureLogin update', shared.session);
@@ -243,8 +246,16 @@ angular.module('yololiumApp')
 
         middleware.forEach(function (wares) {
           promise = promise.then(function (session2a) {
+            if (session2a.error) {
+              return $q.reject(session2a.error);
+            }
             update(session2a);
-            return wares[0](shared.session, opts);
+            return wares[0](shared.session, opts).then(function (session2b) {
+              if (session2b.error) {
+                return $q.reject(session2b.error);
+              }
+              return session2b;
+            });
           }, wares[1]);
         });
 

@@ -29,12 +29,6 @@ angular.module('yololiumApp')
     var scope = this;
     var login = ldsAccountOptions.ldsStaleLoginInfo;
 
-    login.homes.forEach(function (h) {
-      if (h.id === login.me.homeId) {
-        login.home = h;
-      }
-    });
-
     scope.login = login;
 
     console.log(login);
