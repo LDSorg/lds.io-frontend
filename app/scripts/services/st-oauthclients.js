@@ -8,24 +8,30 @@
  * Service in the yololiumApp.
  */
 angular.module('yololiumApp')
-  .service('stOauthclients', ['StApi', '$http', function stOauthclients(StApi, $http) {
-    var me = this
-      , apiPrefix = StApi.apiPrefix
-      ;
+  .service('stOauthclients', [
+    'StApi'
+  , '$http'
+  , function stOauthclients(StApi, $http) {
+    var me = this;
+    var apiPrefix = StApi.apiPrefix;
 
-    function fetch() {
-      return $http.get(apiPrefix + '/me/clients').then(function (resp) {
+    function fetch(account) {
+      return $http.get(apiPrefix + '/accounts/' + account.id + '/clients').then(function (resp) {
+        if (!resp.data || resp.data.error) {
+          throw new Error(resp.data.error.message || "failed to fetch OAuth2 clients");
+        }
+
         return resp.data.clients;
       });
     }
 
-    function create(name, secret) {
+    function create(account, name, secret) {
       var app = { name: name };
       if (secret) {
         app.secret = secret;
       }
 
-      return $http.post(apiPrefix + '/me/clients', app).then(function (resp) {
+      return $http.post(apiPrefix + '/accounts/' + account.id + '/clients', app).then(function (resp) {
         return resp.data;
       });
     }

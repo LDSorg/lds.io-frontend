@@ -1,0 +1,97 @@
+//- modal-dialog & model-content are containers for this template
+.auth-modal(ng-init="VCDC.showSecret = false;")
+  .modal-header
+    h4.modal-title Verify your LDS Account
+    div(ng-if="VCDC.flashMessage")
+      br
+      .alert(ng-class="[ VCDC.flashMessageClass ]")
+        span(ng-bind="VCDC.flashMessage")
+
+  .modal-body
+    //- Update account means show only new and required fields
+    //- NOTE: upgrading from one role to another may prompt this modal to show
+    //- Create account means show all required fields (same as update)
+    //- Link account means show only login fields, this may go back to update account
+    .row
+      .col-sm-8
+        .form-group
+          label(for="phonecode") SMS verification for {{ VCDC.phone }}. 
+      .col-sm-4
+        button.btn.btn-default(
+          ng-click="VCDC.sendCode('phone', VCDC.phone)"
+          ng-disabled="VCDC.codes.phone"
+        ) Send Code to Phone
+
+    .row
+      //-form(ng-submit="VCDC.validateCode('phone', VCDC.phone, VCDC.codes.phone, VCDC.phoneCode)")
+      form(ng-submit="VCDC.validateCode(VCDC.phoneCode)")
+        .col-sm-8
+          .form-group
+            input.form-control(
+              type="text"
+              placeholder="ex: SMS 098-765"
+              ng-model="VCDC.phoneCode"
+              ng-disabled="!VCDC.codes.phone || VCDC.phoneVerified"
+              min-length="6"
+              required="required"
+            )
+            .help-block(ng-if="VCDC.phoneFlashMessage") {{ VCDC.phoneFlashMessage }}
+        .col-sm-4
+          button.btn.btn-success(
+            type="submit"
+            ng-disabled="!VCDC.codes.phone || VCDC.phoneVerified"
+          ) Verify Phone Code
+    .row
+      .col-xs-12
+        .alert.alert-danger(ng-if="VCDC.validationErrorMessages.phone") {{ VCDC.validationErrorMessages.phone }}
+        .alert.alert-success(ng-if="VCDC.phoneVerified") Phone Verified! :-D
+        .help-block code will be sent from +1 (801) 788-4599
+
+    .row
+      .col-sm-8
+        .form-group
+          label(for="emailcode") EMAIL verification code for {{ VCDC.email }}.
+      .col-sm-4
+        button.btn.btn-default(
+          ng-click="VCDC.sendCode('email', VCDC.email)"
+          ng-disabled="VCDC.codes.email"
+        ) Send Code to Email
+
+    .row
+      //-form(ng-submit="VCDC.validateCode('email', VCDC.email, VCDC.codes.email, VCDC.emailCode)")
+      form(ng-submit="VCDC.validateCode(VCDC.emailCode)")
+        .col-sm-8
+          .form-group
+            input.form-control(
+              type="text"
+              placeholder="ex: Email fluffy-bunny-77"
+              ng-model="VCDC.emailCode"
+              ng-disabled="!VCDC.codes.email || VCDC.emailVerified"
+              min-length="9"
+              required="required"
+            )
+            .help-block(ng-if="VCDC.emailFlashMessage") {{ VCDC.emailFlashMessage }}
+        .col-sm-4
+          button.btn.btn-success(
+            type="submit"
+            ng-disabled="!VCDC.codes.email || VCDC.emailVerified"
+          ) Verify Email Code
+    .row
+      .col-xs-12
+        .alert.alert-danger(ng-if="VCDC.validationErrorMessages.email") {{ VCDC.validationErrorMessages.email }}
+        .alert.alert-success(ng-if="VCDC.emailVerified") Email Verified! :-D
+        .help-block code will be sent by woof@hellabit.com
+
+
+    .modal-footer
+      .row
+        .col-xs-12
+          .form-group
+            button.btn.btn-primary(
+              ng-disabled="!VCDC.phoneVerified || !VCDC.emailVerified"
+              ng-click="VCDC.verifyAccount()"
+              type='button'
+            )
+              span(ng-if="!VCDC.phoneVerified || !VCDC.emailVerified") Verify your Account
+              span(ng-if="VCDC.phoneVerified && VCDC.emailVerified") Continue
+

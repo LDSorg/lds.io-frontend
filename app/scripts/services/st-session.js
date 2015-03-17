@@ -186,6 +186,7 @@ angular.module('yololiumApp')
     function subscribe(fn, scope) {
       if (!scope) {
         // services and such
+        notifier.promise.then(null, null, fn);
         notifier.notify(shared.session);
         return;
       }
@@ -268,6 +269,19 @@ angular.module('yololiumApp')
           console.log('[st-session.js] ensureAccount callback');
           return shared.session;
         });
+      }).then(function () {
+        if (!shared.session.accounts.length) {
+          window.alert('[SANITY CHECK FAIL]: did not have an account after ensuring account');
+          throw new Error('[SANITY CHECK FAIL]: did not have an account after ensuring account');
+        }
+        if (shared.session.accounts.length > 1) {
+          window.alert('[NOT IMPLEMENTED]: User account switching has not yet been implemented. Please logout and log back in with only one Account.');
+          throw new Error('[NOT IMPLEMENTED]: User account switching has not yet been implemented. Please logout and log back in with only one Account.');
+        }
+
+        shared.session.account = shared.session.accounts[0];
+
+        return shared.session;
       });
     }
 

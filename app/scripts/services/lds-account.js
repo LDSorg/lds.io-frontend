@@ -20,6 +20,7 @@ angular.module('yololiumApp')
 
     var me = this;
     var config = StApi.loginConfig;
+    var apiPrefix = StApi.apiPrefix;
 
     me.showAccountModal = function (session, opts) {
       console.log('opening the lds account update');
@@ -202,6 +203,82 @@ angular.module('yololiumApp')
       return $q.all(promises).then(function () {
         return session;
       });
+    };
+
+    me.getCode = function (account, type, node) {
+      return $http.post(apiPrefix + '/ldsconnect/' + account.id + '/verify/code', {
+        type: type
+      , node: node
+      }).success(function (data) {
+        console.log('StLogins.getCode result', data);
+      }).then(function (result) {
+        if (result.data.error) {
+          return $q.reject(result.data.error);
+        }
+        return result.data;
+      });
+    };
+
+    me.validateCode = function (account, type, node, uuid, code) {
+      console.info('lds validate code account');
+      console.log(account);
+      console.log(account.id);
+      return $http.post(apiPrefix + '/ldsconnect/' + account.id + '/verify/code/validate', {
+        type: type
+      , node: node
+      , uuid: uuid
+      , code: code
+      }).success(function (data) {
+        console.log('StLogins.validateCode result', data);
+      }).then(function (result) {
+        if (result.data.error) {
+          return $q.reject(result.data.error);
+        }
+
+        return result.data;
+      });
+    };
+
+    me.isFresh = function (iso) {
+      var now = Date.now();
+      var date = new Date(iso).valueOf();
+      // 3 months - 3 days
+      var staleTime = (3 * 30 * 24 * 60 * 60 * 1000) - (3 * 24 * 60 * 60 * 1000);
+      var fresh = date && (now - date < staleTime);
+
+      return fresh;
+    };
+
+    me.showVerificationModal = function (account, opts) {
+      console.log('opening the lds account update');
+      return $modal.open({
+        templateUrl: '/views/verify-contact-details.html'
+      , controller: 'VerifyContactDetailsController as VCDC'
+      , backdrop: 'static'
+      , keyboard: false
+      , resolve: {
+          myLdsAccount: function () {
+            return me;
+          }
+        , ldsAccountObject: function () {
+            return account;
+          }
+        , ldsAccountOptions: function () {
+            return opts;
+          }
+        , ldsAccountConfig: function () {
+            return config;
+          }
+        }
+      }).result;
+    };
+
+    me.ensureVerified = function (account, opts) {
+      if (me.isFresh(account.emailVerifiedAt) && me.isFresh(account.phoneVerifiedAt)) {
+        return $q.when();
+      }
+
+      return me.showVerificationModal(account, opts);
     };
 
     return me;

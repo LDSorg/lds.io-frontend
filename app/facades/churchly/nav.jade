@@ -13,8 +13,11 @@
           span.icon-bar
     #navbar-main.navbar-collapse.collapse(ng-class="!navCollapsed && 'in'")
       ul.nav.navbar-nav.navbar-right(style="padding-top: 9px;")
+        li(ng-show="NC.session.accounts.length")
+          a(ui-sref="develop") Develop
+
         li(ng-show="!NC.session.accounts.length")
-          a(href="", ng-click="NC.showLoginModal()") Login
+          a(href="" ng-click="NC.showLoginModal()") Login
 
         li.dropdown(ng-show="NC.session.accounts.length")
           a#account.dropdown-toggle(data-toggle='dropdown', href='')

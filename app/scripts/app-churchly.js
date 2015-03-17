@@ -1,5 +1,10 @@
 'use strict';
 
+window.addEventListener('error', function (err) {
+  console.error(err);
+  window.alert('Uncaught Exception: ' + (err.message || 'unknown error'));
+});
+
 angular.module('yololiumApp', [
   'ui.bootstrap'
 , 'ui.router'
@@ -8,7 +13,31 @@ angular.module('yololiumApp', [
   'ngSanitize'
 */
 ]).config(['$stateProvider', '$httpProvider', function ($stateProvider, $httpProvider) {
+    var rootTemplate = $('.ui-view-body').html();
     $stateProvider
+      .state('root', {
+        url: '/'
+      , views: {
+          body: {
+            template: rootTemplate
+            /*
+          , controller: ['$state', 'mySession', 'stConfig', function ($state, mySession, stConfig) {
+              if (!stConfig.useSplash) {
+                $state.go('home');
+                return;
+              }
+
+              if (!mySession || !mySession.account || 'guest' === mySession.account.role) {
+                $state.go('splash');
+              } else {
+                $state.go('home');
+              }
+            }]
+            */
+          }
+        }
+      })
+
       .state('account', {
         url: '/account/'
       , views: {
@@ -23,10 +52,25 @@ angular.module('yololiumApp', [
           }
         }
       })
+
+      .state('develop', {
+        url: '/develop/'
+      , views: {
+          body: {
+            templateUrl: 'views/oauthclients.html'
+          , controller: 'OauthclientsController as OA'
+          , resolve: {
+              authenticatedSession: ['StSession', function (StSession) {
+                return StSession.ensureSession();
+              }]
+            }
+          }
+        }
+      })
       ;
 
     // alternatively, register the interceptor via an anonymous factory
-    $httpProvider.interceptors.push(function(/*$q*/) {
+    $httpProvider.interceptors.push([ '$q', function($q) {
       var recase = window.Recase.create({ exceptions: {} })
         ;
 
@@ -45,6 +89,7 @@ angular.module('yololiumApp', [
           ) {
             config.data = recase.snakeCopy(config.data);
           }
+
           return config;
         }
       , 'requestError': function (rejection) {
@@ -60,6 +105,10 @@ angular.module('yololiumApp', [
           // but we convert to camelCase for javascript convention
           if (!/^https?:\/\//.test(config.url) && /json/.test(response.headers('Content-Type'))) {
             response.data = recase.camelCopy(response.data);
+            if (response.data.error) {
+              //throw new Error(response.data.error.message);
+              return $q.reject(new Error(response.data.error.message));
+            }
           }
           return response;
         }
@@ -70,7 +119,7 @@ angular.module('yololiumApp', [
         }
 
       };
-    });
+    }]);
 
 }]).run([ 'StSession', 'LdsAccount', function (StSession, LdsAccount) {
   console.log('StSession.use');

@@ -96,6 +96,10 @@ angular.module('yololiumApp')
         if (session.accounts.length > 1) {
           window.alert("Account Switching not yet Implemented. Please log out and log back in with only one account");
         }
+
+        updateSession(session);
+
+        /*
         var account = session.accounts[0];
         $http.get(StApi.apiPrefix + '/ldsconnect/' + account.id + '/me').then(function (resp) {
           console.log(resp);
@@ -106,7 +110,7 @@ angular.module('yololiumApp')
           }
           window.alert("Got account data. Check the console!");
         });
-        updateSession(session);
+        */
       }, function (err) {
         console.error(err);
         window.alert(err.message || err.toString());
@@ -115,11 +119,14 @@ angular.module('yololiumApp')
     };
 
     scope.logout = function () {
-      console.info("You logged out. Sad day. :-/");
       StSession.destroy().then(function () {
+        console.info("You logged out. Sad day. :-/");
         updateSession(null);
-      }, function () {
-        // nada
+      }, function (e) {
+        console.error("Hahaha! What a loser. You failed at logging out. Wow... just wow...");
+        console.error("(j/k, that's a message for me as the developer :-p)");
+        console.error(e);
+        updateSession(null);
       });
     };
 

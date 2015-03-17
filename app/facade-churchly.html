@@ -24,7 +24,7 @@
     <link href="styles/font-awesome.min.css" rel="stylesheet">
     <!-- fontawesome fonts MUST exist in ../fonts/ -->
   </head>
-  <body>
+  <body style="padding-top: 50px;">
     <!--[if lt IE 10]>
       <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
     <![endif]-->
@@ -37,7 +37,7 @@
     <!-- Add your site or application content here -->
 
     <div ng-include="'facades/churchly/nav.html'"></div>
-    <div ui-view="body" autoscroll="false">
+    <div class="ui-view-body" ui-view="body" autoscroll="false">
 
       <div class="container">
         <br/>
@@ -70,6 +70,7 @@
     <script src="scripts/services/st-login.js"></script>
     <script src="scripts/services/lds-account.js"></script>
     <script src="scripts/services/st-account.js"></script>
+    <script src="scripts/services/st-oauthclients.js"></script>
     <script src="scripts/services/st-alert.js"></script>
     <script src="scripts/controllers/alert.js"></script>
     <script src="scripts/controllers/login-v2.js"></script>
@@ -77,6 +78,8 @@
     <script src="scripts/controllers/account.js"></script>
     <script src="scripts/controllers/lds-account.js"></script>
     <script src="scripts/controllers/nav.js"></script>
+    <script src="scripts/controllers/oauthclients.js"></script>
+    <script src="scripts/controllers/verify-contact-details.js"></script>
 
     <!-- endbuild -->
   </body>
