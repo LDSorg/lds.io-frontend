@@ -38,6 +38,23 @@ angular.module('yololiumApp', [
         }
       })
 
+      .state('oauth', {
+        url: '/authorize/:token/'
+      , views: {
+          body: {
+            templateUrl: 'views/oauth.html'
+          , controller: 'OauthCtrl as O'
+          , resolve: {
+              mySession: ['StSession', function (StSession) {
+                return StSession.get().then(function (session) {
+                  return session;
+                });
+              }]
+            }
+          }
+        }
+      })
+
       .state('account', {
         url: '/account/'
       , views: {

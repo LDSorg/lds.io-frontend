@@ -41,13 +41,44 @@
           th Permissions
 
         tr(ng-repeat="client in OA.clients")
-          td: span(ng-bind="client.name")
-          td: span(ng-bind="client.url")
-          td: span(ng-bind="client.id")
-          td: span(ng-bind="client.secret")
+          td
+            span(ng-bind="client.name")
+          td
+            span(ng-bind="client.url")
+          td
+            span(ng-bind="client.id")
+          td
+            span(ng-bind="client.secret")
           //- TODO: display the arrays fancily
-          td: span(ng-bind="client.permissions")
+          td
+            span(ng-bind="client.permissions")
           //- TODO: stats (x stakes, x wards, x members)
+
+      div(ng-repeat="client in OA.clients")
+        strong {{ client.name }}
+        br
+        span {{ client.desc }}
+        br
+        span {{ client.url }}
+        br
+        span {{ client.createdAt }}
+        br
+        span {{ client.updatedAt }}
+        br
+        div(ng-repeat="pair in client.apikeys")
+          span(ng-if="pair.insecure")
+            span(ng-if="pair.test") Development
+            span(ng-if="!pair.test") Production
+            span &#32;Browser / Mobile
+          span(ng-if="!pair.insecure")
+            span(ng-if="pair.test") Development
+            span(ng-if="!pair.test") Production
+            span &#32;Server
+          br
+          span {{ pair.key }}
+          br
+          span {{ pair.secret }}
+          br
 
   .row
     h3 Register an App

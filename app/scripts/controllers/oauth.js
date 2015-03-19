@@ -10,6 +10,8 @@
 angular.module('yololiumApp')
   .controller('OauthCtrl', [ 
     '$window'
+  , '$q'
+  , '$timeout'
   , '$scope'
   , '$http'
   , '$stateParams'
@@ -17,14 +19,40 @@ angular.module('yololiumApp')
   , 'StApi'
   , function (
       $window
+    , $q
+    , $timeout
     , $scope
     , $http
     , $stateParams
     , StSession
     , StApi
     ) {
-    var scope = this
-      ;
+
+    var scope = this;
+
+    // TODO move into config
+    var scopeMessages = {
+      me: "View Stake and Ward Directories"
+    };
+
+    function updateAccepted() {
+      scope.acceptedString = scope.pendingScope.filter(function (obj) {
+        return obj.acceptable && obj.accepted;
+      }).map(function (obj) {
+        return obj.value;
+      }).join(' ');
+
+      return scope.acceptedString;
+    }
+
+    function scopeStrToObj(value) {
+      return {
+        accepted: true
+      , acceptable: !!scopeMessages[value]
+      , name: scopeMessages[value] || 'Invalid Scope \'' + value + '\''
+      , value: value
+      };
+    }
 
     // Convert all scope changes back to a scope string
     scope.updateScope = function () {
@@ -33,6 +61,7 @@ angular.module('yololiumApp')
         setTimeout(function () {
           window.alert("this feature is not yet implemented");
         }, 0);
+
         return;
       }
 
@@ -45,34 +74,14 @@ angular.module('yololiumApp')
         return;
       }
 
+      // we're switching the accounts
       selectAccount(scope.selectedAccountId).then(function (/*txdata*/) {
-        var accepted = scope.deltaScope
-          ;
-
-        // TODO check for allow / deny
-        scope.acceptedScope = scope.deltaScopeString;
-
-        /*
-        Object.keys(accepted).filter(function (k) {
-          var s = accepted[k]
-            ;
-
-          return s.accepted;
-        }).map(function (k) {
-          var s = accepted[k]
-            ;
-
-          return s.group + ':' + s.readable.join(',') + ':' + s.writeable.join(',') + ':' + s.executable.join(',');
-        }).join(' ');
-        */
-
-        console.log('scope.acceptedScope', scope.acceptedScope);
-        console.log('scope.selectedAccountId', scope.selectedAccountId);
-        console.log('');
+        updateAccepted();
+        // TODO Recheck which scopes have already been accepted for this account
       });
     };
 
-    function selectAccount(accountId) {
+    function requestSelectedAccount(accountId) {
       return $http.get(
         StApi.oauthPrefix
       + '/scope/' + $stateParams.token
@@ -83,37 +92,41 @@ angular.module('yololiumApp')
           console.error(resp.data);
           scope.error = resp.data.error;
           scope.rawResponse = resp.data;
-          return;
+          return $q.reject(new Error(resp.data.error.message));
         }
 
-        if ('string' !== typeof resp.data.deltaScopeString) {
+        if ('string' !== typeof resp.data.pendingString) {
           console.error('resp.data');
           console.error(resp.data);
           scope.error = { message: "missing scope request" };
           scope.rawResponse = resp.data;
 
-          return;
+          return $q.reject(new Error(scope.error.message));
         }
 
         return resp.data;
-      }).then(function (txdata) {
+      });
+    }
+
+    function selectAccount(accountId) {
+      return requestSelectedAccount(accountId).then(function (txdata) {
         scope.client = txdata.client;
 
         if (!scope.client.title) {
           scope.client.title = scope.client.name || 'Missing App Title';
         }
 
-        scope.grantedScopeString = txdata.grantedScopeString;
-        scope.requestedScopeString = txdata.requestedScopeString;
-        scope.deltaScopeString = txdata.deltaScopeString;
+        scope.selectedAccountId = accountId;
+        scope.transactionId = txdata.transactionId;
+        scope.grantedString = txdata.grantedString;
+        scope.requestedString = txdata.requestedString;
+        scope.pendingString = txdata.pendingString;
 
-        if (scope.deltaScopeString) {
-          scope.deltaScope = txdata.deltaScopeString.split(' ').map(function (str) {
-            return { accepted: true, name: str };
-          });
-        } else if ('string' === typeof scope.grantedScopeString) {
+        if (scope.pendingString) {
+          scope.pendingScope = txdata.pendingArr.map(scopeStrToObj);
+        } else if (txdata.granted) {
           // TODO submit form with getElementById or whatever
-          setTimeout(function () {
+          $timeout(function () {
             // NOTE needs time for angular to set transactionId
             if (!$window._gone) {
               $window.jQuery('#oauth-hack-submit').submit();
@@ -121,6 +134,8 @@ angular.module('yololiumApp')
             }
           }, 50);
         }
+
+        updateAccepted();
 
         return txdata;
       });
@@ -133,22 +148,19 @@ angular.module('yololiumApp')
     , { close: false
       , options: ['login', 'create']
       , default: 'login'
-      , includeAccount: true // show the account stuff when asking to create a login
       }
       // TODO account opts
     , { verify: ['email', 'phone']
       }
     ).then(function (session) {
-      console.log('session');
+      console.log('OAuth Dialog Session');
       console.log(session);
       console.log('');
 
       // get token from url param
       scope.token = $stateParams.token;
 
-      selectAccount(session.account.id).then(function (txdata) {
-        scope.transactionId = txdata.transactionId;
-
+      selectAccount(session.account.id).then(function (/*txdata*/) {
         scope.accounts = session.accounts.slice(0);
 
         scope.accounts.push({
@@ -158,7 +170,7 @@ angular.module('yololiumApp')
 
         scope.accounts.forEach(function (acc, i) {
           if (!acc.displayName) {
-            acc.displayName = 'Account #' + (i + 1);
+            acc.displayName = acc.email || ('Account #' + (i + 1));
           }
         });
 

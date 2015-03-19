@@ -24,7 +24,9 @@
 
           //- TODO auto-update on change
           input(type="hidden" name="transaction_id" ng-value="O.transactionId")
-          input(type="hidden" name="accepted_scope" ng-value="O.acceptedScope")
+          input(type="hidden" name="accepted_scope" ng-value="O.acceptedString")
+          input(type="hidden" name="granted_scope" ng-value="O.grantedString")
+          input(type="hidden" name="pending_scope" ng-value="O.pendingString")
           input(type="hidden" name="selected_account_id" ng-value="O.selectedAccountId")
           .form-group
             .col-xs-6
@@ -45,15 +47,16 @@
               br
               img(ng-src="{{ O.client.logo || '/images/app-icon-64px.png' }}")
 
-            .col-xs-12(ng-if="!O.deltaScope.length")
+            .col-xs-12(ng-if="!O.pendingScope.length")
               span Allow login
 
-            .col-xs-12(ng-if="O.deltaScope.length")
-              .checkbox(ng-repeat="scope in O.deltaScope")
+            .col-xs-12(ng-if="O.pendingScope.length")
+              .checkbox(ng-repeat="scope in O.pendingScope")
                 label
                   input(
                     ng-change="O.updateScope()"
                     ng-model="scope.accepted"
+                    ng-disabled="!scope.acceptable"
                     type="checkbox"
                   )
                   |  {{ scope.name }}
