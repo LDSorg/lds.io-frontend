@@ -141,8 +141,11 @@ angular.module('yololiumApp', [
 }]).run([ 'StSession', 'LdsAccount', function (StSession, LdsAccount) {
   console.log('StSession.use');
   StSession.use(function (session, opts) {
-    console.log('blah', session);
-    return LdsAccount.ensureAccount(session, opts);
+    return LdsAccount.ensureAccount(session, opts).then(function (session) {
+      console.info('session after LdsAccount.ensureAccount');
+      console.log(session);
+      return session;
+    });
   });
 }]);
 

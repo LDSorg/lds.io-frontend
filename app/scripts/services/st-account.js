@@ -183,7 +183,7 @@ angular.module('yololiumApp')
         if (!l.id) {
           console.error("Create login before attempting to attach to account");
           console.error(l);
-          throw new Error("Cannot create new logins via account routes. Create login first.");
+          return $q.reject(new Error("Cannot create new logins via account routes. Create login first."));
         }
         return { id: l.id };
       });
@@ -205,7 +205,7 @@ angular.module('yololiumApp')
       }, function (err) {
         console.error('[ERROR] CREATE account');
         console.error(err);
-        return err;
+        return $q.reject(err);
       })
       ;
 

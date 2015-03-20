@@ -246,21 +246,31 @@ angular.module('yololiumApp')
         var promise = $q.when(shared.session);
 
         middleware.forEach(function (wares) {
+          var when = wares[0];
+          var reject = wares[1];
+
           promise = promise.then(function (session2a) {
+
             if (session2a.error) {
               return $q.reject(session2a.error);
             }
             update(session2a);
-            return wares[0](shared.session, opts).then(function (session2b) {
+
+            return when(shared.session, opts).then(function (session2b) {
               if (session2b.error) {
                 return $q.reject(session2b.error);
               }
+
+              update(session2b);
               return session2b;
             });
-          }, wares[1]);
+          }, reject);
         });
 
-        return promise;
+        return promise.then(function (newSession) {
+          update(newSession);
+          return newSession;
+        });
       }).then(function () {
         return StAccount.ensureAccount(shared.session, opts.account).then(function (session3) {
           update(session3);

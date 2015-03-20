@@ -130,20 +130,20 @@ angular.module('yololiumApp')
       var hasCorruptAccount;
       var incompleteLdsLogins = {};
       var incompleteLogins = {};
-      var promises;
+      var promise;
 
       ldsLogins = session.logins.filter(function (login) {
-        return 'local' === login.provider;
+        return 'local' === login.type;
       });
       logins = session.logins.filter(function (login) {
-        return 'local' !== login.provider;
+        return 'local' !== login.type;
       });
 
       // ensure that each ldsLogin has exactly one account
       // (This is just a sanity check. The server guarantees this condition.)
       ldsLogins.forEach(function (login) {
         if (login.accounts.length < 1) {
-          incompleteLdsLogins[login.id] = { id: login.id };
+          incompleteLdsLogins[login.id] = { id: login.id, type: login.type };
         }
         if (login.accounts.length > 1) {
           // TODO automatic failure condition reporting
@@ -153,7 +153,7 @@ angular.module('yololiumApp')
 
       logins.forEach(function (login) {
         if (login.accounts.length < 1) {
-          incompleteLogins[login.id] = { id: login.id };
+          incompleteLogins[login.id] = { id: login.id, type: login.type };
         }
         // NOTE: Unlike the scenario above, multiple Lds Accounts
         // can be linked to a single non-lds login.
@@ -189,20 +189,22 @@ angular.module('yololiumApp')
           + " TODO: ask the user which social account should be linked to which LDS Account."));
       }
 
-      promises = Object.keys(incompleteLdsLogins).map(function (key) {
+      // NOTE: it would be a bad idea to run these async
+      promise = $q.when(session);
+      Object.keys(incompleteLdsLogins).map(function (key) {
         var login = incompleteLdsLogins[key];
         // NOTE: see condition above, which prevents linking all social logins to all accounts
         var otherLogins = Object.keys(incompleteLogins).map(function (k) { return incompleteLogins[k]; });
 
-        // TODO reverse accounts so that the empty object is optional
-        return StAccount.create({}, [login].concat(otherLogins), opts);
+        promise = promise.then(function () {
+          // TODO reverse accounts so that the empty object is optional
+          return StAccount.create({}, [login].concat(otherLogins), opts);
+        });
       });
 
       // ensure that no ldsAccount has more than one ldsLogin
       // using PromiseA.all instead of forEachAsync because of the limited and finite nature of the list
-      return $q.all(promises).then(function () {
-        return session;
-      });
+      return promise;
     };
 
     me.getCode = function (account, type, node) {

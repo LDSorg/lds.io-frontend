@@ -3,16 +3,16 @@
   .container
     .navbar-header
       //-div.pull-left(style="padding-top: 9px; padding-left: 9px; padding-bottom: 9px;")
-      a.navbar-brand(href="#/" style="padding-top: 23px; padding-left: 25px;")
+      a.navbar-brand
         span LDS Connect
         img.navbar-logo.img(ng-src="images/lds-connect-logo-inverse-32px.png" style="position: relative; top: -6px; padding-right: 8px;" class="pull-left")
-      div(style="padding-top: 9px;")
+      div
         button.navbar-toggle(type='button', ng-init="navCollapsed = true", ng-click="navCollapsed = !navCollapsed")
           span.icon-bar
           span.icon-bar
           span.icon-bar
     #navbar-main.navbar-collapse.collapse(ng-class="!navCollapsed && 'in'")
-      ul.nav.navbar-nav.navbar-right(style="padding-top: 9px;")
+      ul.nav.navbar-nav.navbar-right
         li(ng-show="NC.session.accounts.length")
           a(ui-sref="develop") Develop
 
