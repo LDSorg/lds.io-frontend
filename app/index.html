@@ -1,27 +1,30 @@
 <!doctype html>
-<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
-<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
-<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+<!--[if lt IE 7]>      <html ng-app="yololiumApp" ng-strict-di class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html ng-app="yololiumApp" ng-strict-di class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html ng-app="yololiumApp" ng-strict-di class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html ng-app="yololiumApp" ng-strict-di class="no-js"> <!--<![endif]-->
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
-    <title>Choose Facade - Waste Angular</title>
-    <meta name="description" content="The Facade Picker for Waste Angular">
+    <title>LDS Connect</title>
+    <meta name="description" content="An API for Latter-Day Saint develpers to create magnicent apps for their wards and stakes">
     <!-- Canonical self-reference-->
-    <link rel="canonical" href="http://local.daplie.com:4080/">
+    <link rel="canonical" href="https://lds.io/">
     <link rel="icon" href="favicon.ico" />
 
     <!-- build:css({.tmp,app}) styles/main.css -->
-    <!-- link rel="stylesheet" href="styles/style.css" -->
+    <link rel="stylesheet" href="styles/style.css">
     <!-- endbuild -->
 
     <!-- link href="//netdna.bootstrapcdn.com/bootswatch/3.2.0/united/bootstrap.min.css" rel="stylesheet" -->
-    <link href="/styles/bootstrap.cosmo.min.css" rel="stylesheet">
+    <link href="styles/bootstrap.cerulean.min.css" rel="stylesheet">
+    <link href="styles/bootstrap-social.min.css" rel="stylesheet">
+    <link href="styles/font-awesome.min.css" rel="stylesheet">
+    <!-- fontawesome fonts MUST exist in ../fonts/ -->
   </head>
-  <body>
+  <body style="padding-top: 50px;">
     <!--[if lt IE 10]>
       <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
     <![endif]-->
@@ -31,41 +34,54 @@
       <script src="bower_components/json3/lib/json3.min.js"></script>
     <![endif]-->
 
-    <div class="container">
-      <div class="jumbotron">
-        <h1>Facade Picker</h1>
-        <p>Browse the Facades and choose the one that's right for you. There's no judgement here.</p>
+    <!-- Add your site or application content here -->
+
+    <div ng-include="'views/nav.html'"></div>
+    <div class="ui-view-body" ui-view="body" autoscroll="false">
+
+      <div class="container">
+        <br/>
+        <div class="jumbotron">
+          <h1>Loginable</h1>
+          <p>Just the login parts. Don't worry about the rest.</p>
+        </div>
       </div>
-      <div class="list-group">
-        <a href="facade-loginable.html" class="list-group-item">
-          <h4 class="list-group-item-heading">Loginable</h4>
-          <p class="list-group-item-text">Does login. That's about it.</p>
-        </a>
-        <a href="facade-sociable.html" class="list-group-item">
-          <h4 class="list-group-item-heading">Sociable</h4>
-          <p class="list-group-item-text">All the meta tags for all the social things. og:, tw:, ipad icons, etc.</p>
-        </a>
-        <a href="facade-business.html" class="list-group-item">
-          <h4 class="list-group-item-heading">Business</h4>
-          <p class="list-group-item-text">Business-y. Get down and defeat the huns 'n stuff.</p>
-        </a>
-        <a href="facade-churchly.html" class="list-group-item">
-          <h4 class="list-group-item-heading">Churchly</h4>
-          <p class="list-group-item-text">Well-behaved and simple.</p>
-        </a>
-      </div>
+
     </div>
 
-    <!-- Add your site or application content here -->
-    <!-- script src="bower_components/angular/angular.js"></script -->
+    <script src="bower_components/jquery/jquery.js"></script>
+    <script src="bower_components/angular/angular.js"></script>
 
     <!-- build:js scripts/plugins.js -->
+    <script src="bower_components/recase/recase.js"></script>
+    <script src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>
+    <script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
     <!-- endbuild -->
 
     <!-- build:js scripts/modules.js -->
+    <script src="scripts/client-config.js"></script>
     <!-- endbuild -->
 
     <!-- build:js({.tmp,app}) scripts/scripts.js -->
+    <script src="scripts/app-churchly.js"></script>
+    <script src="scripts/services/st-api.js"></script>
+    <script src="scripts/services/st-oauth-providers.js"></script>
+    <script src="scripts/services/st-session.js"></script>
+    <script src="scripts/services/st-login.js"></script>
+    <script src="scripts/services/lds-account.js"></script>
+    <script src="scripts/services/st-account.js"></script>
+    <script src="scripts/services/st-oauthclients.js"></script>
+    <script src="scripts/services/st-alert.js"></script>
+    <script src="scripts/controllers/alert.js"></script>
+    <script src="scripts/controllers/login-v2.js"></script>
+    <script src="scripts/controllers/account-new.js"></script>
+    <script src="scripts/controllers/account.js"></script>
+    <script src="scripts/controllers/lds-account.js"></script>
+    <script src="scripts/controllers/nav.js"></script>
+    <script src="scripts/controllers/oauthclients.js"></script>
+    <script src="scripts/controllers/oauth.js"></script>
+    <script src="scripts/controllers/verify-contact-details.js"></script>
+
     <!-- endbuild -->
   </body>
 </html>

@@ -1,46 +1,25 @@
 //.navbar.navbar-default.navbar-fixed-top
-.navbar.navbar-default(style="margin-bottom: 0; border-top-width: 0;")
+.navbar.navbar-default.navbar-fixed-top(ng-controller="NavController as NC" style="margin-bottom: 0; border-top-width: 0;")
   .container
     .navbar-header
-      div.pull-left(style="padding-top: 9px; padding-left: 9px; padding-bottom: 9px;")
-        img.navbar-logo.img-circle(ng-src="http://beta.images.coolaj86.com/api/resize/height/100?url={{ NC.logo }}"
-          style="border: 2px solid white; height: 54px; width: 106px;")
-      a.navbar-brand(href="/" style="padding-top: 23px; padding-left: 25px;") {{ NC.business.title }}
-      //- this is a hack to get the logo to show up centered
-      div(style="padding-top: 9px;")
+      //-div.pull-left(style="padding-top: 9px; padding-left: 9px; padding-bottom: 9px;")
+      a.navbar-brand
+        span LDS Connect
+        img.navbar-logo.img(ng-src="images/lds-connect-logo-inverse-32px.png" style="position: relative; top: -6px; padding-right: 8px;" class="pull-left")
+      div
         button.navbar-toggle(type='button', ng-init="navCollapsed = true", ng-click="navCollapsed = !navCollapsed")
           span.icon-bar
           span.icon-bar
           span.icon-bar
     #navbar-main.navbar-collapse.collapse(ng-class="!navCollapsed && 'in'")
-      //- this is a hack to match the logo (as mentioned above)
-      ul.nav.navbar-nav(style="padding-top: 9px;")
-        //-li.dropdown
-          a#themes.dropdown-toggle(data-toggle='dropdown', href='')
-            | Themes
-            span.caret
-          ul.dropdown-menu(aria-labelledby='themes')
-            li
-              a(href='../default/') Default
-            li.divider
-            li
-              a(href='../amelia/') Amelia
-            li
-              a(href='../cerulean/') Cerulean
+      ul.nav.navbar-nav.navbar-right
+        li(ng-show="NC.session.accounts.length")
+          a(ui-sref="develop") Develop
 
-        li(du-scrollspy="about", ng-if="'Home' == NC.activeTab")
-          a(ng-href="#about" du-smooth-scroll) About
-        li(du-scrollspy="privacy", ng-if="'Home' == NC.activeTab")
-          a(ng-href="#privacy" du-smooth-scroll) Privacy
+        li(ng-show="!NC.session.accounts.length")
+          a(href="" ng-click="NC.showLoginModal()") Login
 
-        li(ng-repeat="tab in NC.tabs", ng-class="{ active: tab.active }")
-          a(ng-href="{{tab.href}}") {{ tab.title }}
-      
-      ul.nav.navbar-nav.navbar-right(style="padding-top: 9px;")
-        li(ng-show="!NC.session")
-          a(href="", ng-click="NC.showLoginModal()") Login
-          span {{ NC.session }}
-        li.dropdown(ng-show="NC.session")
+        li.dropdown(ng-show="NC.session.accounts.length")
           a#account.dropdown-toggle(data-toggle='dropdown', href='')
             | Account
             span.caret
@@ -50,6 +29,3 @@
             li.divider
             li
               a(href="", ng-click="NC.logout()") Logout
-        li
-          div(style="padding-top: 5px;")
-            button.btn.btn-info(type="button", ng-click="NC.payInvoice()") Pay Invoice
