@@ -33,46 +33,47 @@ jade -w ./public/views/*.jade
 
 Use <https://local.ldsconnect.org:8043>.
 
-Waste Angular
+5. Develop in frontend/app
+-------
+
+The Hard Way
 =============
 
-A reference implementation / seed project for the Wasteful front-ends (Waste NoBackend).
-
-### 1. Clone the Node.js Waste Backend
-
-**Follow the README.md** inside of waste
-
-```bash
-git clone https://github.com/coolaj86/waste.git
-pushd waste
-cat README.md
+```
+echo "Cloning Frontend-Developer Backend (very minimal)..."
+git clone https://github.com/LDSorg/backend-oauth2-node-passport-example.git \
+  lds-dev-backend \
+  > /dev/null
+pushd lds-dev-backend
 ```
 
-### 2. Clone the AngularJS Waste Frontend
-
-```bash
-git clone https://github.com/coolaj86/waste-angular.git
-pushd ./waste-angular
-bower install
+```
+echo "Installing NPMs (this will take several seconds, maybe a minute)..."
+npm install --loglevel silent
 ```
 
-### 3. Build the Templates
-
-```bash
-jade ./app/views/*.jade
+```
+echo "Cloning Developer HTTPS Certificates..."
+git clone https://github.com/LDSorg/local.ldsconnect.org-certificates.git \
+  ./certs \
+  > /dev/null
+tree -I .git ./certs
 ```
 
-### 4. Start the Server
-
-```bash
-# go to the parent directory (back to waste)
-popd
-
-# start the server
-node ./bin/server-runner.js 4443 4080
+```
+echo "Cloning the Frontend and Creating ./public link"
+git clone https://github.com/LDSorg/ldsconnect.org-frontend.git \
+  ./frontend \
+  > /dev/null
+ln -s 'frontend/app' ./public
 ```
 
-Visit `http://local.daplie.com:4080` (NOT `localhost:4080`)
+```
+echo "Installing NPMs (this will take several seconds, maybe a minute)..."
+pushd frontend
+bower install --silent > /dev/null
+jade app/views/*.jade
+```
 
 Directory Structure
 ===================
