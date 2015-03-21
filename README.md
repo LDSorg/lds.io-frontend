@@ -40,6 +40,13 @@ jade -w ./public/views/*.jade
 
 Use <https://local.ldsconnect.org:8043>.
 
+**IMPORTANT**: Because LDS Connect v2 is being staged at <https://lds.io> which
+does not have a valid SSL certificate, you must **visit <https://lds.io> and ACCEPT
+THE CERTIFICATE**
+
+**AGAIN**: If you do not accept the certificate for <https://lds.io>, the API will
+fail to work.
+
 5. Develop in frontend/app
 -------
 
