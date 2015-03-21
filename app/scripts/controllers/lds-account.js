@@ -31,7 +31,6 @@ angular.module('yololiumApp')
 
     scope.login = login;
 
-    console.log(login);
     scope.markAsChecked = function () {
       return $http.post(StApi.apiPrefix + '/logins/ldsaccount/' + login.id + '/mark-as-checked').then(function (resp) {
         if (!resp.data || resp.data.error || !resp.data.success) {

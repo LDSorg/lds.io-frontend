@@ -12,7 +12,11 @@ angular.module('yololiumApp', [
 /*
   'ngSanitize'
 */
-]).config(['$stateProvider', '$httpProvider', function ($stateProvider, $httpProvider) {
+]).config([
+    '$stateProvider'
+  , '$httpProvider'
+  , 'stConfig'
+  , function ($stateProvider, $httpProvider, StApi) {
     var rootTemplate = $('.ui-view-body').html();
     $stateProvider
       .state('root', {
@@ -86,10 +90,19 @@ angular.module('yololiumApp', [
       })
       ;
 
-    // alternatively, register the interceptor via an anonymous factory
+    // send creds
+    $httpProvider.defaults.withCredentials = true;
+    // alternatively, register the interceptor via an anonymous factory?
     $httpProvider.interceptors.push([ '$q', function($q) {
-      var recase = window.Recase.create({ exceptions: {} })
-        ;
+      var recase = window.Recase.create({ exceptions: {} });
+
+      function isApiUrl(url) {
+        // TODO provide a list of known-good API urls in StApi and loop
+        return !/^https?:\/\//.test(url)
+          || url.match(StApi.apiPrefix)
+          || url.match(StApi.oauthPrefix)
+          ;
+      }
 
       return {
         'request': function (config) {
@@ -101,7 +114,7 @@ angular.module('yololiumApp', [
           }
           */
           if (config.data
-              && !/^https?:\/\//.test(config.url)
+              && isApiUrl(config.url)
               && /json/.test(config.headers['Content-Type'])
           ) {
             config.data = recase.snakeCopy(config.data);
@@ -115,12 +128,11 @@ angular.module('yololiumApp', [
           return rejection;
         }
       , 'response': function (response) {
-          var config = response.config
-            ;
+          var config = response.config;
 
           // our own API is snake_case (to match webApi / ruby convention)
           // but we convert to camelCase for javascript convention
-          if (!/^https?:\/\//.test(config.url) && /json/.test(response.headers('Content-Type'))) {
+          if (isApiUrl(config.url) && /json/.test(response.headers('Content-Type'))) {
             response.data = recase.camelCopy(response.data);
             if (response.data.error) {
               //throw new Error(response.data.error.message);
