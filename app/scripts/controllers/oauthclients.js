@@ -26,16 +26,43 @@ angular.module('yololiumApp')
 
     stOauthclients.fetch(authenticatedSession.account).then(function (clients) {
       OA.clients = clients;
-      console.log('');
     }).catch(function (e) {
       window.alert("[OAuth2 Clients] ERROR: " + e.message);
     });
 
-    OA.addApp = function () {
-      console.info('oauth client account');
-      console.log(account);
+    OA.getKeyPair = function (client, query) {
+      var thing;
+
+      client.apikeys.some(function (pair) {
+        if (!!pair.insecure === !!query.insecure) {
+          if (!!pair.test === !!query.test) {
+            // hmmm... bad naming on my part
+            // TODO consistent naming
+            if ('id' === query.type) {
+              thing = pair.key;
+              return true;
+            }
+            else {
+              thing = pair.secret;
+              return true;
+            }
+          }
+        }
+      });
+
+      return thing;
+    };
+
+    OA.registerApp = function () {
       LdsAccount.ensureVerified(account, {}).then(function () {
-        stOauthclients.create(authenticatedSession.account, OA.appName, OA.appSecret).then(function (client) {
+        stOauthclients.create(
+          authenticatedSession.account
+        , { name: OA.newApp.name 
+          , desc: OA.newApp.desc
+          , logo: OA.newApp.logo
+          , urls: [OA.newApp.url]
+          }
+        ).then(function (client) {
           OA.clients.push(client);
         });
 
