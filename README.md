@@ -96,68 +96,60 @@ Directory Structure
 
 ```
 lds-dev-backend/
-├── LICENSE
-├── README.md
+├── package.json
+├── serve.js
 ├── app.js
 ├── certs
 │   ├── ca
 │   │   ├── intermediate.crt.pem
 │   │   └── root.crt.pem
-│   ├── server
-│   │   ├── my-server.crt.pem
-│   │   └── my-server.key.pem
-│   └── tmp
-│       └── my-server.csr.pem
-├── frontend
-│   ├── LICENSE
-│   ├── README.md
-│   ├── app
-│   │   ├── 404.html
-│   │   ├── bower_components
-│   │   ├── favicon.ico
-│   │   ├── fonts
-│   │   ├── images
-│   │   ├── index.html
-│   │   ├── oauth2-close.html
-│   │   ├── robots.txt
-│   │   ├── scripts
-│   │   │   ├── app-churchly.js
-│   │   │   ├── client-config.js
-│   │   │   ├── controllers
-│   │   │   │   ├── account.js
-│   │   │   │   ├── lds-account.js
-│   │   │   │   ├── login-v2.js
-│   │   │   │   ├── nav.js
-│   │   │   │   ├── oauth.js
-│   │   │   │   ├── oauthclients.js
-│   │   │   │   └── verify-contact-details.js
-│   │   │   └── services
-│   │   │       ├── lds-account.js
-│   │   │       ├── st-account.js
-│   │   │       ├── st-api.js
-│   │   │       ├── st-login.js
-│   │   │       ├── st-oauth-providers.js
-│   │   │       ├── st-oauthclients.js
-│   │   │       └── st-session.js
-│   │   ├── styles
-│   │   │   ├── bootstrap-social.min.css
-│   │   │   ├── bootstrap.cerulean.min.css
-│   │   │   ├── font-awesome.min.css
-│   │   │   └── style.css
-│   │   └── views
-│   │       ├── account.jade
-│   │       ├── lds-account.jade
-│   │       ├── login-v2.jade
-│   │       ├── nav.jade
-│   │       ├── oauth.jade
-│   │       ├── oauthclients.jade
-│   │       └── verify-contact-details.jade
-│   ├── bower.json
-│   ├── install-min.bash
-│   ├── package.json
-├── lib
-│   └── facebook-connect.js
-├── package.json
+│   └── server
+│       ├── my-server.crt.pem
+│       └── my-server.key.pem
 ├── public -> frontend/app
-└── serve.js
+└── frontend
+    ├── package.json
+    ├── bower.json
+    ├── install-min.bash
+    └── app
+        ├── 404.html
+        ├── bower_components
+        ├── favicon.ico
+        ├── fonts
+        ├── images
+        ├── index.html
+        ├── oauth2-close.html
+        ├── robots.txt
+        ├── scripts
+        │   ├── app-churchly.js
+        │   ├── client-config.js
+        │   ├── controllers
+        │   │   ├── account.js
+        │   │   ├── lds-account.js
+        │   │   ├── login-v2.js
+        │   │   ├── nav.js
+        │   │   ├── oauth.js
+        │   │   ├── oauthclients.js
+        │   │   └── verify-contact-details.js
+        │   └── services
+        │       ├── lds-account.js
+        │       ├── st-account.js
+        │       ├── st-api.js
+        │       ├── st-login.js
+        │       ├── st-oauth-providers.js
+        │       ├── st-oauthclients.js
+        │       └── st-session.js
+        ├── styles
+        │   ├── bootstrap.cerulean.min.css
+        │   ├── bootstrap-social.min.css
+        │   ├── font-awesome.min.css
+        │   └── style.less
+        └── views
+            ├── account.jade
+            ├── lds-account.jade
+            ├── login-v2.jade
+            ├── nav.jade
+            ├── oauth.jade
+            ├── oauthclients.jade
+            └── verify-contact-details.jade
 ```
