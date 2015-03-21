@@ -44,8 +44,8 @@ Use <https://local.ldsconnect.org:8043>.
 does not have a valid SSL certificate, you must **visit <https://lds.io> and ACCEPT
 THE CERTIFICATE**
 
-**AGAIN**: If you do not accept the certificate for <https://lds.io>, the API will
-fail to work.
+**AGAIN**: If you do not accept the certificate for <https://lds.io> in your BROWSER,
+the API will fail to work.
 
 5. Develop in frontend/app
 -------
