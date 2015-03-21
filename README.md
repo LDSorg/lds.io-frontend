@@ -43,7 +43,16 @@ Use <https://local.ldsconnect.org:8043>.
 5. Develop in frontend/app
 -------
 
-The Hard Way
+You can fork this repository and then submit pull requests after updating your local copy:
+
+```
+git remote rename origin upstream
+git remote add origin https://github.com/${YOUR_USER_NAME}/ldsconnect.org-frontend.git
+```
+
+Do not commit `.html` files (with the exception of `index.html` and `oauth2-close.html`.
+
+Install the Hard Way
 =============
 
 ```
