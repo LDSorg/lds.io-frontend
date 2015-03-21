@@ -121,6 +121,7 @@ angular.module('yololiumApp')
         scope.grantedString = txdata.grantedString;
         scope.requestedString = txdata.requestedString;
         scope.pendingString = txdata.pendingString;
+        scope.pendingScope = [];
 
         if (scope.pendingString) {
           scope.pendingScope = txdata.pendingArr.map(scopeStrToObj);
