@@ -4,20 +4,34 @@ Zero-Config Install
 LDSConnect.org allows API access to the test domain `https://local.ldsconnect.org:8043`
 so that you can run a copy of it locally without needing to install a local server.
 
+1. Install
+----------
+
 ```bash
 curl -fsSL https://bit.ly/install-ldsconnect-frontend-min | bash
 ```
 
-```bash
-pushd lds-dev-backend
-jade -w ./public/views/*.jade
-```
+2. In a new terminal, start the server
+-----------
 
 ```bash
 pushd lds-dev-backend
 node ./serve.js
 ```
 
+3. In a new terminal, watch jade files
+--------
+```bash
+pushd lds-dev-backend
+jade -w ./public/views/*.jade
+```
+
+4. Visit https://local.ldsconnect.org:8043
+--------
+
+`localhost` and `127.0.0.1` are not valid domains.
+
+Use <https://local.ldsconnect.org:8043>.
 
 Waste Angular
 =============
