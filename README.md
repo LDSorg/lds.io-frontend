@@ -1,3 +1,10 @@
+LDSConnect.org Frontend
+=========
+
+The ldsconnect.org API is completely decoupled from the static assets.
+
+This repository is provided so that you can comfortably develop the UI against the real API without any worry of the backend.
+
 Zero-Config Install
 ===================
 
