@@ -46,7 +46,7 @@
             .form-group(ng-if="!LC.account.localLoginId")
               label(for="username") LDS.org Account Username
               span &#32;(
-              a(href="https://ldsaccount.lds.org/recover-username") forgot username?
+              a(href="https://ldsaccount.lds.org/recover-username" target="forgotuser") forgot username?
               span )
               input.form-control(
                 ng-model="LC.delta.localLogin.uid"
@@ -61,7 +61,7 @@
             .form-group(ng-if="LC.delta.localLogin.exists")
               label(for="password") LDS.org Account Passphrase 
               span &#32;(
-              a(href="https://ldsaccount.lds.org/recover-password") forgot passphrase?
+              a(href="https://ldsaccount.lds.org/recover-password" target="forgotpass") forgot passphrase?
               span )
               span &nbsp;&nbsp;&nbsp;
               label.checkbox-inline
