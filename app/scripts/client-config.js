@@ -1,6 +1,6 @@
 window.StClientConfig = {
   "webhookPrefix": "/webhooks"
-, "oauthPrefix": "/oauth"
+, "oauthPrefix": "https://lds.io/oauth"
 , "sessionPrefix": "/session"
 , "apiPrefix": "https://lds.io/api"
 , "snakeApi": true
