@@ -46,11 +46,12 @@
             .form-group(ng-if="!LC.account.localLoginId")
               label(for="username") LDS.org Account Username
               span &#32;(
-              a(href="https://ldsaccount.lds.org/recover-username") forgot username?
+              a(href="https://ldsaccount.lds.org/recover-username" target="forgotuser") forgot username?
               span )
               input.form-control(
                 ng-model="LC.delta.localLogin.uid"
                 ng-change="LC.checkLogin(LC.delta.localLogin)"
+                ng-disabled="LC.authenticating"
                 type="text"
                 placeholder="ex: johndoe"
               )
@@ -61,7 +62,7 @@
             .form-group(ng-if="LC.delta.localLogin.exists")
               label(for="password") LDS.org Account Passphrase 
               span &#32;(
-              a(href="https://ldsaccount.lds.org/recover-password") forgot passphrase?
+              a(href="https://ldsaccount.lds.org/recover-password" target="forgotpass") forgot passphrase?
               span )
               span &nbsp;&nbsp;&nbsp;
               label.checkbox-inline
@@ -74,6 +75,7 @@
                 ng-if="!LC.showSecret"
                 ng-model="LC.delta.localLogin.secret"
                 ng-change="LC.checkSecret(LC.delta.localLogin)"
+                ng-disabled="LC.authenticating"
                 type='password'
                 placeholder="ex: ************"
               )
@@ -81,6 +83,7 @@
                 ng-if="LC.showSecret"
                 ng-model="LC.delta.localLogin.secret"
                 ng-change="LC.checkSecret(LC.delta.localLogin)"
+                ng-disabled="LC.authenticating"
                 type='text'
                 placeholder="ex: my secret phrase"
               )
@@ -158,10 +161,29 @@
         .row
           .col-xs-12
             .form-group
-              input.btn.btn-primary(ng-if="!LC.formAction" type='submit' disabled value="Enter Username")
-              input.btn.btn-primary(ng-if="'login' == LC.formAction" type='submit' value="Login")
-              a.btn.btn-primary(ng-if="'create' == LC.formAction" type='submit' href="https://ldsaccount.lds.org/register?isMember=true" target="ldsaccount") Register for an LDS Account on LDS.org
-              //-a.btn.btn-default.pull-right(href='') Help
+              input.btn.btn-primary(
+                ng-if="!LC.formAction"
+                type='submit'
+                disabled="disabled"
+                value="Enter Username"
+              )
+              input.btn.btn-primary(
+                ng-if="LC.authenticating"
+                disabled="disabled"
+                type="button"
+                value="Logging in..."
+              )
+              input.btn.btn-primary(
+                ng-if="'login' == LC.formAction && !LC.authenticating"
+                ng-disabled="LC.authenticating"
+                type='submit'
+                value="Login"
+              )
+              a.btn.btn-primary(
+                ng-if="'create' == LC.formAction"
+                type="submit"
+                href="https://ldsaccount.lds.org/register?isMember=true" target="ldsaccount"
+              ) Register for an LDS Account on LDS.org
 
       .row(ng-if="LC.logins.length")
         .col-xs-12

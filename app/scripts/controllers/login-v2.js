@@ -472,23 +472,38 @@ angular.module('yololiumApp')
         return;
       }
 
+      scope.authenticating = true;
       return loginHelper(nodeObj).then(function (session) {
+        scope.flashMessage = "";
+        scope.flashMessageClass = "alert-danger";
+
+        scope.authenticating = false;
+
         console.log('UPDATE 1');
         console.log(session);
 
         if (!session) {
           console.error("[ERROR] no session returned");
           console.error(session);
+          scope.flashMessage = "[API Error] could not check username / password";
           return;
         }
 
         if (!session.logins || !session.logins.length) {
           console.error("no logins on session");
           console.error(session);
+          scope.delta.localLogin.secret = '';
+          scope.showSecret = true;
+          scope.flashMessage = "Incorrect password for '"
+            + scope.delta.localLogin.node + "'. Double check and try again.";
           return;
         }
 
         $modalInstance.close(session);
+      }, function (err) {
+        scope.authenticating = false;
+
+        scope.flashMessage = err && err.message || '[Uknown Error]: Please refresh and try again.';
       });
     };
 
