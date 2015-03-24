@@ -23,7 +23,6 @@ angular.module('yololiumApp')
     var apiPrefix = StApi.apiPrefix;
 
     me.showAccountModal = function (session, opts) {
-      console.log('opening the lds account update');
       return $modal.open({
         templateUrl: '/views/lds-account.html'
       , controller: 'LdsAccountController as LAC'
@@ -60,11 +59,6 @@ angular.module('yololiumApp')
       var recheckTime = (3 * 30 * 24 * 60 * 60 * 1);
       var ldsLogins;
       var hasLdsAccount;
-
-      console.log('session');
-      console.log(session);
-      console.log('opts');
-      console.log(opts);
 
       // the server must reject account creation with no local login present
       // TODO inspect account for freshness / validation?
@@ -103,6 +97,7 @@ angular.module('yololiumApp')
           return false;
         }
 
+        // TODO ISO timestamps
         fresh = (Date.now()/1000) - parseInt(login.checkedAt||0, 10) < recheckTime;
         //fresh = (Date.now()/1000) - parseInt(login.verifiedAt||0, 10) < recheckTime;
         if (!fresh) {
@@ -211,8 +206,6 @@ angular.module('yololiumApp')
       return $http.post(apiPrefix + '/ldsconnect/' + account.id + '/verify/code', {
         type: type
       , node: node
-      }).success(function (data) {
-        console.log('StLogins.getCode result', data);
       }).then(function (result) {
         if (result.data.error) {
           return $q.reject(result.data.error);
@@ -222,16 +215,11 @@ angular.module('yololiumApp')
     };
 
     me.validateCode = function (account, type, node, uuid, code) {
-      console.info('lds validate code account');
-      console.log(account);
-      console.log(account.id);
       return $http.post(apiPrefix + '/ldsconnect/' + account.id + '/verify/code/validate', {
         type: type
       , node: node
       , uuid: uuid
       , code: code
-      }).success(function (data) {
-        console.log('StLogins.validateCode result', data);
       }).then(function (result) {
         if (result.data.error) {
           return $q.reject(result.data.error);
@@ -252,7 +240,6 @@ angular.module('yololiumApp')
     };
 
     me.showVerificationModal = function (account, opts) {
-      console.log('opening the lds account update');
       return $modal.open({
         templateUrl: '/views/verify-contact-details.html'
       , controller: 'VerifyContactDetailsController as VCDC'

@@ -25,11 +25,8 @@ angular.module('yololiumApp')
       });
     }
 
-    function create(account, name, secret) {
-      var app = { name: name };
-      if (secret) {
-        app.secret = secret;
-      }
+    function create(account, app) {
+      /* { name: ..., desc: ..., logo: ... } */
 
       return $http.post(apiPrefix + '/accounts/' + account.id + '/clients', app).then(function (resp) {
         return resp.data;
