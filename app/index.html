@@ -63,17 +63,17 @@
   https://lds.io/api/ldsconnect/&lt;accountId>/photos/household/&lt;headOfHouseholdId>/large</span
   ><span ng-if="MC.user"
   ><a ng-href="https://lds.io/api/ldsconnect/accounts"
-    target="_blank">https://lds.io/api/ldsconnect/accounts</a>
-  <a ng-href="https://lds.io/api/ldsconnect/{{ MC.user.account.id }}>/me"
-    target="_blank">https://lds.io/api/ldsconnect/{{ MC.user.account.id }}>/me</a>
-  <a ng-href="https://lds.io/api/ldsconnect/{{ MC.user.account.id }}/stakes/{{ MC.user.homeStakeId }}/wards/{{ MC.user.homeWardId }}"
-    target="_blank">https://lds.io/api/ldsconnect/{{ MC.user.account.id }}/stakes/{{ MC.user.homeStakeId }}/wards/{{ MC.user.homeWardId }}</a>
-  <a ng-href="https://lds.io/api/ldsconnect/{{ MC.user.account.id }}/stakes/{{ MC.user.homeStakeId }}/wards/{{ MC.user.homeWardId }}/photos"
-    target="_blank">https://lds.io/api/ldsconnect/{{ MC.user.account.id }}/stakes/{{ MC.user.homeStakeId }}/wards/{{ MC.user.homeWardId }}/photos</a>
-  <a ng-href="https://lds.io/api/ldsconnect/{{ MC.user.account.id }}/photos/individual/{{ MC.user.account.id }}/large"
-    target="_blank">https://lds.io/api/ldsconnect/{{ MC.user.account.id }}/photos/individual/{{ MC.user.account.id }}/large</a>
-  <a ng-href="https://lds.io/api/ldsconnect/{{ MC.user.account.id }}/photos/household/{{ MC.user.account.id }}/large"
-    target="_blank">https://lds.io/api/ldsconnect/{{ MC.user.account.id }}/photos/household/{{ MC.user.account.id }}/large</a></span>
+    target="ldsconnectaccounts">https://lds.io/api/ldsconnect/accounts</a>
+  <a ng-href="https://lds.io/api/ldsconnect/{{ MC.account.id }}/me"
+    target="ldsconnectme">https://lds.io/api/ldsconnect/{{ MC.account.id }}/me</a>
+  <a ng-href="https://lds.io/api/ldsconnect/{{ MC.account.id }}/stakes/{{ MC.user.homeStakeId }}/wards/{{ MC.user.homeWardId }}"
+    target="ldsconnectward{{MC.user.homeWardId}}">https://lds.io/api/ldsconnect/{{ MC.account.id }}/stakes/{{ MC.user.homeStakeId }}/wards/{{ MC.user.homeWardId }}</a>
+  <a href="https://lds.io/api/ldsconnect/{{ MC.account.id }}/stakes/{{ MC.user.homeStakeId }}/wards/{{ MC.user.homeWardId }}/photos"
+    target="ldsconnectward{{MC.user.homeWardId}}photos">https://lds.io/api/ldsconnect/{{ MC.account.id }}/stakes/{{ MC.user.homeStakeId }}/wards/{{ MC.user.homeWardId }}/photos</a>
+  <a ng-href="https://lds.io/api/ldsconnect/{{ MC.account.id }}/photos/individual/{{ MC.user.individualId }}/large"
+    target="ldsconnect{{MC.user.individualId}}memberphoto">https://lds.io/api/ldsconnect/{{ MC.account.id }}/photos/individual/{{ MC.user.individualId }}/large</a>
+  <a ng-href="https://lds.io/api/ldsconnect/{{ MC.account.id }}/photos/household/{{ MC.user.individualId }}/large"
+    target="ldsconnect{{MC.user.individualId}}familyphoto">https://lds.io/api/ldsconnect/{{ MC.account.id }}/photos/household/{{ MC.user.individualId }}/large</a></span>
 
   Note: choose from large (500x375), medium (200x150), or thumbnail (40x40)
 
@@ -93,9 +93,14 @@
             </code>
           </pre>
         </div>
+        <div>
+          <pre>
+            <code>{{ MC.session | json }}</code>
+          </pre>
+        </div>
       </div>
 
-    <a href="https://github.com/LDSorg/"><img style="position: absolute; top: 50px; left: 0; border: 0;" src="https://camo.githubusercontent.com/82b228a3648bf44fc1163ef44c62fcc60081495e/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f7265645f6161303030302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_left_red_aa0000.png"></a>
+    <a href="https://github.com/LDSorg/" target="ldsorggithub"><img style="position: absolute; top: 50px; left: 0; border: 0;" src="https://camo.githubusercontent.com/82b228a3648bf44fc1163ef44c62fcc60081495e/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f7265645f6161303030302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_left_red_aa0000.png"></a>
     </div>
 
     <script src="bower_components/jquery/jquery.js"></script>
@@ -118,6 +123,7 @@
     <script src="scripts/services/st-session.js"></script>
     <script src="scripts/services/st-login.js"></script>
     <script src="scripts/services/lds-account.js"></script>
+    <script src="scripts/services/lds-io.js"></script>
     <script src="scripts/services/st-account.js"></script>
     <script src="scripts/services/st-oauthclients.js"></script>
     <script src="scripts/services/st-alert.js"></script>

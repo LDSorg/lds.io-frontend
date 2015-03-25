@@ -148,12 +148,19 @@ angular.module('yololiumApp')
     }
 
     // external auth (i.e. facebook, twitter)
-    function update(session) {
+    function update(session, restore) {
       gettingSession = null;
 
       if (shared.session !== session) {
         shared.session = mangle(session);
         shared.touchedAt = Date.now();
+        if (true !== restore && session && session.logins.length && session.accounts.length) {
+          console.info('saving session');
+          console.log(session);
+          localStorage.setItem('token', 'TODO');
+          localStorage.setItem('tokenExpiresAt', new Date(Date.now() + (10 * 60 * 1000)).toISOString());
+          localStorage.setItem('session.json', JSON.stringify(session));
+        }
       }
 
       // TODO Object.freeze (Mozilla's deepFreeze example)
@@ -203,10 +210,15 @@ angular.module('yololiumApp')
       var d = $q.defer();
 
       console.log('DESTROYING SESSION');
+
+      localStorage.removeItem('token');
+      localStorage.removeItem('tokenExpiresAt');
+      localStorage.removeItem('session.json');
+
       console.log(shared);
       shared.session = null;
       gettingSession = null;
-      $http.delete(apiPrefix + '/session').success(function (resp) {
+      $http.delete(apiPrefix + '/session').then(function (resp) {
         shared.session = null;
         gettingSession = null;
         update(resp.data);
@@ -299,6 +311,30 @@ angular.module('yololiumApp')
       middleware.push([cb, eb]);
     }
 
+    function restoreSession() {
+      var token = localStorage.getItem('token');
+      var expiresAt = new Date(localStorage.getItem('tokenExpiresAt')).valueOf();
+      var fresh = Date.now() - expiresAt < (30 * 24 * 60 * 60 * 1000);
+      var session;
+
+      if (!fresh) {
+        console.warn('no fresh token');
+        console.log(token);
+        console.log(localStorage.getItem('tokenExpiresAt'), expiresAt);
+        console.log(fresh);
+        return;
+      }
+
+      session = JSON.parse(localStorage.getItem('session.json'));
+
+      console.info('fresh session');
+      console.info(session);
+
+      update(session, true);
+
+      return session;
+    }
+
     var x = {
       get: read
     , create: create
@@ -308,6 +344,7 @@ angular.module('yololiumApp')
     , subscribe: subscribe
     , ensureSession: ensureSession
     , use: useMiddleware
+    , restoreSession: restoreSession
     };
 
     x.oauthPromises = StOauthProviders.create(function (resolve, reject) {

@@ -24,20 +24,31 @@ angular.module('yololiumApp', [
       , views: {
           body: {
             template: rootTemplate
-            /*
-          , controller: ['$state', 'mySession', 'stConfig', function ($state, mySession, stConfig) {
-              if (!stConfig.useSplash) {
-                $state.go('home');
-                return;
+          , controller: ['$scope', 'StSession', 'LdsIo', function ($scope, StSession, LdsIo) {
+              var MC = this;
+
+              function init(session) {
+                if (!session) {
+                  MC.session = null;
+                  return;
+                }
+
+                MC.session = session;
+                
+                LdsIo.getProfile(session.account).then(function (profile) {
+                  console.info('LdsIo profile');
+                  console.log(profile);
+                  MC.user = profile;
+                  MC.account = session.account;
+                  MC.session = profile;
+                });
               }
 
-              if (!mySession || !mySession.account || 'guest' === mySession.account.role) {
-                $state.go('splash');
-              } else {
-                $state.go('home');
-              }
+              StSession.subscribe(init, $scope);
+
+              StSession.restoreSession();
             }]
-            */
+          , controllerAs: 'MC'
           }
         }
       })
@@ -159,6 +170,8 @@ angular.module('yololiumApp', [
       return session;
     });
   });
+
+  StSession.restoreSession();
 }]);
 
 angular.module('yololiumApp')
