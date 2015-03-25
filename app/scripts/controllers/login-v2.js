@@ -474,6 +474,7 @@ angular.module('yololiumApp')
 
       scope.authenticating = true;
       scope.showSecret = false;
+      scope.rawMessage = "";
       return loginHelper(nodeObj).then(function (session) {
         scope.flashMessage = "";
         scope.flashMessageClass = "alert-danger";
@@ -482,6 +483,13 @@ angular.module('yololiumApp')
 
         if (!session) {
           scope.flashMessage = "[API Error] could not check username / password";
+          return;
+        }
+
+        if ('string' === typeof session) {
+          // this is probably a 500 and is already html escaped
+          scope.flashMessage = 'Unknown Error';
+          scope.rawMessage = session;
           return;
         }
 

@@ -10,6 +10,8 @@
 
     <title>LDS Connect</title>
     <meta name="description" content="An API for Latter-Day Saint develpers to create magnicent apps for their wards and stakes">
+    <meta name="viewport" content="user-scalable=0, initial-scale=1.0">
+
     <!-- Canonical self-reference-->
     <link rel="canonical" href="https://lds.io/">
     <link rel="icon" href="favicon.ico" />
@@ -19,7 +21,7 @@
     <!-- endbuild -->
 
     <!-- link href="//netdna.bootstrapcdn.com/bootswatch/3.2.0/united/bootstrap.min.css" rel="stylesheet" -->
-    <link href="styles/bootstrap.cerulean.min.css" rel="stylesheet">
+    <link href="styles/bootstrap.flatly.min.css" rel="stylesheet">
     <link href="styles/bootstrap-social.min.css" rel="stylesheet">
     <link href="styles/font-awesome.min.css" rel="stylesheet">
     <!-- fontawesome fonts MUST exist in ../fonts/ -->
@@ -43,10 +45,57 @@
         <br/>
         <div class="jumbotron">
           <h1>v2.0 In Progress</h1>
-          <p>See <a href="https://ldsconnect.org">ldsconnect.org</a> for the v1 API. v2 should be finished by March 25th, 2015. See the current demo at <a href="https://github.com/LDSorg/frontend-oauth2-browser-angular-seed-example">LDS Connect OAuth2 Browser Demo</a></p>
+          <p>See <a href="https://ldsconnect.org">ldsconnect.org</a> for the v1 API. v2 should be finished by Thursday, March 26th, 2015. See the current demo at <a href="https://github.com/LDSorg/frontend-oauth2-browser-angular-seed-example">LDS Connect OAuth2 Browser Demo</a></p>
+        </div>
+        <div>
+          <pre>
+            <code>
+  //
+  // Working APIs (beta)
+  //
+
+  <span ng-if="!MC.user"
+  >https://lds.io/api/ldsconnect/accounts
+  https://lds.io/api/ldsconnect/&lt;accountId>/me
+  https://lds.io/api/ldsconnect/&lt;accountId>/stakes/&lt;stakeId>/wards/&lt;wardId>
+  https://lds.io/api/ldsconnect/&lt;accountId>/stakes/&lt;stakeId>/wards/&lt;wardId>/photos
+  https://lds.io/api/ldsconnect/&lt;accountId>/photos/individual/&lt;individualId>/large
+  https://lds.io/api/ldsconnect/&lt;accountId>/photos/household/&lt;headOfHouseholdId>/large</span
+  ><span ng-if="MC.user"
+  ><a ng-href="https://lds.io/api/ldsconnect/accounts"
+    target="_blank">https://lds.io/api/ldsconnect/accounts</a>
+  <a ng-href="https://lds.io/api/ldsconnect/{{ MC.user.account.id }}>/me"
+    target="_blank">https://lds.io/api/ldsconnect/{{ MC.user.account.id }}>/me</a>
+  <a ng-href="https://lds.io/api/ldsconnect/{{ MC.user.account.id }}/stakes/{{ MC.user.homeStakeId }}/wards/{{ MC.user.homeWardId }}"
+    target="_blank">https://lds.io/api/ldsconnect/{{ MC.user.account.id }}/stakes/{{ MC.user.homeStakeId }}/wards/{{ MC.user.homeWardId }}</a>
+  <a ng-href="https://lds.io/api/ldsconnect/{{ MC.user.account.id }}/stakes/{{ MC.user.homeStakeId }}/wards/{{ MC.user.homeWardId }}/photos"
+    target="_blank">https://lds.io/api/ldsconnect/{{ MC.user.account.id }}/stakes/{{ MC.user.homeStakeId }}/wards/{{ MC.user.homeWardId }}/photos</a>
+  <a ng-href="https://lds.io/api/ldsconnect/{{ MC.user.account.id }}/photos/individual/{{ MC.user.account.id }}/large"
+    target="_blank">https://lds.io/api/ldsconnect/{{ MC.user.account.id }}/photos/individual/{{ MC.user.account.id }}/large</a>
+  <a ng-href="https://lds.io/api/ldsconnect/{{ MC.user.account.id }}/photos/household/{{ MC.user.account.id }}/large"
+    target="_blank">https://lds.io/api/ldsconnect/{{ MC.user.account.id }}/photos/household/{{ MC.user.account.id }}/large</a></span>
+
+  Note: choose from large (500x375), medium (200x150), or thumbnail (40x40)
+
+  //
+  // TODO
+  //
+  https://lds.io/api/ldsconnect/&lt;accountId>/stakes/&lt;stakeId>
+  https://lds.io/api/ldsconnect/&lt;accountId>/stakes/&lt;stakeId>/photos
+
+  * auto-detect and correct address line2 as city, state
+  * attach gender to individuals
+  * test in family ward (spouse, children)
+
+  // later
+  * apply info check to account, not login 
+  * use OAuth2 as primary login (no cookies)
+            </code>
+          </pre>
         </div>
       </div>
 
+    <a href="https://github.com/LDSorg/"><img style="position: absolute; top: 50px; left: 0; border: 0;" src="https://camo.githubusercontent.com/82b228a3648bf44fc1163ef44c62fcc60081495e/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f7265645f6161303030302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_left_red_aa0000.png"></a>
     </div>
 
     <script src="bower_components/jquery/jquery.js"></script>

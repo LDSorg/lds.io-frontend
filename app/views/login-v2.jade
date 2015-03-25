@@ -6,6 +6,7 @@
       br
       .alert(ng-class="[ LC.flashMessageClass ]")
         span(ng-bind="LC.flashMessage")
+        p(ng-if="LC.rawMessage" ng-bind="LC.rawMessage")
 
   .modal-body
     //- Update account means show only new and required fields
