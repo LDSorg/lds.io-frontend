@@ -13,11 +13,14 @@ angular.module('yololiumApp', [
   'ngSanitize'
 */
 ]).config([
-    '$stateProvider'
+    '$urlRouterProvider'
+  , '$stateProvider'
   , '$httpProvider'
   , 'stConfig'
-  , function ($stateProvider, $httpProvider, StApi) {
+  , function ($urlRouterProvider, $stateProvider, $httpProvider, StApi) {
     var rootTemplate = $('.ui-view-body').html();
+
+    $urlRouterProvider.otherwise('/');
     $stateProvider
       .state('root', {
         url: '/'
@@ -26,6 +29,7 @@ angular.module('yololiumApp', [
             template: rootTemplate
           , controller: ['$scope', 'StSession', 'LdsIo', function ($scope, StSession, LdsIo) {
               console.info('MC controller');
+
               var MC = this;
 
               MC.urlsafe = function (name) {

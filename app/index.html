@@ -8,7 +8,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
-    <title>LDS Connect</title>
+    <title>LDS I/O - OAuth2 APIs for LDS Developers</title>
     <meta name="description" content="An API for Latter-Day Saint develpers to create magnicent apps for their wards and stakes">
     <meta name="viewport" content="user-scalable=0, initial-scale=1.0">
 
@@ -44,14 +44,16 @@
       <div class="container">
         <br/>
         <div class="jumbotron">
-          <h1>v2.0 In Progress</h1>
-          <p>See <a href="https://ldsconnect.org">ldsconnect.org</a> for the v1 API. v2 should be finished by Thursday, March 26th, 2015. See the current demo at <a href="https://github.com/LDSorg/frontend-oauth2-browser-angular-seed-example">LDS Connect OAuth2 Browser Demo</a></p>
+          <h1>LDS API v2.0</h1>
+          <p>Login to see data examples for you ward and to register apps.</p>
+          <p>See the current demo at <a href="https://github.com/LDSorg/frontend-oauth2-browser-angular-seed-example"target="github-browser-demo">LDS OAuth2 Browser Demo</a>.</p>
+          <p>More documentation, examples, and AngularJs library forthcoming.</p>
         </div>
         <div>
           <pre>
             <code>
   //
-  // Working APIs (beta)
+  // APIs (beta)
   //
 
   <span ng-if="!MC.user"
@@ -73,31 +75,39 @@
   <a ng-href="https://lds.io/api/ldsconnect/{{ MC.account.id }}/me"
     target="ldsconnectme">/api/ldsconnect/{{ MC.account.id }}/me</a>
   <a ng-href="https://lds.io/api/ldsconnect/{{ MC.account.id }}/stakes/{{ MC.user.homeStakeId }}"
-    target="ldsconnectward{{MC.user.homeStakeId}}">/api/ldsconnect/{{ MC.account.id }}/stakes/{{ MC.user.homeStakeId }}</a>
+    target="ldsconnectward{{MC.user.homeStakeId}}"
+    >/api/ldsconnect/{{ MC.account.id }}/stakes/{{ MC.user.homeStakeId }}</a>
   <a href="https://lds.io/api/ldsconnect/{{ MC.account.id }}/stakes/{{ MC.user.homeStakeId }}/photos"
-    target="ldsconnectward{{MC.user.homeStakeId}}photos">/api/ldsconnect/{{ MC.account.id }}/stakes/{{ MC.user.homeStakeId }}/photos</a>
+    target="ldsconnectward{{MC.user.homeStakeId}}photos"
+    >/api/ldsconnect/{{ MC.account.id }}/stakes/{{ MC.user.homeStakeId }}/photos</a>
   <a ng-href="https://lds.io/api/ldsconnect/{{ MC.account.id }}/stakes/{{ MC.user.homeStakeId }}/wards/{{ MC.user.homeWardId }}"
-    target="ldsconnectward{{MC.user.homeWardId}}">/api/ldsconnect/{{ MC.account.id }}/stakes/{{ MC.user.homeStakeId }}/wards/{{ MC.user.homeWardId }}</a>
+    target="ldsconnectward{{MC.user.homeWardId}}"
+    >/api/ldsconnect/{{ MC.account.id }}/stakes/{{ MC.user.homeStakeId }}/wards/{{ MC.user.homeWardId }}</a>
   <a href="https://lds.io/api/ldsconnect/{{ MC.account.id }}/stakes/{{ MC.user.homeStakeId }}/wards/{{ MC.user.homeWardId }}/photos"
-    target="ldsconnectward{{MC.user.homeWardId}}photos">/api/ldsconnect/{{ MC.account.id }}/stakes/{{ MC.user.homeStakeId }}/wards/{{ MC.user.homeWardId }}/photos</a>
+    target="ldsconnectward{{MC.user.homeWardId}}photos"
+    >/api/ldsconnect/{{ MC.account.id }}/stakes/{{ MC.user.homeStakeId }}/wards/{{ MC.user.homeWardId }}/photos</a>
   <a ng-href="https://lds.io/api/ldsconnect/{{ MC.account.id }}/photos/individual/{{ MC.user.individualId }}/medium/{{ MC.urlsafe(MC.user.name) }}.jpg"
-    target="ldsconnect{{MC.user.individualId}}memberphoto">/api/ldsconnect/{{ MC.account.id }}/photos/individual/{{ MC.user.individualId }}/medium/{{ MC.urlsafe(MC.user.name) }}.jpg</a>
+    target="ldsconnect{{MC.user.individualId}}memberphoto"
+    >/api/ldsconnect/{{ MC.account.id }}/photos/individual/{{ MC.user.individualId }}/medium/{{ MC.urlsafe(MC.user.name) }}.jpg</a>
   <a ng-href="https://lds.io/api/ldsconnect/{{ MC.account.id }}/photos/family/{{ MC.user.individualId }}/medium/{{ MC.urlsafe(MC.user.surnames.join('-')) }}.jpg"
-    target="ldsconnect{{MC.user.individualId}}familyphoto">/api/ldsconnect/{{ MC.account.id }}/photos/family/{{ MC.user.individualId }}/medium/{{ MC.urlsafe(MC.user.surnames.join('-')) }}s.jpg</a></span>
+    target="ldsconnect{{MC.user.individualId}}familyphoto"
+    >/api/ldsconnect/{{ MC.account.id }}/photos/family/{{ MC.user.individualId }}/medium/{{ MC.urlsafe(MC.user.surnames.join('-')) }}s.jpg</a></span>
 
   Note: choose from large (500x375), medium (200x150), or thumbnail (40x40)
 
   //
-  // TODO
+  // Bugs
   //
+  See <a href="https://github.com/LDSorg/lds.io-backend/issues" target="github-lds-io"
+    >https://github.com/LDSorg/lds.io-backend/issues</a>
 
-  * auto-detect and correct address line2 as city, state
-  * attach gender to individuals
-  * test in family ward (spouse, children)
-
-  // later
-  * apply info check to account, not login 
-  * use OAuth2 as primary login (no cookies)
+  //
+  // Todos
+  //
+  * allow developer to update app registration info
+  * show list of available apps
+  * show list of apps I have allowed
+  * cURL example exploring API with `--cookie my-session.txt`
             </code>
           </pre>
         </div>
