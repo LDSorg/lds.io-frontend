@@ -26,6 +26,9 @@ angular.module('yololiumApp')
 
     stOauthclients.fetch(authenticatedSession.account).then(function (clients) {
       OA.clients = clients;
+      OA.clients.forEach(function (client) {
+        client.url = (client.urls||[])[0]||'';
+      });
     }).catch(function (e) {
       window.alert("[OAuth2 Clients] ERROR: " + e.message);
     });
@@ -53,21 +56,50 @@ angular.module('yololiumApp')
       return thing;
     };
 
+    function scrapeForm(client) {
+      return {
+        name: client.name 
+      , desc: client.desc
+      , logo: client.logo
+      , urls: client.urls || [client.url]
+      };
+    }
+
     OA.registerApp = function () {
+      var client = OA.newApp;
+
       LdsAccount.ensureVerified(account, {}).then(function () {
         stOauthclients.create(
           authenticatedSession.account
-        , { name: OA.newApp.name 
-          , desc: OA.newApp.desc
-          , logo: OA.newApp.logo
-          , urls: [OA.newApp.url]
-          }
+        , scrapeForm(client)
         ).then(function (client) {
           OA.clients.push(client);
+          OA.newApp = {};
         });
-
-        OA.appName = '';
-        OA.appSecret = '';
       });
+    };
+
+    OA.updateApp = function (client) {
+      client.updating = true;
+      stOauthclients.update(account, client.uuid, scrapeForm(client)).then(function () {
+        client.updating = false;
+      }).catch(function (err) {
+        window.alert('[ERROR] ' + err.message);
+      });
+    };
+
+    OA.deleteApp = function (client) {
+      if (window.confirm("Are you sure you want to utterly obliterate '" + client.name + "'?")) {
+        if (window.confirm("You're super sure about destroying '" + client.name + "'? (last chance)")) {
+          
+          OA.clients.some(function (c, i) {
+            if (c === client) {
+              OA.clients.splice(i, 1);
+              return true;
+            }
+          });
+          return stOauthclients.destroy(account, client.uuid);
+        }
+      }
     };
   }]);

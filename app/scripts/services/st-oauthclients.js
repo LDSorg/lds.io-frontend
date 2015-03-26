@@ -33,6 +33,24 @@ angular.module('yololiumApp')
       });
     }
 
+    function update(account, id, app) {
+      /* { name: ..., desc: ..., logo: ... } */
+
+      return $http.post(apiPrefix + '/accounts/' + account.id + '/clients/' + id, app).then(function (resp) {
+        return resp.data;
+      });
+    }
+
+    function destroy(account, id) {
+      /* { name: ..., desc: ..., logo: ... } */
+
+      return $http.delete(apiPrefix + '/accounts/' + account.id + '/clients/' + id).then(function (resp) {
+        return resp.data;
+      });
+    }
+
     me.fetch = fetch;
+    me.update = update;
     me.create = create;
+    me.destroy = destroy;
   }]);
