@@ -25,9 +25,16 @@ angular.module('yololiumApp', [
           body: {
             template: rootTemplate
           , controller: ['$scope', 'StSession', 'LdsIo', function ($scope, StSession, LdsIo) {
+              console.info('MC controller');
               var MC = this;
 
+              MC.urlsafe = function (name) {
+                return name.toLowerCase().replace(/[^\-\w]/, '').replace(/s$/, '');
+              };
+
               function init(session) {
+                console.info('MC session');
+                console.log(session);
                 if (!session) {
                   MC.session = null;
                   return;

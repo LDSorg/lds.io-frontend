@@ -198,9 +198,9 @@ angular.module('yololiumApp')
         return;
       }
 
-      if (!/^[0-9a-z\-_]+$/i.test(nodeObj.node)) {
+      if (!/^[0-9a-z\.\-_]+$/i.test(nodeObj.node)) {
         // TODO validate this is true on the server
-        nodeObj.message = 'Only alphanumeric characters are allowed in usernames.';
+        nodeObj.message = "Only alphanumeric characters, '-', '_', and '.' are allowed in usernames.";
         return;
       }
 
