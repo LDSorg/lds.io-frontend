@@ -4,7 +4,7 @@
       //- this needs to actually POST so that it can issue the redirect immediately
       form#oauth-hack-submit.form-horizontal(
         method="POST"
-        action="/oauth/dialog/authorize/decision"
+        action="/api/oauth3/authorization_decision"
       )
         fieldset
           legend Allow Application {{ O.appName }}

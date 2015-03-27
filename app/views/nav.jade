@@ -13,6 +13,8 @@
           span.icon-bar
     #navbar-main.navbar-collapse.collapse(ng-class="!navCollapsed && 'in'")
       ul.nav.navbar-nav.navbar-right
+        li
+          a(ui-sref="api") API
         li(ng-show="NC.session.accounts.length")
           a(ui-sref="develop") Develop
 

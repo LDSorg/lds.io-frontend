@@ -9,29 +9,15 @@
  */
 angular.module('yololiumApp')
   .controller('OauthclientsController', [
-    'stOauthclients'
+    '$scope'
+  , 'stOauthclients'
   , 'LdsAccount'
   , 'authenticatedSession'
-  , function (stOauthclients, LdsAccount, authenticatedSession) {
+  , 'StSession'
+  , '$state'
+  , function ($scope, stOauthclients, LdsAccount, authenticatedSession, StSession, $state) {
     var OA = this;
-    var account = authenticatedSession.account;
-
-    OA.clients = OA.clients || [];
-
-    OA.freshAccount = LdsAccount.isFresh(account.emailVerifiedAt) && LdsAccount.isFresh(account.phoneVerifiedAt);
-    OA.email = account.email;
-    OA.phone = account.phone;
-    OA.hasEmail = !!OA.email;
-    OA.hasPhone = !!OA.phone;
-
-    stOauthclients.fetch(authenticatedSession.account).then(function (clients) {
-      OA.clients = clients;
-      OA.clients.forEach(function (client) {
-        client.url = (client.urls||[])[0]||'';
-      });
-    }).catch(function (e) {
-      window.alert("[OAuth2 Clients] ERROR: " + e.message);
-    });
+    var account;
 
     OA.getKeyPair = function (client, query) {
       var thing;
@@ -102,4 +88,32 @@ angular.module('yololiumApp')
         }
       }
     };
+
+    function init(session) {
+      if (!session || !session.account) {
+        $state.go('root');
+        return;
+      }
+
+      account = session.account;
+
+      OA.clients = OA.clients || [];
+
+      OA.freshAccount = LdsAccount.isFresh(account.emailVerifiedAt) && LdsAccount.isFresh(account.phoneVerifiedAt);
+      OA.email = account.email;
+      OA.phone = account.phone;
+      OA.hasEmail = !!OA.email;
+      OA.hasPhone = !!OA.phone;
+      stOauthclients.fetch(authenticatedSession.account).then(function (clients) {
+        OA.clients = clients;
+        OA.clients.forEach(function (client) {
+          client.url = (client.urls||[])[0]||'';
+        });
+      }).catch(function (e) {
+        window.alert("[OAuth2 Clients] ERROR: " + e.message);
+      });
+    }
+
+    init(authenticatedSession);
+    StSession.subscribe(init, $scope);
   }]);

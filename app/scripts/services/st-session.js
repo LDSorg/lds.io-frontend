@@ -165,6 +165,7 @@ angular.module('yololiumApp')
 
       // TODO Object.freeze (Mozilla's deepFreeze example)
       notifier.notify(shared.session);
+
       return shared.session;
     }
 
@@ -207,24 +208,16 @@ angular.module('yololiumApp')
     }
 
     function destroy() {
-      var d = $q.defer();
-
-      console.log('DESTROYING SESSION');
-
       localStorage.removeItem('token');
       localStorage.removeItem('tokenExpiresAt');
       localStorage.removeItem('session.json');
-
-      console.log(shared);
       shared.session = null;
-      gettingSession = null;
-      $http.delete(apiPrefix + '/session').then(function (resp) {
-        shared.session = null;
-        gettingSession = null;
-        update(resp.data);
-        d.resolve(resp.data);
+      gettingSession = true;
+
+      return $http.delete(apiPrefix + '/session').then(function (resp) {
+        gettingSession = false;
+        return update(resp.data);
       });
-      return d.promise;
     }
 
     // app/scripts/client-config.js

@@ -1,0 +1,385 @@
+.container
+  .row
+    .col-md-12
+      h1 LDS API v2.0
+      h3 API Overview
+      pre
+        code.
+          &nbsp;  //
+          &nbsp;  // APIs (beta)
+          &nbsp;  //
+          &nbsp;
+          &nbsp;  https://lds.io/api/ldsio/accounts
+          &nbsp;  https://lds.io/api/ldsio/&lt;accountId>/me
+          &nbsp;  https://lds.io/api/ldsio/&lt;accountId>/stakes/&lt;stakeId>
+          &nbsp;  https://lds.io/api/ldsio/&lt;accountId>/stakes/&lt;stakeId>/photos
+          &nbsp;  https://lds.io/api/ldsio/&lt;accountId>/stakes/&lt;stakeId>/wards/&lt;wardId>
+          &nbsp;  https://lds.io/api/ldsio/&lt;accountId>/stakes/&lt;stakeId>/wards/&lt;wardId>/photos
+          &nbsp;  https://lds.io/api/ldsio/&lt;accountId>/photos/individual/&lt;individualId>/medium/&lt;whatever>.jpg
+          &nbsp;  https://lds.io/api/ldsio/&lt;accountId>/photos/family/&lt;homeId>/medium/&lt;whatever>.jpg
+          &nbsp;
+          &nbsp;  Note: choose from large (500x375), medium (200x150), or thumbnail (40x40)
+
+      h3 Getting Started
+      p.
+        You will interact with LDS I/O primary through two OAuth2 strategies.
+      h4 Browser / Client-side Authentication
+      p
+        strong OAuth2 Implicit Grant Strategy
+      p.
+        The primary authentication and api access strategy takes place entirely in the browser.
+      p.
+        This allows your app to stay within the guidelines of the LDS.org privacy policy, as your
+        app never gets any personal data, it is delivered directly to the user's browser without
+        touching your server.
+      pre
+        code.
+          //
+          // Usage
+          //
+          1. Copy oauth-close.html into the root of your project
+
+          2. Create a token handler (this is called by oauth-close.html)
+
+              window.completeLogin = function (name, url) {
+                var match;
+                var token;
+
+                match = url.match(/(^|\#|\?|\&)access_token=([^\&]+)(\&|$)/);
+                if (!match || !match[2]) {
+                  window.alert("looks like the login failed");
+                  return;
+                }
+
+                token = match[2];
+
+                testAccessToken(token);
+              };
+
+          3. Open a the login dialog
+
+              var myAppDomain = 'https://local.ldsconnect.org:8043';
+              var myAppId = 'TEST_ID_9e78b54c44a8746a5727c972';
+              var requestedScope = ['me'];
+
+              var url = 'https://lds.io/api/oauth3/dialog/authorize'
+                + '?response_type=token'
+                + '&client_id=' + myAppId
+                + '&redirect_uri=' + myAppDomain + '/oauth-close.html?type=/auth/ldsconnect/callback/'
+                + '&scope=' + encodeURIComponent(requestedScope.join(' '))
+                + '&state=' + Math.random().toString().replace(/^0./, '')
+                ;
+
+              // NOTE: this currently redirects to lds.io, which is techie,
+              // but will redirect to ldsconnect.org, which is non-techie,
+              // in the near future
+              window.open(url, 'ldsconnectLogin', 'height=720,width=620')
+
+      h4 OAuth2 Server / Browser (in-progress)
+      p
+        strong OAuth2 Authorization Code Strategy
+      p.
+        For convenience, you are allowed to authenticate via LDS I/O with your server and
+        retrieve anonymized identifiers which are scoped to your app.
+      p.
+        You may not, however, retrieve personally identifiable or sensitive data via the server APIs.
+      p
+        strong OAuth2 / OAuth3 Endpoints for LDS I/O
+      ul
+        li
+          span Browser Directive URL:  
+          a(href="https://lds.io/oauth3?redirect_uri=https://lds.io/oauth3.html") https://lds.io/oauth3?redirect_uri={{ redirect }}
+        li
+          span Server Directive URL:  
+          a(href="https://lds.io/oauth3.json") https://lds.io/oauth3.json
+        li
+          span Authorization URL:  
+          a(href="https://lds.io/api/oauth3/authorization_dialog") https://lds.io/api/oauth3/authorization_dialog
+        li
+          span Token URL:  
+          a(href="https://lds.io/api/oauth3/access_token") https://lds.io/api/oauth3/access_token
+        li
+          span Profile URL (well, kind of):  
+          a(href="https://lds.io/api/ldsio/accounts") https://lds.io/api/ldsio/accounts
+        li TODO switch user url, logout url, implicit login url
+
+      p
+        strong OAuth2 Endpoints for Facebook
+      p.
+        I can't refer you to a library for every possible programming language, but you can find an example
+        for connecting to Facebook in every possible programming language, so start with that example and
+        compare these values for facebook with those above during your development process:
+      ul
+        li
+          span Endpoints URL: 
+          strong &nbsp;N/A
+        li
+          span Authorization URL:  
+          a(href="https://www.facebook.com/dialog/oauth") https://www.facebook.com/dialog/oauth
+        li
+          span Token URL:  
+          a(href="https://graph.facebook.com/oauth/access_token") https://graph.facebook.com/oauth/access_token
+        li
+          span Profile URL:  
+          a(href="https://graph.facebook.com/me") https://graph.facebook.com/me
+        li
+          span TODO logout, switchuser n/a
+
+      
+  .row
+    .col-md-12
+      h1 (Deprecated) LDS API v1.0
+      h3 QuickStart Examples with Screencasts
+      p
+        span To make development easier, we provide a few zero-config examples where all you have to do is&#32;
+        tt git clone
+        span &#32; and follow a few short steps and you can test various features.
+        
+      ol
+        //-li 
+          span Test LDS Connect API tokens with Chrome and curl
+          ul
+            li
+              a(href="https://github.com/LDSorg/lds-connect-tokens-curl") lds-connect-tokens-curl
+        li
+          h4 Choose your backend
+          ul
+            li 
+              span How to use any Facebook Connect / OAuth2 example (ruby, python, go, etc)
+              ul
+                li
+                  a(href="http://youtu.be/DElNpgn4Fac" target="_blank") Screencast
+
+            li
+              span io.js / node.js + Passport + OAuth2
+              ul
+                li
+                  a(href="https://github.com/LDSorg/passport-lds-connect-example" target="_blank") passport-lds-connect-example
+
+            li
+              span Ruby + Sinatra + OAuth2
+              ul
+                li
+                  a(href="https://github.com/LDSorg/lds-connect-ruby" target="_blank") lds-connect-ruby-example
+
+        li
+          h4 Choose your frontend
+          ul
+            li
+              span Bootstrap 3 + jQuery + OAuth2
+              ul
+                li
+                  a(href="https://youtu.be/PSVsKcCnPF4" target="_blank") Screencast
+                li
+                  a(href="https://github.com/LDSorg/oauth2-jquery" target="_blank") jquery-lds-connect-example
+            li
+              span Bootstrap 3 + AngularJS (angular-seed style) + OAuth2
+              ul
+                li
+                  a(href="https://youtu.be/3lnSjV8m1Jg" target="_blank") Screencast
+                li
+                  a(href="https://github.com/LDSorg/oauth2-angular-seed" target="_blank") angular-seed-lds-connect-example
+
+
+      h3 API
+      p.
+        LDS Connect makes it possible to authenticate through lds.org and use its API with OAuth2, very much like Facebook Connect.
+
+      p
+        a(href="https://ldsconnect.org/login.html" target="_blank") Login to LDS Connect
+        span &#32;as&#32;
+        strong dumbledore
+        span &#32;w/ passphrase&#32;
+        strong secret
+        span &#32;to test the API:
+
+      ul
+        li
+          span https://ldsconnect.org/api/ldsconnect/me
+          span &nbsp;(
+          a(
+            href="https://ldsconnect.org/api/ldsconnect/me?access_token=09177b4c-2052-test-b672-5eda1321729e"
+          , target="ldsme"
+          ) see example
+          span )
+        li 
+          span https://ldsconnect.org/api/ldsconnect/stakes/:stakeUnitNo/info
+          span &nbsp;(
+          a(
+            href="https://ldsconnect.org/api/ldsconnect/stakes/bettendorf/info?access_token=09177b4c-2052-test-b672-5eda1321729e"
+          , target="ldsstakeinfo"
+          ) see example
+          span )
+        li 
+          span https://ldsconnect.org/api/ldsconnect/stakes/:stakeUnitNo/photos
+          span &nbsp;(
+          a(
+            href="https://ldsconnect.org/api/ldsconnect/stakes/bettendorf/photos?access_token=09177b4c-2052-test-b672-5eda1321729e"
+          , target="ldsstakephotos"
+          ) see example
+          span )
+        li https://ldsconnect.org/api/ldsconnect/stakes/:stakeUnitNo/wards/:wardUnitNo/info
+          span &nbsp;(
+          a(
+            href="https://ldsconnect.org/api/ldsconnect/stakes/bettendorf/wards/gryffindor/info?access_token=09177b4c-2052-test-b672-5eda1321729e"
+          , target="ldswardinfo"
+          ) see example
+          span )
+        li https://ldsconnect.org/api/ldsconnect/stakes/:stakeUnitNo/wards/:wardUnitNo/photos
+          span &nbsp;(
+          a(
+            href="https://ldsconnect.org/api/ldsconnect/stakes/bettendorf/wards/gryffindor/photos?access_token=09177b4c-2052-test-b672-5eda1321729e"
+          , target="ldswardphotos"
+          ) see example
+          span )
+
+      p 
+        span The API documented at 
+        a(href="https://github.com/LDSorg/lds-connect/blob/master/API.md") https://github.com/LDSorg/lds-connect/blob/master/API.md
+
+      h3 Create your App
+
+      p
+        strong Before you register 
+        span &#32;your application, please use the&#32;
+        strong test api keys
+        span &#32; to begin work on your app.
+
+      h4 Use any OAuth2 (Facebook Connect) Library with LDS Connect
+      ol
+        li Find an OAuth2 Library example for the language of your choice (passport, omniauth, etc)
+        li Check to see if LDS Connect already has a module for it, if so, just start using it.
+        li Test the library against Facebook Connect (for simplicity, you can use our Facebook API tokens), or Instagram
+        li Swap the three OAuth2 Endpoint URLs with the ones for LDS Connect
+        li Swap the API App ID and API App secret with the ones for LDS Connect
+        li
+          span Email&#32;
+          a(href="mailto:developers@ldsconnect.org") developers@ldsconnect.org
+          span &#32;for help if you can successfully connect through Facebook or Instagram, but are having trouble with LDS Connect.
+      p.
+        You can use any OAuth2 library to connect to LDS Connect. Basically all you need to do is find the example for using Facebook Connect with that library and then swap out the URLs to facebook with these:
+      p.small (hint: test that the example actually works with Facebook OAuth2 first)
+
+      h4 OAuth2 Endpoints
+      ul
+        li
+          span Authorization URL:  
+          a(href="https://ldsconnect.org/dialog/authorize") https://ldsconnect.org/dialog/authorize
+          br
+          span.small (replaces https://www.facebook.com/dialog/oauth)
+        li
+          span Token URL:  
+          a(href="https://ldsconnect.org/oauth/token") https://ldsconnect.org/oauth/token
+          br
+          span.small (replaces https://graph.facebook.com/oauth/access_token)
+        li
+          span Profile URL:  
+          a(href="https://ldsconnect.org/api/ldsconnect/me") https://ldsconnect.org/api/ldsconnect/me
+          br
+          span.small (replaces https://graph.facebook.com/me)
+
+      h4 OAuth2 Test API Keys and Test Token
+      ul
+        li OAuth2 Access (Bearer) Token: 09177b4c-2052-test-b672-5eda1321729e
+        li Username: dumbledore
+        li Password: secret
+        li 
+          span OAuth2 App ID: 55c7-test-bd03
+          br
+          span.small (use 746913342088510 for testing facebook)
+
+        li 
+          span OAuth2 App Secret: 6b2fc4f5-test-8126-64e0-b9aa0ce9a50d
+          br
+          span.small (use ad539732cbfbd60169f32336e257b37c for testing facebook)
+
+        li 
+          span Callback URL: https://local.ldsconnect.org:8043
+          br
+          span.small
+            span (use&#32;
+            strong http
+            span ://local.foobar3000.com:
+            strong 4080
+            span &#32; for testing facebook)
+
+      h3 Register your App
+      p
+        strong Before you register 
+        span &#32;your application, please use the&#32;
+        strong test api keys
+        span &#32; to begin work on your app.
+
+      h4 IMPORTANT SECURITY WARNINGS
+
+      p
+        strong    Validated login is NOT a guarantee of membership
+        span . LDS.org allows non-members to register for accounts (for scripture marking and such), however,
+        span      such users won't have valid ward ids and such so they won't get back real or fake ward data.
+
+      p
+        strong
+          em Anyone 
+          span    can login through ldsconnect.org
+        span , even without an LDS.org account!
+        span . For testing, development, and the convenience of "try before you give away your real credentials", the login
+        strong    dumbledore
+        span      with the passphrase
+        strong    secret
+        span      will return real-looking objects with fake unit numbers (
+        code areaUnitNo
+        span ,&#32;
+        code stakeUnitNo
+        span , and&#32;
+        code wardUnitNo
+        span ).
+
+      p
+        strong    For test users
+        span      (dumbledore:secret)&#32;
+        code /api/ldsconnect/me
+        span      will always have have&#32;
+        code guest = true
+        span . For real users,&#32;
+        code guest = false
+        span      will always be set explicitly.
+        span      All OAuth plugins (such as passport-lds-connect)
+        em        should
+        span      set guest in their session / profile / account object as well.
+
+
+      p
+        span If you need to safegaurd your app (i.e. you send emails or text messages)
+        strong    test explicitly for
+        code      guest === false
+        span      before taking any action that would not be useful for a test user. 
+      p
+        span It would be wise to not text numbers with invalid area codes (000 through 299 and 555)
+        span      or emails to
+        code  .*@(example|test).(org|net|com)
+        span .
+
+      h4 App ID and App Secret
+      strong UPDATE your email and phone number on lds.org BEFORE you register.
+      p
+        span To get an App ID and App Secret you will need to&#32;
+        a(href="/register.html") register your application
+        span.
+          &#32; with your LDS.org Account, but you can start developing
+          a test app (which will only be accessible to test users)
+          right away with the following credentials:
+      p
+        strong Before you register 
+        span &#32;your application, please use the&#32;
+        strong test api keys
+        span &#32; to begin work on your app.
+
+      p If you have any trouble send an email to  
+        a(href="mailto:developers@ldsconnect.org") developers@ldsconnect.org
+        span .
+
+      p
+        strong Before you register 
+        span &#32;your application, please use the&#32;
+        strong test api keys
+        span &#32; to begin work on your app.

@@ -110,6 +110,9 @@ angular.module('yololiumApp')
 
     function selectAccount(accountId) {
       return requestSelectedAccount(accountId).then(function (txdata) {
+        console.info('accountId', 'txdata');
+        console.log(accountId);
+        console.log(txdata);
         scope.client = txdata.client;
 
         if (!scope.client.title) {
@@ -142,42 +145,55 @@ angular.module('yololiumApp')
       });
     }
 
-    StSession.ensureSession(
-      // role
-      null
-      // TODO login opts (these are hypothetical)
-    , { close: false
-      , options: ['login', 'create']
-      , default: 'login'
-      }
-      // TODO account opts
-    , { verify: ['email', 'phone']
-      }
-    ).then(function (session) {
-      console.log('OAuth Dialog Session');
-      console.log(session);
-      console.log('');
+    function init() {
+      StSession.ensureSession(
+        // role
+        null
+        // TODO login opts (these are hypothetical)
+      , { close: false
+        , options: ['login', 'create']
+        , default: 'login'
+        }
+        // TODO account opts
+      , { verify: ['email', 'phone']
+        }
+      ).then(function (session) {
+        console.log('OAuth Dialog Session');
+        console.log(session);
+        console.log('');
 
-      // get token from url param
-      scope.token = $stateParams.token;
+        // get token from url param
+        scope.token = $stateParams.token;
 
-      selectAccount(session.account.id).then(function (/*txdata*/) {
-        scope.accounts = session.accounts.slice(0);
+        return selectAccount(session.account.id).then(function (/*txdata*/) {
+          scope.accounts = session.accounts.slice(0);
 
-        scope.accounts.push({
-          displayName: 'Create New Account'
-        , new: true
-        });
+          scope.accounts.push({
+            displayName: 'Create New Account'
+          , new: true
+          });
 
-        scope.accounts.forEach(function (acc, i) {
-          if (!acc.displayName) {
-            acc.displayName = acc.email || ('Account #' + (i + 1));
+          scope.accounts.forEach(function (acc, i) {
+            if (!acc.displayName) {
+              acc.displayName = acc.email || ('Account #' + (i + 1));
+            }
+          });
+
+          scope.selectedAccount = session.account;
+          scope.previousAccount = session.account;
+          scope.updateScope();
+        }, function (err) {
+          if (/logged in/.test(err.message)) {
+            return StSession.destroy().then(function () {
+              init();
+            });
           }
+          console.error("ERROR somewhere");
+          console.log(err);
+          window.alert(err.message);
         });
-
-        scope.selectedAccount = session.account;
-        scope.previousAccount = session.account;
-        scope.updateScope();
       });
-    });
+    }
+
+    init();
   }]);

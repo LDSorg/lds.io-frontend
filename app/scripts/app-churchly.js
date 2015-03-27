@@ -96,6 +96,15 @@ angular.module('yololiumApp', [
         }
       })
 
+      .state('api', {
+        url: '/api/'
+      , views: {
+          body: {
+            templateUrl: 'views/api.html'
+          }
+        }
+      })
+
       .state('develop', {
         url: '/develop/'
       , views: {
