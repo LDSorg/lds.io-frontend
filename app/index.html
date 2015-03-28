@@ -59,39 +59,39 @@
   <span ng-if="!MC.user"
   >Login to see live data.
   
-  https://lds.io/api/ldsconnect/accounts
-  https://lds.io/api/ldsconnect/&lt;accountId>/me
-  https://lds.io/api/ldsconnect/&lt;accountId>/stakes/&lt;stakeId>
-  https://lds.io/api/ldsconnect/&lt;accountId>/stakes/&lt;stakeId>/photos
-  https://lds.io/api/ldsconnect/&lt;accountId>/stakes/&lt;stakeId>/wards/&lt;wardId>
-  https://lds.io/api/ldsconnect/&lt;accountId>/stakes/&lt;stakeId>/wards/&lt;wardId>/photos
-  https://lds.io/api/ldsconnect/&lt;accountId>/photos/individual/&lt;individualId>/&lt;date>/medium/&lt;whatever>.jpg
-  https://lds.io/api/ldsconnect/&lt;accountId>/photos/family/&lt;homeId>/&lt;date>/medium/&ltwhatever>.jpg</span
+  https://lds.io/api/ldsio/accounts
+  https://lds.io/api/ldsio/&lt;accountId>/me
+  https://lds.io/api/ldsio/&lt;accountId>/stakes/&lt;stakeId>
+  https://lds.io/api/ldsio/&lt;accountId>/stakes/&lt;stakeId>/photos
+  https://lds.io/api/ldsio/&lt;accountId>/stakes/&lt;stakeId>/wards/&lt;wardId>
+  https://lds.io/api/ldsio/&lt;accountId>/stakes/&lt;stakeId>/wards/&lt;wardId>/photos
+  https://lds.io/api/ldsio/&lt;accountId>/photos/individual/&lt;individualId>/&lt;date>/medium/&lt;whatever>.jpg
+  https://lds.io/api/ldsio/&lt;accountId>/photos/family/&lt;homeId>/&lt;date>/medium/&ltwhatever>.jpg</span
   ><span ng-if="MC.user"
   >Click on the links to see the data for your ward and stake!
   
-  <a ng-href="https://lds.io/api/ldsconnect/accounts"
-    target="ldsconnectaccounts">/api/ldsconnect/accounts</a>
-  <a ng-href="https://lds.io/api/ldsconnect/{{ MC.account.id }}/me"
-    target="ldsconnectme">/api/ldsconnect/{{ MC.account.id }}/me</a>
-  <a ng-href="https://lds.io/api/ldsconnect/{{ MC.account.id }}/stakes/{{ MC.user.homeStakeId }}"
-    target="ldsconnectward{{MC.user.homeStakeId}}"
-    >/api/ldsconnect/{{ MC.account.id }}/stakes/{{ MC.user.homeStakeId }}</a>
-  <a href="https://lds.io/api/ldsconnect/{{ MC.account.id }}/stakes/{{ MC.user.homeStakeId }}/photos"
-    target="ldsconnectward{{MC.user.homeStakeId}}photos"
-    >/api/ldsconnect/{{ MC.account.id }}/stakes/{{ MC.user.homeStakeId }}/photos</a>
-  <a ng-href="https://lds.io/api/ldsconnect/{{ MC.account.id }}/stakes/{{ MC.user.homeStakeId }}/wards/{{ MC.user.homeWardId }}"
-    target="ldsconnectward{{MC.user.homeWardId}}"
-    >/api/ldsconnect/{{ MC.account.id }}/stakes/{{ MC.user.homeStakeId }}/wards/{{ MC.user.homeWardId }}</a>
-  <a href="https://lds.io/api/ldsconnect/{{ MC.account.id }}/stakes/{{ MC.user.homeStakeId }}/wards/{{ MC.user.homeWardId }}/photos"
-    target="ldsconnectward{{MC.user.homeWardId}}photos"
-    >/api/ldsconnect/{{ MC.account.id }}/stakes/{{ MC.user.homeStakeId }}/wards/{{ MC.user.homeWardId }}/photos</a>
-  <a ng-href="https://lds.io/api/ldsconnect/{{ MC.account.id }}/photos/individual/{{ MC.user.individualId }}/{{ MC.user.photos[0].updatedAt }}/medium/{{ MC.urlsafe(MC.user.name) }}.jpg"
-    target="ldsconnect{{MC.user.individualId}}memberphoto"
-    >/api/ldsconnect/{{ MC.account.id }}/photos/individual/{{ MC.user.individualId }}/{{ MC.user.photos[0].updatedAt }}/medium/{{ MC.urlsafe(MC.user.name) }}.jpg</a>
-  <a ng-href="https://lds.io/api/ldsconnect/{{ MC.account.id }}/photos/family/{{ MC.user.individualId }}/{{ MC.user.photos[1].updatedAt }}/medium/{{ MC.urlsafe(MC.user.surnames.join('-')) }}.jpg"
-    target="ldsconnect{{MC.user.individualId}}familyphoto"
-    >/api/ldsconnect/{{ MC.account.id }}/photos/family/{{ MC.user.individualId }}/{{ MC.user.photos[1].updatedAt }}/medium/{{ MC.urlsafe(MC.user.surnames.join('-')) }}s.jpg</a></span>
+  <a ng-href="https://lds.io/api/ldsio/accounts"
+    target="ldsioaccounts">/api/ldsio/accounts</a>
+  <a ng-href="https://lds.io/api/ldsio/{{ MC.account.id }}/me"
+    target="ldsiome">/api/ldsio/{{ MC.account.id }}/me</a>
+  <a ng-href="https://lds.io/api/ldsio/{{ MC.account.id }}/stakes/{{ MC.user.homeStakeId }}"
+    target="ldsioward{{MC.user.homeStakeId}}"
+    >/api/ldsio/{{ MC.account.id }}/stakes/{{ MC.user.homeStakeId }}</a>
+  <a href="https://lds.io/api/ldsio/{{ MC.account.id }}/stakes/{{ MC.user.homeStakeId }}/photos"
+    target="ldsioward{{MC.user.homeStakeId}}photos"
+    >/api/ldsio/{{ MC.account.id }}/stakes/{{ MC.user.homeStakeId }}/photos</a>
+  <a ng-href="https://lds.io/api/ldsio/{{ MC.account.id }}/stakes/{{ MC.user.homeStakeId }}/wards/{{ MC.user.homeWardId }}"
+    target="ldsioward{{MC.user.homeWardId}}"
+    >/api/ldsio/{{ MC.account.id }}/stakes/{{ MC.user.homeStakeId }}/wards/{{ MC.user.homeWardId }}</a>
+  <a href="https://lds.io/api/ldsio/{{ MC.account.id }}/stakes/{{ MC.user.homeStakeId }}/wards/{{ MC.user.homeWardId }}/photos"
+    target="ldsioward{{MC.user.homeWardId}}photos"
+    >/api/ldsio/{{ MC.account.id }}/stakes/{{ MC.user.homeStakeId }}/wards/{{ MC.user.homeWardId }}/photos</a>
+  <a ng-href="https://lds.io/api/ldsio/{{ MC.account.id }}/photos/individual/{{ MC.user.individualId }}/{{ MC.user.photos[0].updatedAt }}/medium/{{ MC.urlsafe(MC.user.name) }}.jpg"
+    target="ldsio{{MC.user.individualId}}memberphoto"
+    >/api/ldsio/{{ MC.account.id }}/photos/individual/{{ MC.user.individualId }}/{{ MC.user.photos[0].updatedAt }}/medium/{{ MC.urlsafe(MC.user.name) }}.jpg</a>
+  <a ng-href="https://lds.io/api/ldsio/{{ MC.account.id }}/photos/family/{{ MC.user.individualId }}/{{ MC.user.photos[1].updatedAt }}/medium/{{ MC.urlsafe(MC.user.surnames.join('-')) }}.jpg"
+    target="ldsio{{MC.user.individualId}}familyphoto"
+    >/api/ldsio/{{ MC.account.id }}/photos/family/{{ MC.user.individualId }}/{{ MC.user.photos[1].updatedAt }}/medium/{{ MC.urlsafe(MC.user.surnames.join('-')) }}s.jpg</a></span>
 
   Note: choose from large (500x375), medium (200x150), or thumbnail (40x40)
 
