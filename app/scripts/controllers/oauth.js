@@ -10,6 +10,7 @@
 angular.module('yololiumApp')
   .controller('OauthCtrl', [ 
     '$window'
+  , '$location'
   , '$q'
   , '$timeout'
   , '$scope'
@@ -19,6 +20,7 @@ angular.module('yololiumApp')
   , 'StApi'
   , function (
       $window
+    , $location
     , $q
     , $timeout
     , $scope
@@ -37,8 +39,6 @@ angular.module('yololiumApp')
         return true;
       }
     }
-
-    scope.iframe = isIframe();
 
     // TODO move into config
     var scopeMessages = {
@@ -165,8 +165,73 @@ angular.module('yololiumApp')
       });
     }
 
+    function determinePermissions(session) {
+      console.log('OAuth Dialog Session');
+      console.log(session);
+      console.log('');
+
+      // get token from url param
+      scope.token = $stateParams.token;
+
+      return selectAccount(session.account.id).then(function (/*txdata*/) {
+        scope.accounts = session.accounts.slice(0);
+
+        scope.accounts.push({
+          displayName: 'Create New Account'
+        , new: true
+        });
+
+        scope.accounts.forEach(function (acc, i) {
+          if (!acc.displayName) {
+            acc.displayName = acc.email || ('Account #' + (i + 1));
+          }
+        });
+
+        scope.selectedAccount = session.account;
+        scope.previousAccount = session.account;
+        scope.updateScope();
+      }, function (err) {
+        if (/logged in/.test(err.message)) {
+          return StSession.destroy().then(function () {
+            init();
+          });
+        }
+        console.error("ERROR somewhere");
+        console.log(err);
+        window.alert(err.message);
+      });
+    }
+
+    function redirectToFailure() {
+      var redirectUri = $location.search().redirect_uri;
+
+      var parser = document.createElement('a');
+      parser.href = redirectUri;
+      if (parser.search) {
+        parser.search += '&';
+      } else {
+        parser.search += '?';
+      }
+      parser.search += 'error=E_NO_SESSION';
+      redirectUri = parser.href;
+
+      window.location.href = redirectUri;
+    }
+
     function init() {
-      StSession.ensureSession(
+      scope.iframe = isIframe();
+
+      if (scope.iframe) {
+        return StSession.read().then(function (session) {
+          if (session && session.accounts && session.accounts.length) {
+            return determinePermissions(session);
+          } else {
+            redirectToFailure();
+          }
+        });
+      }
+
+      return StSession.ensureSession(
         // role
         null
         // TODO login opts (these are hypothetical)
@@ -177,42 +242,7 @@ angular.module('yololiumApp')
         // TODO account opts
       , { verify: ['email', 'phone']
         }
-      ).then(function (session) {
-        console.log('OAuth Dialog Session');
-        console.log(session);
-        console.log('');
-
-        // get token from url param
-        scope.token = $stateParams.token;
-
-        return selectAccount(session.account.id).then(function (/*txdata*/) {
-          scope.accounts = session.accounts.slice(0);
-
-          scope.accounts.push({
-            displayName: 'Create New Account'
-          , new: true
-          });
-
-          scope.accounts.forEach(function (acc, i) {
-            if (!acc.displayName) {
-              acc.displayName = acc.email || ('Account #' + (i + 1));
-            }
-          });
-
-          scope.selectedAccount = session.account;
-          scope.previousAccount = session.account;
-          scope.updateScope();
-        }, function (err) {
-          if (/logged in/.test(err.message)) {
-            return StSession.destroy().then(function () {
-              init();
-            });
-          }
-          console.error("ERROR somewhere");
-          console.log(err);
-          window.alert(err.message);
-        });
-      });
+      ).then(determinePermissions);
     }
 
     init();
