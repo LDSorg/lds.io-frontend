@@ -212,12 +212,13 @@ angular.module('yololiumApp')
       localStorage.removeItem('tokenExpiresAt');
       localStorage.removeItem('session.json');
       shared.session = null;
-      gettingSession = true;
 
-      return $http.delete(apiPrefix + '/session').then(function (resp) {
+      gettingSession = $http.delete(apiPrefix + '/session').then(function (resp) {
         gettingSession = false;
         return update(resp.data);
       });
+
+      return gettingSession;
     }
 
     // app/scripts/client-config.js
