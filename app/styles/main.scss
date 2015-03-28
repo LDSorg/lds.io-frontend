@@ -112,3 +112,33 @@ body {
         border-bottom: 0;
     }
 }
+
+
+// forms
+/* new j-input for labels to become placeholders */
+.j-input{
+  position: relative;
+  input{
+     background-color: transparent;
+  }
+
+  label {
+    font-weight: normal;
+    position: absolute;
+    left: 12px;
+    margin-top: 12px;
+    background-color: white;
+    color: $grayLight;
+    padding: 0 5px;
+    z-index: -1;
+    @include transition(all 0.15s ease-in-out);
+    line-height: initial;
+  }
+
+  input:focus + label, input.filled + label{ // when input is focused, or when has content (determined in $.placeholder.js)
+    z-index: 1;
+    margin-top: -7px;
+    font-size: 12px;
+    color: #ccc;
+  }
+}

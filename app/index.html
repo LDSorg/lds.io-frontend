@@ -25,6 +25,7 @@
     <link href="styles/bootstrap-social.min.css" rel="stylesheet">
     <link href="styles/font-awesome.min.css" rel="stylesheet">
     <!-- fontawesome fonts MUST exist in ../fonts/ -->
+    <link rel="stylesheet" href="styles/less.css">
   </head>
   <body style="padding-top: 50px;" ng-init="ngLoaded = true" class="fade" ng-class="{ in: ngLoaded }">
     <!--[if lt IE 10]>
@@ -58,7 +59,7 @@
 
   <span ng-if="!MC.user"
   >Login to see live data.
-  
+
   https://lds.io/api/ldsio/accounts
   https://lds.io/api/ldsio/&lt;accountId>/me
   https://lds.io/api/ldsio/&lt;accountId>/stakes/&lt;stakeId>
@@ -69,7 +70,7 @@
   https://lds.io/api/ldsio/&lt;accountId>/photos/family/&lt;homeId>/&lt;date>/medium/&ltwhatever>.jpg</span
   ><span ng-if="MC.user"
   >Click on the links to see the data for your ward and stake!
-  
+
   <a ng-href="https://lds.io/api/ldsio/accounts"
     target="ldsioaccounts">/api/ldsio/accounts</a>
   <a ng-href="https://lds.io/api/ldsio/{{ MC.account.id }}/me"

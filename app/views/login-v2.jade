@@ -44,24 +44,18 @@
       .row
         .col-xs-12
           span(ng-if="'codes' != LC.formAction")
-            .form-group(ng-if="!LC.account.localLoginId")
-              label(for="username") LDS.org Account Username
-              span &#32;(
-              a(href="https://ldsaccount.lds.org/recover-username" target="forgotuser") forgot username?
-              span )
+            .form-group(ng-if="!LC.account.localLoginId" class="j-input")
               input.form-control(
                 ng-model="LC.delta.localLogin.uid"
-                ng-change="LC.checkLogin(LC.delta.localLogin)"
+                ng-change="LC.checkLogin(LC.delta.localLogin); LC.inputCheck()"
                 ng-disabled="LC.authenticating"
+                ng-class="{filled : LC.delta.localLogin.uid }"
                 type="text"
-                placeholder="ex: johndoe"
               )
-              span &#32;
-              span(ng-bind="LC.delta.localLogin.message")
-              span(ng-if="!LC.delta.localLogin.message") Enter your existing username or the username you would like to create.
+              label(for="username") LDS.org Account Username
 
             .form-group(ng-if="LC.delta.localLogin.exists")
-              label(for="password") LDS.org Account Passphrase 
+              label(for="password") LDS.org Account Passphrase
               span &#32;(
               a(href="https://ldsaccount.lds.org/recover-password" target="forgotpass") forgot passphrase?
               span )
@@ -135,11 +129,18 @@
       .row(ng-if="'create' == LC.formAction")
         .col-xs-12
           div
+            span &#32;(
+              a(href="https://ldsaccount.lds.org/recover-username" target="forgotuser") forgot username?
+              span )
+
+              span &#32;
+              span(ng-bind="LC.delta.localLogin.message")
+              span(ng-if="!LC.delta.localLogin.message") Enter your existing username or the username you would like to create.
             p
               span To create an LDS Account you will need your&#32;
               strong Membership Record Number (MRN)
               span .
-            p 
+            p
               span You can get your&#32;
               strong MRN
               span &#32;from
@@ -157,6 +158,8 @@
               li
                 span your&#32;
                 strong ward clerk
+
+
 
       .modal-footer
         .row
