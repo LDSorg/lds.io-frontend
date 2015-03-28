@@ -65,8 +65,8 @@
   https://lds.io/api/ldsconnect/&lt;accountId>/stakes/&lt;stakeId>/photos
   https://lds.io/api/ldsconnect/&lt;accountId>/stakes/&lt;stakeId>/wards/&lt;wardId>
   https://lds.io/api/ldsconnect/&lt;accountId>/stakes/&lt;stakeId>/wards/&lt;wardId>/photos
-  https://lds.io/api/ldsconnect/&lt;accountId>/photos/individual/&lt;individualId>/medium/&lt;whatever>.jpg
-  https://lds.io/api/ldsconnect/&lt;accountId>/photos/family/&lt;homeId>/medium/&ltwhatever>.jpg</span
+  https://lds.io/api/ldsconnect/&lt;accountId>/photos/individual/&lt;individualId>/&lt;date>/medium/&lt;whatever>.jpg
+  https://lds.io/api/ldsconnect/&lt;accountId>/photos/family/&lt;homeId>/&lt;date>/medium/&ltwhatever>.jpg</span
   ><span ng-if="MC.user"
   >Click on the links to see the data for your ward and stake!
   
@@ -86,12 +86,12 @@
   <a href="https://lds.io/api/ldsconnect/{{ MC.account.id }}/stakes/{{ MC.user.homeStakeId }}/wards/{{ MC.user.homeWardId }}/photos"
     target="ldsconnectward{{MC.user.homeWardId}}photos"
     >/api/ldsconnect/{{ MC.account.id }}/stakes/{{ MC.user.homeStakeId }}/wards/{{ MC.user.homeWardId }}/photos</a>
-  <a ng-href="https://lds.io/api/ldsconnect/{{ MC.account.id }}/photos/individual/{{ MC.user.individualId }}/medium/{{ MC.urlsafe(MC.user.name) }}.jpg"
+  <a ng-href="https://lds.io/api/ldsconnect/{{ MC.account.id }}/photos/individual/{{ MC.user.individualId }}/{{ MC.user.photos[0].updatedAt }}/medium/{{ MC.urlsafe(MC.user.name) }}.jpg"
     target="ldsconnect{{MC.user.individualId}}memberphoto"
-    >/api/ldsconnect/{{ MC.account.id }}/photos/individual/{{ MC.user.individualId }}/medium/{{ MC.urlsafe(MC.user.name) }}.jpg</a>
-  <a ng-href="https://lds.io/api/ldsconnect/{{ MC.account.id }}/photos/family/{{ MC.user.individualId }}/medium/{{ MC.urlsafe(MC.user.surnames.join('-')) }}.jpg"
+    >/api/ldsconnect/{{ MC.account.id }}/photos/individual/{{ MC.user.individualId }}/{{ MC.user.photos[0].updatedAt }}/medium/{{ MC.urlsafe(MC.user.name) }}.jpg</a>
+  <a ng-href="https://lds.io/api/ldsconnect/{{ MC.account.id }}/photos/family/{{ MC.user.individualId }}/{{ MC.user.photos[1].updatedAt }}/medium/{{ MC.urlsafe(MC.user.surnames.join('-')) }}.jpg"
     target="ldsconnect{{MC.user.individualId}}familyphoto"
-    >/api/ldsconnect/{{ MC.account.id }}/photos/family/{{ MC.user.individualId }}/medium/{{ MC.urlsafe(MC.user.surnames.join('-')) }}s.jpg</a></span>
+    >/api/ldsconnect/{{ MC.account.id }}/photos/family/{{ MC.user.individualId }}/{{ MC.user.photos[1].updatedAt }}/medium/{{ MC.urlsafe(MC.user.surnames.join('-')) }}s.jpg</a></span>
 
   Note: choose from large (500x375), medium (200x150), or thumbnail (40x40)
 
@@ -107,6 +107,8 @@
   * show list of available apps
   * show list of apps I have allowed
   * cURL example exploring API with `--cookie my-session.txt`
+  * test cancel / rejection
+  * pass grantend_scope
             </code>
           </pre>
         </div>
