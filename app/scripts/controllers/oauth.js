@@ -30,6 +30,16 @@ angular.module('yololiumApp')
 
     var scope = this;
 
+    function isIframe () {
+      try {
+        return window.self !== window.top;
+      } catch (e) {
+        return true;
+      }
+    }
+
+    scope.iframe = isIframe();
+
     // TODO move into config
     var scopeMessages = {
       me: "View Stake and Ward Directories"
@@ -96,7 +106,7 @@ angular.module('yololiumApp')
         }
 
         if ('string' !== typeof resp.data.pendingString) {
-          console.error('resp.data');
+          console.error('resp.data (TODO look for redirect uri)');
           console.error(resp.data);
           scope.error = { message: "missing scope request" };
           scope.rawResponse = resp.data;
@@ -134,6 +144,16 @@ angular.module('yololiumApp')
             // NOTE needs time for angular to set transactionId
             if (!$window._gone) {
               $window.jQuery('#oauth-hack-submit').submit();
+              $window._gone = true;
+            }
+          }, 50);
+        }
+
+        if (scope.iframe && (!txdata.granted || scope.pendingString)) {
+          $timeout(function () {
+            // NOTE needs time for angular to set transactionId
+            if (!$window._gone) {
+              $window.jQuery('#hack-cancel').click();
               $window._gone = true;
             }
           }, 50);

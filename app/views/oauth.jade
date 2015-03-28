@@ -61,10 +61,16 @@
                   )
                   |  {{ scope.name }}
 
-            .form-group
+            .col-xs-12(ng-if="O.iframe")
+              .alert.alert-danger
+                p To prevent click-jacking the user may not interact with the authorize dialog in an iFrame.
+                p If you supply no scope, or the scope has already been granted, you will receive a token.
+                p Otherwise the error callback will be called.
+
+            .form-group(ng-if="!O.iframe")
               .col-lg-offset-10.col-lg-offset-2
                 .col-xs-6
-                  input.btn.btn-default(
+                  input#hack-cancel.btn.btn-default(
                     name="cancel"
                     value="Cancel"
                     type="submit"
