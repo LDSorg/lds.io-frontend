@@ -65,7 +65,6 @@ angular.module('yololiumApp')
     */
     ];
 
-    console.log('opts', opts);
     scope.hideSocial = opts.hideSocial;
     scope.flashMessage = opts.flashMessage;
     scope.flashMessageClass = opts.flashMessageClass;
@@ -113,8 +112,6 @@ angular.module('yololiumApp')
         };
       });
 
-      console.log('[new account] stLoginSession.logins');
-      console.log(stLoginSession.logins);
       stLoginSession.logins.some(function (login) {
         if ('local' === (login.type || login.provider)) {
           scope.account.localLoginId = login.id;
@@ -320,19 +317,14 @@ angular.module('yololiumApp')
           scope.validationDefer = null;
           return;
         }
-        console.log(codes);
         scope.validationDefer = $q.defer();
         scope.formAction = 'codes';
         scope.codes = codes;
         scope.codesMap = {};
-        console.info('result codes');
-        console.log(codes);
         codes.forEach(function (code, i) {
           realNodes[i].uuid = code.uuid;
           //scope.codesMap[code.node] = code;
         });
-        console.info('realNodes');
-        console.log(realNodes);
 
         /*
         scope.deltaEmail.uuid = scope.codesMap.email;
@@ -365,8 +357,6 @@ angular.module('yololiumApp')
       }
 
       return myStLogin.validateCodes(codes).then(function (results) {
-        console.log('myStLogin.validateCodes(codes)', results);
-
         if (scope.delta.localLogin.twoAuthPhone) {
           scope.delta.localLogin.multifactor = [{ node: scope.deltaPhone.node }];
         }
@@ -382,7 +372,8 @@ angular.module('yololiumApp')
         stLoginSession = session;
 
         if (stLoginSession.error) {
-          console.error(stLoginSession);
+          console.error("[Code Validation Error]:");
+          console.log(stLoginSession);
           window.alert(stLoginSession.error.message || stLoginSession.error || "Unknown Session Error");
           return $q.reject(stLoginSession.error);
         }
@@ -394,7 +385,8 @@ angular.module('yololiumApp')
               return true;
             }
 
-            console.error(join);
+            console.error("[Unknown Join Error] in login code validation:");
+            console.log(join);
             window.alert(join.error && join.error.message || join.error || "Uknown Join Error");
           });
 
@@ -417,14 +409,12 @@ angular.module('yololiumApp')
       }
 
       if (nodeObj.exists) {
-        console.log('Proceeding to login');
         stLoginSession.logins.forEach(function (l) {
           // TODO checkboxes in UI
           l.linkable = true;
         });
         promise = scope.login(nodeObj);
       } else {
-        console.log('Proceeding to create login');
         promise = scope.createLogin();
       }
 
@@ -443,7 +433,8 @@ angular.module('yololiumApp')
         return session;
       }, function (err) {
         scope.validationErrorMessage = err.message || 'Code validation failed, Double check and try again';
-        console.error(err);
+        console.error("[Code Validation Error] in login / submit codes:");
+        console.log(err);
       });
       // TODO allow the user to cancel / skip validation and handle
       // scope.validationDefer.reject(err);
@@ -505,7 +496,7 @@ angular.module('yololiumApp')
       }, function (err) {
         scope.authenticating = false;
 
-        console.error("[CAUGHT ERROR]:");
+        console.error("[CAUGHT ERROR] in submit login:");
         console.log(err);
         scope.flashMessage = err && err.message || '[Uknown Error]: Please refresh and try again.';
       });

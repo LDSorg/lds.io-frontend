@@ -124,7 +124,6 @@ angular.module('yololiumApp')
         me.created = me.created || Date.now();
         me.updated = Date.now();
 
-        //console.log('_userSession', _userSession);
         update(_userSession);
         //shared.session = mangle(_userSession);
         //shared.touchedAt = Date.now();
@@ -155,8 +154,6 @@ angular.module('yololiumApp')
         shared.session = mangle(session);
         shared.touchedAt = Date.now();
         if (true !== restore && session && session.logins.length && session.accounts.length) {
-          console.info('saving session');
-          console.log(session);
           localStorage.setItem('token', 'TODO');
           localStorage.setItem('tokenExpiresAt', new Date(Date.now() + (10 * 60 * 1000)).toISOString());
           localStorage.setItem('session.json', JSON.stringify(session));
@@ -168,28 +165,6 @@ angular.module('yololiumApp')
 
       return shared.session;
     }
-
-    /*
-    function addAccount() {
-      var account = session && session.account
-        ;
-
-      if (!account || !account.id || account.error) {
-        console.error('ERROR updating account');
-        console.error(account);
-        return;
-      }
-
-      // TODO do these account adjustments in StSession
-      if (!mySession.accounts.some(function (a) {
-        return a.id === account.id;
-      })) {
-        mySession.accounts.push(account);
-      }
-
-      mySession.selectedAccountId = account.id;
-    }
-    */
 
     function subscribe(fn, scope) {
       if (!scope) {
@@ -243,9 +218,7 @@ angular.module('yololiumApp')
           if (session2.error) {
             return $q.reject(session2.error);
           }
-          console.log('[st-session.js] ensureLogin callback');
           update(session2);
-          console.log('[st-session.js] ensureLogin update', shared.session);
           // pass in just account?
         });
       }).then(function () {
@@ -282,7 +255,6 @@ angular.module('yololiumApp')
           update(session3);
           // TODO an account may provide a limited amount of information if its login requirements
           // have not been met (i.e. it requires multi-factor auth)
-          console.log('[st-session.js] ensureAccount callback');
           return shared.session;
         });
       }).then(function () {
@@ -312,17 +284,13 @@ angular.module('yololiumApp')
       var session;
 
       if (!fresh) {
-        console.warn('no fresh token');
-        console.log(token);
-        console.log(localStorage.getItem('tokenExpiresAt'), expiresAt);
-        console.log(fresh);
+        // TODO
+        console.warn('[STALE TOKEN] (TODO)');
+        console.log(token, fresh, localStorage.getItem('tokenExpiresAt'));
         return;
       }
 
       session = JSON.parse(localStorage.getItem('session.json'));
-
-      console.info('fresh session');
-      console.info(session);
 
       update(session, true);
 
@@ -342,9 +310,7 @@ angular.module('yololiumApp')
     };
 
     x.oauthPromises = StOauthProviders.create(function (resolve, reject) {
-      console.log('[st-session.js] promiseLogin StSession.read()');
       read({ expire: true }).then(function (session) {
-        console.log('[st-session.js] promiseLogin StSession.read() callback');
         if (session.error) {
           console.error('error in session');
           console.error(session);

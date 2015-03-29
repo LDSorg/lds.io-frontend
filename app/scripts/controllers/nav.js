@@ -97,7 +97,8 @@ angular.module('yololiumApp')
 
         updateSession(session);
       }, function (err) {
-        console.error(err);
+        console.error("[Login modal error]");
+        console.log(err);
         window.alert(err.message || err.toString());
         throw err;
       });
@@ -105,12 +106,11 @@ angular.module('yololiumApp')
 
     scope.logout = function () {
       StSession.destroy().then(function () {
-        console.info("You logged out. Sad day. :-/");
         updateSession(null);
       }, function (e) {
         console.error("Hahaha! What a loser. You failed at logging out. Wow... just wow...");
         console.error("(j/k, that's a message for me as the developer :-p)");
-        console.error(e);
+        console.log(e);
         updateSession(null);
       });
     };

@@ -99,7 +99,7 @@ angular.module('yololiumApp')
       ).then(function (resp) {
         if (resp.data.error) {
           console.error('resp.data');
-          console.error(resp.data);
+          console.log(resp.data);
           scope.error = resp.data.error;
           scope.rawResponse = resp.data;
           return $q.reject(new Error(resp.data.error.message));
@@ -107,7 +107,7 @@ angular.module('yololiumApp')
 
         if ('string' !== typeof resp.data.pendingString) {
           console.error('resp.data (TODO look for redirect uri)');
-          console.error(resp.data);
+          console.log(resp.data);
           scope.error = { message: "missing scope request" };
           scope.rawResponse = resp.data;
 
@@ -120,9 +120,6 @@ angular.module('yololiumApp')
 
     function selectAccount(accountId) {
       return requestSelectedAccount(accountId).then(function (txdata) {
-        console.info('accountId', 'txdata');
-        console.log(accountId);
-        console.log(txdata);
         scope.client = txdata.client;
 
         if (!scope.client.title) {
@@ -166,10 +163,6 @@ angular.module('yololiumApp')
     }
 
     function determinePermissions(session) {
-      console.log('OAuth Dialog Session');
-      console.log(session);
-      console.log('');
-
       // get token from url param
       scope.token = $stateParams.token;
 
@@ -196,7 +189,7 @@ angular.module('yololiumApp')
             init();
           });
         }
-        console.error("ERROR somewhere");
+        console.error("ERROR somewhere in oauth process");
         console.log(err);
         window.alert(err.message);
       });

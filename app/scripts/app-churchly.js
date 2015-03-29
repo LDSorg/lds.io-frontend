@@ -1,8 +1,8 @@
 'use strict';
 
 window.addEventListener('error', function (err) {
-  console.error(err);
-  window.alert('Uncaught Exception: ' + (err.message || 'unknown error'));
+  console.error("Uncaught Exception:");
+  console.log(err);
 });
 
 angular.module('yololiumApp', [
@@ -28,8 +28,6 @@ angular.module('yololiumApp', [
           body: {
             template: rootTemplate
           , controller: ['$scope', 'StSession', 'LdsIo', function ($scope, StSession, LdsIo) {
-              console.info('MC controller');
-
               var MC = this;
 
               MC.urlsafe = function (name) {
@@ -37,8 +35,6 @@ angular.module('yololiumApp', [
               };
 
               function init(session) {
-                console.info('MC session');
-                console.log(session);
                 if (!session) {
                   MC.session = null;
                   return;
@@ -47,8 +43,6 @@ angular.module('yololiumApp', [
                 MC.session = session;
                 
                 LdsIo.getProfile(session.account).then(function (profile) {
-                  console.info('LdsIo profile');
-                  console.log(profile);
                   MC.user = profile;
                   MC.account = session.account;
                   MC.session = profile;
@@ -137,13 +131,6 @@ angular.module('yololiumApp', [
 
       return {
         'request': function (config) {
-          /*
-          if (!/.html/.test(config.url)) {
-            console.log('[$http] request');
-            console.log(config);
-            //console.log(config.method, config.url);
-          }
-          */
           if (config.data
               && isApiUrl(config.url)
               && /json/.test(config.headers['Content-Type'])
@@ -154,8 +141,6 @@ angular.module('yololiumApp', [
           return config;
         }
       , 'requestError': function (rejection) {
-          //console.log('[$http] requestError');
-          //console.log(rejection);
           return rejection;
         }
       , 'response': function (response) {
@@ -173,8 +158,6 @@ angular.module('yololiumApp', [
           return response;
         }
       , 'responseError': function (rejection) {
-          //console.log('[$http] responseError');
-          //console.log(rejection);
           return rejection;
         }
 
@@ -182,11 +165,14 @@ angular.module('yololiumApp', [
     }]);
 
 }]).run([ 'StSession', 'LdsAccount', function (StSession, LdsAccount) {
-  console.log('StSession.use');
+  // attach after angular is initialized so that angular errors
+  // don't annoy developers that forgot bower install
+  window.addEventListener('error', function (err) {
+    window.alert('Uncaught Exception: ' + (err.message || 'unknown error'));
+  });
+
   StSession.use(function (session, opts) {
     return LdsAccount.ensureAccount(session, opts).then(function (session) {
-      console.info('session after LdsAccount.ensureAccount');
-      console.log(session);
       return session;
     });
   });
