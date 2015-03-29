@@ -1,8 +1,18 @@
+var baseUrl = localStorage.getItem('baseUrl');
+
+if (!baseUrl) {
+  baseUrl = window.location.protocol + '//' + window.location.host;
+  //baseUrl += window.location.pathname;
+}
+console.info("baseUrl is set to '" + baseUrl + "'");
+console.log("Set to default by running `localStorage.removeItem('baseUrl')`");
+console.log("Need to test a dev environment? `localStorage.setItem('baseUrl', 'https://example.com:8080')`");
+
 window.StClientConfig = {
   "webhookPrefix": "/webhooks"
-, "oauthPrefix": "https://lds.io/api/oauth3"
-, "sessionPrefix": "/session"
-, "apiPrefix": "https://lds.io/api"
+, "oauthPrefix":  baseUrl + "/api/oauth3"
+, "sessionPrefix": baseUrl + "/session"
+, "apiPrefix": baseUrl + "/api"
 , "snakeApi": true
 , "superUserApi": "/api/superuser"
 , "adminApi": "/api/admin"
