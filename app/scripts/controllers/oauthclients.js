@@ -48,6 +48,7 @@ angular.module('yololiumApp')
       , desc: client.desc
       , logo: client.logo
       , urls: client.urls || [client.url]
+      , live: client.live
       };
     }
 

@@ -124,9 +124,17 @@
             .col-sm-6
               p Last updated: {{ client.updatedAt }}
           .row
-            button.btn.btn-default.pull-right(type="submit" ng-if="!client.updating") Update
-            button.btn.btn-default.pull-right(type="submit" ng-if="client.updating" disabled="disabled") Updating...
-            button.btn.btn-danger.pull-left(type="button" ng-click="OA.deleteApp(client)") Delete
+            .col-sm-6
+              button.btn.btn-danger.pull-left(type="button" ng-click="OA.deleteApp(client)") Delete
+            .col-sm-6
+              button.btn.btn-default.pull-right(type="submit" ng-if="client.updating" disabled="disabled") Updating...
+              button.btn.btn-default.pull-right(type="submit" ng-if="!client.updating") Update
+              .pull-right &nbsp;
+              .alert.pull-right(ng-class="{ 'alert-success': client.live, 'alert-warning': !client.live }")
+                .checkbox
+                  label
+                    input(type="checkbox", ng-model="client.live")
+                    span &nbsp;&nbsp;Live&nbsp;&nbsp;
             br
 
   .row
