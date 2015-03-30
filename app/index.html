@@ -39,6 +39,14 @@
     <!-- Add your site or application content here -->
 
     <div ng-include="'views/nav.html'"></div>
+
+    <div ng-if="R.dev" class="alert alert-warning" style="width: 100%; text-align: center;">
+      <h4>This is the developer (beta) site.</h4>
+      <p>Please visit
+        <a href="https://lds.io">https://lds.io</a> for the live site.
+      </p>
+    </div>
+
     <div class="ui-view-body" ui-view="body" autoscroll="false">
 
       <div class="container">
