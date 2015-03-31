@@ -1,21 +1,22 @@
-LDSConnect.org Frontend
-=========
+LDS I/O Frontend
+================
 
-The ldsconnect.org API is completely decoupled from the static assets.
+The lds.io API is completely decoupled from the static assets.
 
-This repository is provided so that you can comfortably develop the UI against the real API without any worry of the backend.
+This repository is provided so that you can comfortably develop
+the UI against the real API without any worry of the backend.
 
 Zero-Config Install
 ===================
 
-LDSConnect.org allows API access to the test domain `https://local.ldsconnect.org:8043`
-so that you can run a copy of it locally without needing to install a local server.
+LDS.io allows API access to the test domain `https://local.ldsconnect.org:8043`
+so that you can run a copy of it locally without needing to install a local api server.
 
 1. Install
 ----------
 
 ```bash
-curl -fsSL https://bit.ly/install-ldsconnect-frontend-min | bash
+curl -fsSL https://bit.ly/install-ldsio-frontend-min | bash
 ```
 
 2. In a new terminal, start the server
@@ -40,13 +41,6 @@ jade -w ./public/views/*.jade
 
 Use <https://local.ldsconnect.org:8043>.
 
-**IMPORTANT**: Because LDS Connect v2 is being staged at <https://lds.io> which
-does not have a valid SSL certificate, you must **visit <https://lds.io> and ACCEPT
-THE CERTIFICATE**
-
-**AGAIN**: If you do not accept the certificate for <https://lds.io> in your BROWSER,
-the API will fail to work.
-
 5. Develop in frontend/app
 -------
 
@@ -54,7 +48,7 @@ You can fork this repository and then submit pull requests after updating your l
 
 ```
 git remote rename origin upstream
-git remote add origin https://github.com/${YOUR_USER_NAME}/ldsconnect.org-frontend.git
+git remote add origin https://github.com/${YOUR_USER_NAME}/lds.io-frontend.git
 ```
 
 Do not commit `.html` files (with the exception of `index.html` and `oauth2-close.html`.
@@ -85,7 +79,7 @@ tree -I .git ./certs
 
 ```
 echo "Cloning the Frontend and Creating ./public link"
-git clone https://github.com/LDSorg/ldsconnect.org-frontend.git \
+git clone https://github.com/LDSorg/lds.io-frontend.git \
   ./frontend \
   > /dev/null
 ln -s 'frontend/app' ./public
@@ -133,9 +127,7 @@ lds-dev-backend/
         │   ├── controllers
         │   │   ├── account.js
         │   │   ├── lds-account.js
-        │   │   ├── login-v2.js
         │   │   ├── nav.js
-        │   │   ├── oauth.js
         │   │   ├── oauthclients.js
         │   │   └── verify-contact-details.js
         │   └── services
@@ -154,9 +146,7 @@ lds-dev-backend/
         └── views
             ├── account.jade
             ├── lds-account.jade
-            ├── login-v2.jade
             ├── nav.jade
-            ├── oauth.jade
             ├── oauthclients.jade
             └── verify-contact-details.jade
 ```
