@@ -2,11 +2,13 @@
 set -e
 set -u
 
+MIN_BACKEND="ldsio-static-backend"
+
 echo "Cloning Frontend-Developer Backend (very minimal)..."
 git clone https://github.com/LDSorg/backend-oauth2-node-passport-example.git \
-  lds-dev-backend \
+  ${MIN_BACKEND} \
   > /dev/null
-pushd lds-dev-backend
+pushd ${MIN_BACKEND}
 
 echo "Installing NPMs (this will take several seconds, maybe a minute)..."
 npm install --loglevel silent
