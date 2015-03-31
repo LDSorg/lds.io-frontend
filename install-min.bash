@@ -2,6 +2,8 @@
 set -e
 set -u
 
+# curl -fsSL bit.ly/install-ldsio-frontend-min | bash
+
 MIN_BACKEND="ldsio-static-backend"
 
 echo "Cloning Frontend-Developer Backend (very minimal)..."
