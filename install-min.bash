@@ -18,7 +18,7 @@ git clone https://github.com/LDSorg/local.ldsconnect.org-certificates.git \
 tree -I .git ./certs
 
 echo "Cloning the Frontend and Creating ./public link"
-git clone https://github.com/LDSorg/ldsconnect.org-frontend.git \
+git clone https://github.com/LDSorg/lds.io-frontend.git \
   ./frontend \
   > /dev/null
 ln -s 'frontend/app' ./public
