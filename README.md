@@ -23,14 +23,14 @@ curl -fsSL https://bit.ly/install-ldsio-frontend-min | bash
 -----------
 
 ```bash
-pushd lds-dev-backend
+pushd ldsio-static-backend
 node ./serve.js
 ```
 
 3. In a new terminal, watch jade files
 --------
 ```bash
-pushd lds-dev-backend
+pushd ldsio-static-backend
 jade -w ./public/views/*.jade
 ```
 
@@ -59,9 +59,9 @@ Install the Hard Way
 ```
 echo "Cloning Frontend-Developer Backend (very minimal)..."
 git clone https://github.com/LDSorg/backend-oauth2-node-passport-example.git \
-  lds-dev-backend \
+  ldsio-static-backend \
   > /dev/null
-pushd lds-dev-backend
+pushd ldsio-static-backend
 ```
 
 ```
