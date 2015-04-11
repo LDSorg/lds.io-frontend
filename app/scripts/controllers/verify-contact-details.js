@@ -6,24 +6,30 @@ angular.module('yololiumApp')
   , '$q'
   , '$modalInstance'
   , 'myLdsAccount'
-  , 'ldsAccountConfig'
+  , 'LdsApiConfig'
+  , 'LdsApiRequest'
   , 'ldsAccountObject'
+  , 'ldsProfileObject'
   , 'ldsAccountOptions'
   , function (
     $scope
   , $q
   , $modalInstance
   , myLdsAccount
-  , ldsAccountConfig
+  , LdsApiConfig
+  , LdsApiRequest
   , account
+  , profile
     /*
   , opts
     */
   ) {
+    console.log('profile', profile);
+
     var scope = this;
 
-    scope.phone = account.phone;
-    scope.email = account.email;
+    scope.phone = (profile.me.phones[0] || {}).value;
+    scope.email = (profile.me.emails[0] || {}).value;
 
     scope.codes = {};
     scope.validationErrorMessages = {};
@@ -54,13 +60,13 @@ angular.module('yololiumApp')
       if (rePhoneCode.test(code)) {
         m = code.match(rePhoneCode);
         type = 'phone';
-        node = account.phone;
+        node = scope.phone;
         uuid = scope.codes[type];
         code = m[1] + '-' + m[2];
       } else if (reEmailCode.test(code)) {
         m = code.match(reEmailCode);
         type = 'email';
-        node = account.email;
+        node = scope.email;
         uuid = scope.codes[type];
         code = m[1] + '-' + m[2] + '-' + m[3];
       } else {

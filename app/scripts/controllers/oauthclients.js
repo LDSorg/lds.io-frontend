@@ -52,8 +52,8 @@ angular.module('yololiumApp')
       };
     }
 
-    OA.registerApp = function (account) {
-      var client = OA.newApp;
+    OA.registerApp = function (client) {
+      //var client = OA.newApp;
 
       LdsAccount.ensureVerified(account, {}).then(function () {
         stOauthclients.create(
@@ -92,9 +92,7 @@ angular.module('yololiumApp')
 
     function init(session) {
       // returns selected account, only account, or most recently added account
-      var account = LdsApiSession.selectAccount(session);
-      console.log('has session', session);
-      console.log('has account', account);
+      account = LdsApiSession.selectAccount(session);
 
       if (!session || !session.token) {
         $state.go('root');

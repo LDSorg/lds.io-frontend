@@ -61,6 +61,9 @@ angular.module('yololiumApp')
        , ldsAccountObject: function () {
            return account;
          }
+       , ldsProfileObject: function () {
+           return LdsApiRequest.profile(account);
+         }
        , ldsAccountOptions: function () {
            return opts;
          }
@@ -69,10 +72,13 @@ angular.module('yololiumApp')
    };
 
     me.getCode = function (account, type, node) {
-      return $http.post(LdsApiConfig.providerUri + '/api/ldsio/' + account.id + '/verify/code', {
-        type: type
-      , node: node
-      }).then(function (result) {
+      return $http.post(
+        LdsApiConfig.providerUri + '/api/ldsio/' + account.appScopedId + '/verify/code'
+      , { type: type
+        , node: node
+        }
+      , { headers: { Authorization: 'Bearer ' + account.token } }
+      ).then(function (result) {
         if (result.data.error) {
           return $q.reject(result.data.error);
         }
@@ -81,12 +87,15 @@ angular.module('yololiumApp')
     };
 
     me.validateCode = function (account, type, node, uuid, code) {
-      return $http.post(LdsApiConfig.providerUri + '/api/ldsio/' + account.id + '/verify/code/validate', {
-        type: type
-      , node: node
-      , uuid: uuid
-      , code: code
-      }).then(function (result) {
+      return $http.post(
+        LdsApiConfig.providerUri + '/api/ldsio/' + account.appScopedId + '/verify/code/validate'
+      , { type: type
+        , node: node
+        , uuid: uuid
+        , code: code
+        }
+      , { headers: { Authorization: 'Bearer ' + account.token } }
+      ).then(function (result) {
         if (result.data.error) {
           return $q.reject(result.data.error);
         }

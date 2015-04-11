@@ -32,7 +32,7 @@ angular.module('yololiumApp')
       /* { name: ..., desc: ..., logo: ... } */
 
       return $http.post(
-        LdsApiConfig.providerUri + '/api/accounts/' + account.id + '/clients'
+        LdsApiConfig.providerUri + '/api/accounts/' + account.appScopedId + '/clients'
       , app
       , { headers: { Authorization: 'Bearer ' + account.token } }
       ).then(function (resp) {
@@ -44,7 +44,7 @@ angular.module('yololiumApp')
       /* { name: ..., desc: ..., logo: ... } */
 
       return $http.post(
-        LdsApiConfig.providerUri + '/api/accounts/' + account.id + '/clients/' + id
+        LdsApiConfig.providerUri + '/api/accounts/' + account.appScopedId + '/clients/' + id
       , app
       , { headers: { Authorization: 'Bearer ' + account.token } }
       ).then(function (resp) {
@@ -56,7 +56,7 @@ angular.module('yololiumApp')
       /* { name: ..., desc: ..., logo: ... } */
 
       return $http.delete(
-        LdsApiConfig.providerUri + '/api/accounts/' + account.id + '/clients/' + id
+        LdsApiConfig.providerUri + '/api/accounts/' + account.appScopedId + '/clients/' + id
       , { headers: { Authorization: 'Bearer ' + account.token } }
       ).then(function (resp) {
         return resp.data;

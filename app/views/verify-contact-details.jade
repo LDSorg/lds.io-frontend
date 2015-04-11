@@ -15,7 +15,10 @@
     .row
       .col-sm-8
         .form-group
-          label(for="phonecode") SMS verification for {{ VCDC.phone }}. 
+          label(for="phonecode")
+            span SMS verification for&#32;
+            mark {{ VCDC.phone }}
+            span .
       .col-sm-4
         button.btn.btn-default(
           ng-click="VCDC.sendCode('phone', VCDC.phone)"
@@ -50,7 +53,10 @@
     .row
       .col-sm-8
         .form-group
-          label(for="emailcode") EMAIL verification code for {{ VCDC.email }}.
+          label(for="emailcode")
+            span EMAIL verification code for&#32;
+            mark {{ VCDC.email }}
+            span .
       .col-sm-4
         button.btn.btn-default(
           ng-click="VCDC.sendCode('email', VCDC.email)"
