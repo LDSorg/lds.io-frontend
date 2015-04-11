@@ -102,8 +102,8 @@ angular.module('yololiumApp')
       OA.clients = OA.clients || [];
 
       OA.freshAccount = LdsAccount.isFresh(account.emailVerifiedAt) && LdsAccount.isFresh(account.phoneVerifiedAt);
-      OA.email = account.email;
-      OA.phone = account.phone;
+      OA.email = account.hasEmail;
+      OA.phone = account.hasPhone;
       OA.hasEmail = !!OA.email;
       OA.hasPhone = !!OA.phone;
       stOauthclients.fetch(account).then(function (clients) {
