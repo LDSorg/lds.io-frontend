@@ -10,12 +10,12 @@
 angular.module('yololiumApp')
   .controller('OauthclientsController', [
     '$scope'
+  , '$location'
   , 'stOauthclients'
   , 'LdsAccount'
-  , 'authenticatedSession'
-  , 'StSession'
+  , 'LdsApiSession'
   , '$state'
-  , function ($scope, stOauthclients, LdsAccount, authenticatedSession, StSession, $state) {
+  , function ($scope, $location, stOauthclients, LdsAccount, LdsApiSession, $state) {
     var OA = this;
     var account;
 
@@ -52,12 +52,12 @@ angular.module('yololiumApp')
       };
     }
 
-    OA.registerApp = function () {
+    OA.registerApp = function (account) {
       var client = OA.newApp;
 
       LdsAccount.ensureVerified(account, {}).then(function () {
         stOauthclients.create(
-          authenticatedSession.account
+          account
         , scrapeForm(client)
         ).then(function (client) {
           OA.clients.push(client);
@@ -91,12 +91,15 @@ angular.module('yololiumApp')
     };
 
     function init(session) {
-      if (!session || !session.account) {
+      // returns selected account, only account, or most recently added account
+      var account = LdsApiSession.selectAccount(session);
+      console.log('has session', session);
+      console.log('has account', account);
+
+      if (!session || !session.token) {
         $state.go('root');
         return;
       }
-
-      account = session.account;
 
       OA.clients = OA.clients || [];
 
@@ -105,7 +108,7 @@ angular.module('yololiumApp')
       OA.phone = account.phone;
       OA.hasEmail = !!OA.email;
       OA.hasPhone = !!OA.phone;
-      stOauthclients.fetch(authenticatedSession.account).then(function (clients) {
+      stOauthclients.fetch(account).then(function (clients) {
         OA.clients = clients;
         OA.clients.forEach(function (client) {
           client.url = (client.urls||[])[0]||'';
@@ -115,6 +118,8 @@ angular.module('yololiumApp')
       });
     }
 
-    init(authenticatedSession);
-    StSession.subscribe(init, $scope);
+    LdsApiSession.requireSession({ strategy: 'implicitGrant' }).then(init, function (err) {
+      console.log('error', err);
+      $state.go('root');
+    });
   }]);

@@ -5,10 +5,56 @@ window.addEventListener('error', function (err) {
   console.log(err);
 });
 
+angular.module('myApp', []);
+angular.module('myApp').controller('NavController', [
+    '$scope'
+  , '$timeout'
+  , '$window'
+  , '$location'
+  , '$http'
+  , 'LdsApiSession'
+  , 'LdsApiRequest'
+  , function ($scope, $timeout, $window, $location, $http, LdsApiSession, LdsApiRequest) {
+
+  var NC = this;
+
+  LdsApiSession.onLogin($scope, function (session) {
+    NC.session = session;
+  });
+
+  LdsApiSession.onLogout($scope, function () {
+    NC.session = null;
+  });
+
+  LdsApiSession.restore().then(function (session) {
+    NC.session = session;
+  });
+
+  NC.login = function (/*name*/) {
+    console.log('nav login');
+    LdsApiSession.login({ scope: '*' }).then(function (session) {
+      return LdsApiRequest.profile(session, { expire: true }).then(function () {
+        NC.session = NC.session;
+      });
+    }, function (err) {
+      LdsApiSession.logout();
+      window.alert("Login failed: " + err.message);
+    });
+  };
+  NC.showLoginModal = NC.login;
+
+  NC.logout = function (/*name*/) {
+    LdsApiSession.logout();
+  };
+}]);
+
 angular.module('yololiumApp', [
   'ui.bootstrap'
 , 'ui.router'
+, 'oauth3'
+, 'lds.io'
 , 'steve'
+, 'myApp'
 /*
   'ngSanitize'
 */
@@ -16,8 +62,8 @@ angular.module('yololiumApp', [
     '$urlRouterProvider'
   , '$stateProvider'
   , '$httpProvider'
-  , 'stConfig'
-  , function ($urlRouterProvider, $stateProvider, $httpProvider, StApi) {
+  //, 'LdsApiConfig'
+  , function ($urlRouterProvider, $stateProvider, $httpProvider/*, LdsApiConfig*/) {
     var rootTemplate = $('.ui-view-body').html();
 
     $urlRouterProvider.otherwise('/');
@@ -27,65 +73,61 @@ angular.module('yololiumApp', [
       , views: {
           body: {
             template: rootTemplate
-          , controller: ['$scope', 'StSession', 'LdsIo', function ($scope, StSession, LdsIo) {
+          , controller: [
+              '$scope'
+            , 'LdsApiSession'
+            , 'LdsApiRequest'
+            , function ($scope, LdsApiSession, LdsApiRequest) {
               var MC = this;
 
               MC.urlsafe = function (name) {
                 return name.toLowerCase().replace(/[^\-\w]/, '').replace(/s$/, '');
               };
 
-              function init(session) {
-                if (!session) {
-                  MC.session = null;
-                  return;
-                }
-
-                MC.session = session;
-                
-                LdsIo.getProfile(session.account).then(function (profile) {
-                  MC.user = profile;
-                  MC.account = session.account;
-                  MC.session = profile;
+              function prefetch(session) {
+                // Prefetching
+                return LdsApiRequest.profile(session).then(function (profile) {
+                  LdsApiRequest.stake(session, profile.homeStakeAppScopedId);
+                  LdsApiRequest.ward(session, profile.homeStakeAppScopedId, profile.homeWardAppScopedId);
                 });
               }
 
-              StSession.subscribe(init, $scope);
-
-              StSession.restoreSession();
+              LdsApiSession.checkSession(prefetch);
+              LdsApiSession.onLogin($scope, prefetch);
             }]
           , controllerAs: 'MC'
           }
         }
       })
 
-      .state('oauth', {
-        url: '/authorize/:token/'
+      .state('logout', {
+        url: '/logout/:callback'
       , views: {
           body: {
-            templateUrl: 'views/oauth.html'
-          , controller: 'OauthCtrl as O'
-          , resolve: {
-              mySession: ['StSession', function (StSession) {
-                return StSession.get().then(function (session) {
-                  return session;
-                });
-              }]
-            }
+            template: ''
+            // DestroySessionController
+          , controller: [
+              '$window'
+            , '$stateParams'
+            , 'LdsApiSession'
+            , function ($window, $stateParams, LdsApiSession) {
+              LdsApiSession.destroy().then(function () {
+                var callback = $stateParams.callback;
+                $window.location.href = '/oauth3.html?close=true&callback=' + callback;
+              });
+            }]
+          , controllerAs: 'DSC'
           }
         }
+
       })
 
       .state('account', {
         url: '/account/'
       , views: {
           body: {
-            templateUrl: 'views/account.html'
-          , controller: 'AccountCtrl as A'
-          , resolve: {
-              mySession: ['StSession', function (StSession) {
-                return StSession.get();
-              }]
-            }
+            templateUrl: 'views/my-account.html'
+          , controller: 'MyAccountController as MAC'
           }
         }
       })
@@ -105,11 +147,6 @@ angular.module('yololiumApp', [
           body: {
             templateUrl: 'views/oauthclients.html'
           , controller: 'OauthclientsController as OA'
-          , resolve: {
-              authenticatedSession: ['StSession', function (StSession) {
-                return StSession.ensureSession();
-              }]
-            }
           }
         }
       })
@@ -124,8 +161,10 @@ angular.module('yololiumApp', [
       function isApiUrl(url) {
         // TODO provide a list of known-good API urls in StApi and loop
         return !/^https?:\/\//.test(url)
-          || url.match(StApi.apiPrefix)
-          || url.match(StApi.oauthPrefix)
+          || url.match('lds.io')
+          //|| url.match(LdsApiConfig.appUri)
+          //|| url.match(LdsApiConfig.providerUri)
+          //|| url.match(LdsApiConfig.realProviderUri)
           ;
       }
 
@@ -145,6 +184,7 @@ angular.module('yololiumApp', [
         }
       , 'response': function (response) {
           var config = response.config;
+          var err;
 
           // our own API is snake_case (to match webApi / ruby convention)
           // but we convert to camelCase for javascript convention
@@ -152,7 +192,11 @@ angular.module('yololiumApp', [
             response.data = recase.camelCopy(response.data);
             if (response.data.error) {
               //throw new Error(response.data.error.message);
-              return $q.reject(new Error(response.data.error.message));
+              err = new Error(response.data.error.message);
+              Object.keys(response.data.error).forEach(function (key) {
+                err[key] = response.data.error[key];
+              });
+              return $q.reject(err);
             }
           }
           return response;
@@ -160,32 +204,65 @@ angular.module('yololiumApp', [
       , 'responseError': function (rejection) {
           return rejection;
         }
-
       };
     }]);
 
-}]).run([ '$rootScope', 'StSession', 'LdsAccount', 'StApi', function ($rootScope, StSession, LdsAccount, StApi) {
-  $rootScope.R = {};
+}]).run([
+    '$rootScope'
+  , '$timeout'
+  , '$q'
+  , '$http'
+  , '$modal'
+  , 'LdsApi'
+  , 'LdsApiSession'
+  , function ($rootScope, $timeout, $q, $http, $modal, LdsApi, LdsApiSession) {
 
-  if (/local|:\d+/.test(StApi.apiPrefix)) {
-    $rootScope.R.dev = true;
-  }
-  // attach after angular is initialized so that angular errors
-  // don't annoy developers that forgot bower install
-  window.addEventListener('error', function (err) {
-    window.alert('Uncaught Exception: ' + (err.message || 'unknown error'));
-  });
+  return LdsApi.init({
+    // TODO dedicated root app
+    appId: 'TEST_ID_beba4219ee9e9edac8a75237' // production server, test client
+  //appId: 'TEST_ID_871a371debefb91c919ca848' // test server, test client
+  , appVersion: '2.0.0-pre'
+  , invokeLogin: function (opts) {
+      //$window.alert("login modal not yet implemented");
+      return $q.reject(new Error("login modal not implemented"));
+      /*
+      console.info('login invoked');
+      return $modal.open({
+        templateUrl: '/views/login-v3.html'
+      , controller: 'LoginController3 as LC'
+      , backdrop: 'static'
+      , keyboard: true
+      , resolve: {
+          myLoginOptions: [function () {
+            return opts;
+          }]
+        }
+      }).result;
+      */
+    }
+  }).then(function (LdsApiConfig) {
+    $rootScope.R = {};
+    // attach after angular is initialized so that angular errors
+    // don't annoy developers that forgot bower install
+    window.addEventListener('error', function (err) {
+      window.alert('Uncaught Exception: ' + (err.message || 'unknown error'));
+    });
 
-  StSession.use(function (session, opts) {
-    return LdsAccount.ensureAccount(session, opts).then(function (session) {
-      return session;
+    // $rootScope.R.ready = true;
+    if (/local|beta|:\d+/.test(LdsApiConfig.appUri)
+      || /local|beta|:\d+/.test(LdsApiConfig.providerUri)
+      || /local|beta|:\d+/.test(LdsApiConfig.realProviderUri)) {
+      $rootScope.R.dev = true;
+    }
+
+    // normally we'd do a background login here, but ldsconnect.org already
+    // is the provider, so no sense in doing that...
+    return LdsApiSession.checkSession().then(function () {
+      $rootScope.rootReady = true;
+      $rootScope.rootDeveloperMode = LdsApiConfig.developerMode;
+    }, function () {
+      $rootScope.rootReady = true;
+      $rootScope.rootDeveloperMode = LdsApiConfig.developerMode;
     });
   });
-
-  StSession.restoreSession();
 }]);
-
-angular.module('yololiumApp')
-  .service('mySession', [function () {}])
-  .service('StPayInvoice', [function () {}])
-  ;

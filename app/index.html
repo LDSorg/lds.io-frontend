@@ -38,7 +38,30 @@
 
     <!-- Add your site or application content here -->
 
-    <div ng-include="'views/nav.html'"></div>
+    <!--.navbar.navbar-default.navbar-fixed-top-->
+    <div ng-controller="NavController as NC" style="margin-bottom: 0; border-top-width: 0;" class="navbar navbar-default navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header"><a href="#/" class="navbar-brand"><span>LDS I/O</span><img ng-src="images/lds-connect-logo-inverse-32px.png" style="position: relative; top: -6px; padding-right: 8px;" class="navbar-logo img pull-left"/></a>
+          <div>
+            <button type="button" ng-init="navCollapsed = true" ng-click="navCollapsed = !navCollapsed" class="navbar-toggle"><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button>
+          </div>
+        </div>
+        <div id="navbar-main" ng-class="!navCollapsed &amp;&amp; 'in'" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a ui-sref="api">API</a></li>
+            <li ng-show="NC.session.accounts.length"><a ui-sref="develop">Develop</a></li>
+            <li ng-show="!NC.session.accounts.length"><a href="" ng-click="NC.showLoginModal()">Login</a></li>
+            <li ng-show="NC.session.accounts.length" class="dropdown"><a id="account" data-toggle="dropdown" href="" class="dropdown-toggle">Account<span class="caret"></span></a>
+              <ul aria-labelledby="account" class="dropdown-menu">
+                <li><a href="" ui-sref="account">Settings</a></li>
+                <li class="divider"></li>
+                <li><a href="" ng-click="NC.logout()">Logout</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
 
     <div ng-if="R.dev" class="alert alert-warning" style="width: 100%; text-align: center;">
       <h4>This is the developer (beta) site.</h4>
@@ -46,6 +69,27 @@
         <a href="https://lds.io">https://lds.io</a> for the live site.
       </p>
     </div>
+
+    <div ng-if="rootDeveloperMode" class="alert alert-info">
+      <p>You are in developer mode. Clear your cache to go back to live mode.
+      <pre
+      ><code
+>LdsIo.cache.destroy().then(function () {
+  location.reload();
+});</pre></code>
+    </div>
+
+    <div ng-if="rootTryDev" class="alert alert-success">
+      <p>You are in live mode. Set your API source to the beta site and refresh to enter developer mode.
+      <pre
+      ><code
+>LdsIo.cache.destroy().then(function () {
+  return LdsIo.storage.set('providerUri', 'https://beta.lds.io');
+}).then(function () {
+  location.reload();
+});</pre></code>
+    </div>
+
 
     <div class="ui-view-body" ui-view="body" autoscroll="false">
 
@@ -127,10 +171,8 @@
   //
   // Todos
   //
-  * show list of available apps
   * show list of apps I have allowed
   * cURL example exploring API with `--cookie my-session.txt`
-  * test cancel / rejection
   * pass grantend_scope
             </code>
           </pre>
@@ -186,24 +228,24 @@
 
     <!-- build:js({.tmp,app}) scripts/scripts.js -->
     <script src="scripts/app-churchly.js"></script>
-    <script src="scripts/services/st-api.js"></script>
-    <script src="scripts/services/st-oauth-providers.js"></script>
-    <script src="scripts/services/st-session.js"></script>
-    <script src="scripts/services/st-login.js"></script>
-    <script src="scripts/services/lds-account.js"></script>
-    <script src="scripts/services/lds-io.js"></script>
-    <script src="scripts/services/st-account.js"></script>
-    <script src="scripts/services/st-oauthclients.js"></script>
-    <script src="scripts/services/st-alert.js"></script>
-    <script src="scripts/controllers/alert.js"></script>
-    <script src="scripts/controllers/login-v2.js"></script>
-    <script src="scripts/controllers/account-new.js"></script>
-    <script src="scripts/controllers/account.js"></script>
-    <script src="scripts/controllers/lds-account.js"></script>
-    <script src="scripts/controllers/nav.js"></script>
-    <script src="scripts/controllers/oauthclients.js"></script>
-    <script src="scripts/controllers/oauth.js"></script>
     <script src="scripts/controllers/verify-contact-details.js"></script>
+    <script src="scripts/services/st-api.js"></script>
+    <script src="scripts/services/lds-account.js"></script>
+    <script src="scripts/services/st-oauthclients.js"></script>
+    <script src="scripts/controllers/oauthclients.js"></script>
+
+    <script src="bower_components/oauth3/angular-oauth3.js"></script>
+    <!-- script src="bower_components/oauth3/angular-oauth3.min.js"></script -->
+
+    <script src="bower_components/angular-lds-io/src/lds-io-storage.js"></script>
+    <script src="bower_components/angular-lds-io/src/lds-io-config.js"></script>
+    <script src="bower_components/angular-lds-io/src/lds-io-cache.js"></script>
+    <script src="bower_components/angular-lds-io/src/lds-io-session.js"></script>
+    <script src="bower_components/angular-lds-io/src/lds-io-api.js"></script>
+    <script src="bower_components/angular-lds-io/src/lds-io.js"></script>
+    <!-- script src="bower_components/angular-lds-io/lds-io.min.js"></script -->
+
+    <script src="scripts/controllers/my-account.js"></script>
     <!-- endbuild -->
 
     <script>

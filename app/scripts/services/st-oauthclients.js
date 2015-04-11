@@ -9,14 +9,17 @@
  */
 angular.module('yololiumApp')
   .service('stOauthclients', [
-    'StApi'
+    '$q'
   , '$http'
-  , function stOauthclients(StApi, $http) {
+  , 'LdsApiConfig'
+  , function stOauthclients($q, $http, LdsApiConfig) {
     var me = this;
-    var apiPrefix = StApi.apiPrefix;
 
     function fetch(account) {
-      return $http.get(apiPrefix + '/accounts/' + account.id + '/clients').then(function (resp) {
+      return $http.get(
+        LdsApiConfig.providerUri + '/api/accounts/' + account.appScopedId + '/clients'
+      , { headers: { Authorization: 'Bearer ' + account.token } }
+      ).then(function (resp) {
         if (!resp.data || resp.data.error) {
           throw new Error(resp.data.error.message || "failed to fetch OAuth2 clients");
         }
@@ -28,7 +31,11 @@ angular.module('yololiumApp')
     function create(account, app) {
       /* { name: ..., desc: ..., logo: ... } */
 
-      return $http.post(apiPrefix + '/accounts/' + account.id + '/clients', app).then(function (resp) {
+      return $http.post(
+        LdsApiConfig.providerUri + '/api/accounts/' + account.id + '/clients'
+      , app
+      , { headers: { Authorization: 'Bearer ' + account.token } }
+      ).then(function (resp) {
         return resp.data;
       });
     }
@@ -36,7 +43,11 @@ angular.module('yololiumApp')
     function update(account, id, app) {
       /* { name: ..., desc: ..., logo: ... } */
 
-      return $http.post(apiPrefix + '/accounts/' + account.id + '/clients/' + id, app).then(function (resp) {
+      return $http.post(
+        LdsApiConfig.providerUri + '/api/accounts/' + account.id + '/clients/' + id
+      , app
+      , { headers: { Authorization: 'Bearer ' + account.token } }
+      ).then(function (resp) {
         return resp.data;
       });
     }
@@ -44,7 +55,10 @@ angular.module('yololiumApp')
     function destroy(account, id) {
       /* { name: ..., desc: ..., logo: ... } */
 
-      return $http.delete(apiPrefix + '/accounts/' + account.id + '/clients/' + id).then(function (resp) {
+      return $http.delete(
+        LdsApiConfig.providerUri + '/api/accounts/' + account.id + '/clients/' + id
+      , { headers: { Authorization: 'Bearer ' + account.token } }
+      ).then(function (resp) {
         return resp.data;
       });
     }
