@@ -1,4 +1,80 @@
 .container
+  div.alert-info(ng-if="MAC.loading")
+    p(ng-if="!MAC.loadingBlink") Loading...
+
+  h2 Available Tokens
+  div(ng-repeat="login in MAC.session.logins")
+    span(ng-init="L = {};")
+    p
+      span Token: &#32;
+      code {{ login.token }}
+      span &#32; Expires At: &#32;
+      code {{ login.expiresAt }}
+      br
+      span Account ID: &#32;
+      code(ng-repeat="account in login.accounts") {{ account.appScopedId || account.id }}
+      br
+      span Granted Scope: &#32;
+      code todo
+      br
+      button.btn.btn-link(ng-show="!L.showJson" ng-click="L.showJson = true") show json
+      button.btn.btn-link(ng-show="L.showJson" ng-click="L.showJson = false") hide json
+      div(ng-if="L.showJson")
+        pre
+          code {{ login | json }}
+  h2 Available Accounts
+  .row
+    .col-sm-6.col-md-4(ng-repeat="account in MAC.accounts")
+      .thumbnail
+        img(
+          ng-src="{{ account.profile.me.photo }}"
+          ng-alt="{{ account.profile.me.name + ' ' + account.profile.me.surnames.join(' ') }}"
+        )
+        .caption
+          h3 {{ account.profile.me.name + ' ' + account.profile.me.surnames.join(' ') }}
+          p {{ account.profile.me.homeWardName }}
+          p {{ account.profile.me.homeStakeName }}
+          p
+            button.btn.btn-primary(
+              ng-if="account !== MAC.selectedAccount"
+              ng-click="MAC.selectedAccount = account; MAC.updateAccount();"
+              role="button"
+            ) Select
+            button.btn.btn-primary(
+              ng-if="account === MAC.selectedAccount"
+              ng-click="MAC.selectedAccount = account; MAC.updateAccount();"
+              role="button"
+              disabled="disabled"
+            ) Selected
+    .col-sm-6.col-md-4(ng-repeat="account in MAC.accounts")
+      .thumbnail
+        img(
+          src="https://ldsconnect.org/images/avatar-64px.png"
+          alt="Add User Account"
+          width="150"
+        )
+        //- TODO add by token also
+        .caption
+          h3 Add Another Account
+          p &nbsp;
+          p &nbsp;
+          p
+            button.btn.btn-success(
+              ng-click="MAC.switchUser()"
+              role="button"
+            ) Add Login
+
+  h2 Choose Stake and Ward
   br
-  pre
-    code {{ MAC | json }}
+  select.form-control(
+    ng-if="MAC.selectedAccount"
+    ng-options="stake as stake.name for stake in MAC.selectedAccount.profile.me.stakes track by stake.appScopedId"
+    ng-model="MAC.stake"
+    ng-change="MAC.updateStake()"
+  )
+  select.form-control(
+    ng-if="MAC.stake"
+    ng-options="ward as ward.name for ward in MAC.stake.wards track by ward.appScopedId"
+    ng-model="MAC.ward"
+    ng-change="MAC.updateWard()"
+  )
