@@ -68,13 +68,74 @@
   br
   select.form-control(
     ng-if="MAC.selectedAccount"
-    ng-options="stake as stake.name for stake in MAC.selectedAccount.profile.me.stakes track by stake.appScopedId"
+    ng-options="stake as stake.comment for stake in MAC.selectedAccount.profile.me.stakes track by stake.appScopedId"
     ng-model="MAC.stake"
     ng-change="MAC.updateStake()"
   )
   select.form-control(
     ng-if="MAC.stake"
-    ng-options="ward as ward.name for ward in MAC.stake.wards track by ward.appScopedId"
+    ng-options="ward as ward.comment for ward in MAC.stake.wards track by ward.appScopedId"
     ng-model="MAC.ward"
     ng-change="MAC.updateWard()"
   )
+
+  h2 Explore API
+
+  ul
+    li https://lds.io/api/ldsio/accounts
+    li https://lds.io/api/ldsio/&lt;accountId>/me
+    li https://lds.io/api/ldsio/&lt;accountId>/stakes/&lt;stakeId>
+    li https://lds.io/api/ldsio/&lt;accountId>/stakes/&lt;stakeId>/photos
+    li https://lds.io/api/ldsio/&lt;accountId>/stakes/&lt;stakeId>/wards/&lt;wardId>
+    li https://lds.io/api/ldsio/&lt;accountId>/stakes/&lt;stakeId>/wards/&lt;wardId>/photos
+    li https://lds.io/api/ldsio/&lt;accountId>/photos/individual/&lt;individualId>/&lt;date>/medium/&lt;whatever>.jpg
+    li https://lds.io/api/ldsio/&lt;accountId>/photos/family/&lt;homeId>/&lt;date>/medium/&lt;whatever>.jpg
+
+  //- TODO server version as well
+  p
+    .checkbox
+      label
+        input(type="checkbox" ng-model="MAC.camelCase" ng-init="MAC.camelCase = true")
+        span use Camel Case mode
+
+  // API::ACCOUNTS
+  div
+    h3
+      span /accounts
+      span &#32;
+      small
+        a(ng-if="!MAC.json.accounts" href="" ng-click="MAC.api.accounts({ show: true })") show example
+        a(ng-if="MAC.json.accounts" href="" ng-click="MAC.api.accounts({ show: false })") hide example
+    p
+      code https://lds.io/api/ldsio/accounts
+    pre
+      code.
+        curl -fsSL -X 'GET' "https://lds.io/api/ldsio/accounts{{ MAC.camelCase && '?camel=true' || '' }}" \
+        &nbsp; -H 'Authorization: Bearer {{ MAC.selectedAccount.token }}' \
+        &nbsp; -H 'X-Developer-Mode: true' \
+        &nbsp; | python -m json.tool
+    div(ng-if="MAC.json.accounts")
+      pre
+        code {{ MAC.json.accounts | json }}
+
+  // API::ME
+  div
+    h3
+      span /me
+      span &#32;
+      small
+        a(ng-if="!MAC.json.me" href="" ng-click="MAC.api.me({ show: true })") show example
+        a(ng-if="MAC.json.me" href="" ng-click="MAC.api.me({ show: false })") hide example
+    p
+      code https://lds.io/api/ldsio/&lt;accountId>/me
+    pre
+      code.
+        curl -fsSL -X 'GET' "https://lds.io/api/ldsio/{{ MAC.selectedAccount.appScopedId }}/me{{ MAC.camelCase && '?camel=true' || '' }}" \
+        &nbsp; -H 'Authorization: Bearer {{ MAC.selectedAccount.token }}' \
+        &nbsp; -H 'X-Developer-Mode: true' \
+        &nbsp; | python -m json.tool
+    div(ng-if="MAC.json.me")
+      pre
+        code {{ MAC.json.me | json }}
+
+  h3 (more in progress)
