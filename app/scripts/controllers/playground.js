@@ -230,6 +230,52 @@ angular.module('yololiumApp')
         scope.json.wardPhotos = err;
       });
     };
+    scope.api.raw = function (url, params, opts) {
+      scope.json.raw = "Loading...";
+
+      var copy = {};
+      var d = new Date();
+
+      if (!opts.show) {
+        scope.json.raw = null;
+        return;
+      }
+
+      // so that we don't cache every click
+      // TODO angular API needs a way to say a resource is temporary / query-based
+      d = new Date(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()).valueOf();
+
+      copy.individual_id = params.individual_id || scope.selectedAccount.profile.me.id;
+      copy.household_id = params.household_id || scope.selectedAccount.profile.me.homeId;
+      copy.ward_id = params.ward_id || scope.ward.id;
+      copy.stake_id = params.stake_id || scope.stake.id;
+      copy.days_ago = d - ((params.days_ago || scope.days_ago) * 24 * 60 * 60 * 1000);
+      copy.days_from_now = d + ((params.days_from_now || scope.days_from_now) * 24 * 60 * 60 * 1000);
+
+      LdsApiRequest.raw(scope.selectedAccount, url, copy).then(function (result) {
+        scope.json.raw = result;
+      }).catch(function (err) {
+        scope.json.raw = err;
+      });
+    };
+    scope.api.rawMobileApi = function (opts) {
+      if (!opts.show) {
+        scope.json.rawMobileApi = null;
+        return;
+      }
+
+      var mobileApiUrl = 'https://tech.lds.org/mobile/ldstools/config.json';
+      var params = {};
+      scope.json.rawMobileApi = "Loading...";
+      LdsApiRequest.raw(scope.selectedAccount, mobileApiUrl, params).then(function (result) {
+        scope.json.rawMobileApi = result;
+      }).catch(function (err) {
+        scope.json.rawMobileApi = err;
+      });
+    };
+    scope.encodeURIComponent = function (url) {
+      return encodeURIComponent(url);
+    };
 
     LdsApiSession.checkSession().then(init, init).catch(init);
     LdsApiSession.onLogin($scope, init);
