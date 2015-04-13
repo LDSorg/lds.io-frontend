@@ -58,7 +58,8 @@
               href="https://github.com/LDSorg/lds.io-backend/issues"
               target="github-issues-ldsio-backend"
               >Issues on Github</a></li>
-            <li ng-show="NC.session.accounts.length"><a ui-sref="develop">Develop</a></li>
+            <li ng-show="NC.session.accounts.length"><a ui-sref="playground">Playground</a></li>
+            <li ng-show="NC.session.accounts.length"><a ui-sref="develop">My Apps</a></li>
             <li ng-show="!NC.session.accounts.length"><a href="" ng-click="NC.showLoginModal()">Login</a></li>
             <li ng-show="NC.session.accounts.length" class="dropdown"><a id="account" data-toggle="dropdown" href="" class="dropdown-toggle">Account<span class="caret"></span></a>
               <ul aria-labelledby="account" class="dropdown-menu">
