@@ -221,3 +221,240 @@
     div(ng-if="PGC.json.stakePhotos")
       pre
         code {{ PGC.json.stakePhotos | json }}
+
+  // API::Debug::Raw::GET
+  div
+    h3
+      span Debug: Raw LDS.org API Calls
+      span &#32;
+      small
+        a(ng-if="!PGC.json.raw" href="" ng-click="PGC.api.raw(PGC.raw.url, PGC.raw, { show: true })") show example
+        a(ng-if="PGC.json.raw" href="" ng-click="PGC.api.raw(PGC.raw.url, PGC.raw, { show: false })") hide example        
+
+    p.
+      LDS I/O wraps, normalizes, and sanatizes the raw lds.org API to be suitable for 3rd-party use.
+      As such, each API endpoint must be prepared one at a time and not all of the API endpoints are available.
+      If you do need an API endpoint that isn't yet available (or some data appears to be incorrect in the wrapped API),
+      you can play with it here, create a JavaScript function that will map it to fit the LDS I/O style, and open an
+      issue on github to have it added.
+    p
+      strong You may not use these resources in production
+      span , they are intended for debugging and development only.
+    p
+      .input-group
+        input.form-control(
+          type="url"
+          placeholder="i.e. https://www.lds.org/mobilecalendar/services/lucrs/cal/subscribed"
+          ng-model="PGC.raw.url"
+          ng-init="PGC.raw.url = 'https://www.lds.org/mobilecalendar/services/lucrs/cal/subscribed'"
+        )
+        span.input-group-btn
+          button.btn.btn-default(
+            type="button"
+            ng-click="PGC.api.raw(PGC.raw.url, PGC.raw, { show: true })"
+          ) Fetch
+
+    p.
+      You for easier development, you can construct URLs with the following templates. Your current member, stake, ward,
+      etc are used as the defaults.
+
+    span.form-horizontal
+      .form-group
+        label.col-sm-2.
+          :individual_id
+        .col-sm-10
+          input.form-control(
+            type="text"
+            ng-model="PGC.raw.individual_id"
+            ng-attr-placeholder="{{ PGC.selectedAccount.profile.me.id }}"
+          )
+      .form-group
+        label.col-sm-2 :household_id
+        .col-sm-10
+          input.form-control(
+            type="text"
+            ng-model="PGC.raw.home_id"
+            ng-attr-placeholder="{{ PGC.selectedAccount.profile.me.homeId }}"
+          )
+      .form-group
+        label.col-sm-2 :stake_id
+        .col-sm-10
+          input.form-control(
+          type="text"
+          ng-model="PGC.raw.stake_id"
+          ng-attr-placeholder="{{ PGC.stake.id }}"
+        )
+      .form-group
+        label.col-sm-2 :ward_id
+        .col-sm-10
+          input.form-control(
+          type="text"
+          ng-model="PGC.raw.ward_id"
+          ng-attr-placeholder="{{ PGC.ward.id }}"
+        )
+      .form-group(ng-init="PGC.days_ago = 14")
+        label.col-sm-2 :days_ago
+        .col-sm-10
+          input.form-control(
+          type="text"
+          ng-model="PGC.raw.days_ago"
+          ng-attr-placeholder="{{ PGC.days_ago }}"
+        )
+      .form-group(ng-init="PGC.days_from_now = 14")
+        label.col-sm-2 :days_from_now
+        .col-sm-10
+          input.form-control(
+          type="text"
+          ng-model="PGC.raw.days_from_now"
+          ng-attr-placeholder="{{ PGC.days_from_now }}"
+        )
+
+    h4 
+      span Examples &#32;
+      small (click to load)
+    ul
+      li
+        a(
+          href=""
+          ng-click="PGC.raw.url = 'https://www.lds.org/mobiledirectory/services/v2/ldstools/current-user-detail'; PGC.api.raw(PGC.raw.url, PGC.raw, { show: true })"
+        ) https://www.lds.org/mobiledirectory/services/v2/ldstools/current-user-detail
+      li
+        a(
+          href=""
+          ng-click="PGC.raw.url = 'https://www.lds.org/mobilecalendar/services/lucrs/cal/subscribed'; PGC.api.raw(PGC.raw.url, PGC.raw, { show: true })"
+        ) https://www.lds.org/mobilecalendar/services/lucrs/cal/subscribed
+      li
+        a(
+          href=""
+          ng-click="PGC.raw.url = 'https://www.lds.org/mobilecalendar/services/lucrs/evt/calendar/:days_ago-:days_from_now'; PGC.api.raw(PGC.raw.url, PGC.raw, { show: true })"
+        ) https://www.lds.org/mobilecalendar/services/lucrs/evt/calendar/:days_ago-:days_from_now
+      li
+        a(
+          href=""
+          ng-click="PGC.raw.url = 'https://www.lds.org/mobiledirectory/services/v2/ldstools/member-detaillist-with-callings/:ward_id'; PGC.api.raw(PGC.raw.url, PGC.raw, { show: true })"
+        ) https://www.lds.org/mobiledirectory/services/v2/ldstools/member-detaillist-with-callings/:ward_id
+      li
+        a(
+          href=""
+          ng-click="PGC.raw.url = 'https://www.lds.org/mobiledirectory/services/v2/ldstools/member-detaillist-with-callings/:stake_id'; PGC.api.raw(PGC.raw.url, PGC.raw, { show: true })"
+        ) https://www.lds.org/mobiledirectory/services/v2/ldstools/member-detaillist-with-callings/:stake_id
+
+
+
+    pre
+      code.
+        curl -fsSL -X 'GET' "https://lds.io/api/ldsio/{{ PGC.selectedAccount.appScopedId }}/debug/raw?url={{ PGC.encodeURIComponent(PGC.raw.url) }}{{ PGC.camelCase && '&camel=true' || '' }}" \
+        &nbsp; -H 'Authorization: Bearer {{ PGC.selectedAccount.token }}' \
+        &nbsp; -H 'X-Developer-Mode: true' \
+        &nbsp; | python -m json.tool
+    div(ng-if="PGC.json.raw")
+      pre
+        code {{ PGC.json.raw | json }}
+
+  // API::Debug::Mobile
+  div
+    h3
+      span Debug: Well-Known Mobile APIs
+      span &#32;
+      small
+        a(ng-if="!PGC.json.rawMobileApi" href="" ng-click="PGC.api.rawMobileApi({ show: true })") show live json
+        a(ng-if="PGC.json.rawMobileApi" href="" ng-click="PGC.api.rawMobileApi({ show: false })") hide live json
+    p
+      span.
+        You can copy and paste any of lds.org URLs below into the debugger above. Remember to
+        replace the <code>%@</code>, <code>%d</code>, and <code>%0.f</code>s with things
+        like <code>:ward_id</code>, <code>:individual_id</code>, <code>:days_ago</code>, etc.
+    p (P.S. I'd really appreciate help in converting these to the appropriate format, just make an issue on github with the converted URLs if you can help out)
+    p
+      code
+        a(
+          href="https://tech.lds.org/mobile/ldstools/config.json"
+          target="lds-mobile-api-list"
+        ) https://tech.lds.org/mobile/ldstools/config.json
+    p
+      code
+        a(
+          href="http://tech.lds.org/wiki/LDS_Tools_Web_Services"
+          target="lds-mobile-api-docs"
+        ) http://tech.lds.org/wiki/LDS_Tools_Web_Services
+    pre
+      code.
+        curl -fsSL -X 'GET' 'https://tech.lds.org/mobile/ldstools/config.json' | python -m json.tool
+
+    pre(ng-if="PGC.json.rawMobileApi")
+      code {{ PGC.json.rawMobileApi | json }}
+    pre(ng-if="!PGC.json.rawMobileApi")
+      code.
+        &nbsp; # Snapshot 2015-Apr-13
+        &nbsp; {
+        &nbsp;   "action-and-interview-list": "https://www.lds.org/mls/mbr/services/report/action-interview-list/unit/%@/?lang=eng",
+        &nbsp;   "action-and-interview-list-full": "https://www.lds.org/mls/mbr/services/report/action-interview-list/full/unit/%@/?lang=eng",
+        &nbsp;   "android-faq-url": "http://www.lds.org/callings/melchizedek-priesthood/records-and-technology-support/lds-tools-faq?lang=eng",
+        &nbsp;   "android-latest-location": "https://play.google.com/store/apps/details?id=org.lds.ldstools",
+        &nbsp;   "android-latest-version": "10-23018",
+        &nbsp;   "android-release-notes-url": "https://www.lds.org/callings/melchizedek-priesthood/records-and-technology-support/lds-tools-release-notifications?lang=eng#android",
+        &nbsp;   "auth-url": "https://signin.lds.org/login.html",
+        &nbsp;   "auto-update-days": "17.25",
+        &nbsp;   "birthday-list": "https://www.lds.org/mls/mbr/services/report/birthday-list/unit/%@/?month=1&months=12&organization=selectAll&lang=eng",
+        &nbsp;   "cal-event": "https://wsmobile1.lds.org/CP/CalendarProxyService/v1/Event/%d",
+        &nbsp;   "cal-events": "https://wsmobile1.lds.org/CP/CalendarProxyService/v1/Events/%.0f-%.0f",
+        &nbsp;   "cal-subscribed": "https://wsmobile1.lds.org/CP/CalendarProxyService/v1/Subscribed",
+        &nbsp;   "cal-version": "https://wsmobile1.lds.org/CP/CalendarProxyService/v1/Locations?blah=adm/appVersion",
+        &nbsp;   "cal2x-colors": "https://www.lds.org/mobilecalendar/services/lucrs/cal/allColors",
+        &nbsp;   "cal2x-event": "https://www.lds.org/mobilecalendar/services/lucrs/evt/%d",
+        &nbsp;   "cal2x-events": "https://www.lds.org/mobilecalendar/services/lucrs/evt/calendar/%.0f-%.0f",
+        &nbsp;   "cal2x-init": "https://www.lds.org/mobilecalendar/services/lucrs/mem/currentUserOptions/%@",
+        &nbsp;   "cal2x-locations": "https://www.lds.org/mobilecalendar/services/lucrs/loc/locations",
+        &nbsp;   "cal2x-set-calendar-color": "https://www.lds.org/mobilecalendar/services/lucrs/cal/%@/color/%@/",
+        &nbsp;   "cal2x-status": "https://www.lds.org/mobilecalendar/heartbeat",
+        &nbsp;   "cal2x-subscribed": "https://www.lds.org/mobilecalendar/services/lucrs/cal/subscribed",
+        &nbsp;   "callings-with-dates": "https://www.lds.org/mls/mbr/services/report/members-with-callings?unitNumber=%@&lang=eng",
+        &nbsp;   "connect-timeout-seconds": "30",
+        &nbsp;   "connection-timeout-seconds": "60",
+        &nbsp;   "current-user-detail": "https://www.lds.org/mobiledirectory/services/v2/ldstools/current-user-detail",
+        &nbsp;   "current-user-id": "https://www.lds.org/mobiledirectory/services/ludrs/1.1/mem/mobile/current-user-id",
+        &nbsp;   "current-user-unit": "https://www.lds.org/mobiledirectory/services/ludrs/1.1/mem/mobile/current-user-unitNo",
+        &nbsp;   "current-user-units": "https://www.lds.org/mobiledirectory/services/ludrs/1.1/unit/mobile/current-user-units",
+        &nbsp;   "current_user_id": "https://www.lds.org/mobiledirectory/services/ludrs/1.1/mem/mobile/current-user-id",
+        &nbsp;   "directory-status": "https://www.lds.org/mobiledirectory/heartbeat",
+        &nbsp;   "expire-after-num-days": "30",
+        &nbsp;   "feedback": "https://lds.qualtrics.com/SE/?SID=SV_esOCWpQ67JUc6na",
+        &nbsp;   "force-app-update": "0",
+        &nbsp;   "ios-eng-support-rss-url": "http://www.ldsmobile.org/lt-ios-help/?feed=rss2",
+        &nbsp;   "ios-faq-url": "http://www.lds.org/callings/melchizedek-priesthood/records-and-technology-support/lds-tools-faq?lang=eng",
+        &nbsp;   "ios-release-notes-url": "https://www.lds.org/callings/melchizedek-priesthood/records-and-technology-support/lds-tools-release-notifications?lang=eng#ios",
+        &nbsp;   "largePhoto": "{500,375};original.jpg;enabled",
+        &nbsp;   "leader-access": "http://tech.lds.org/mobile/ldstools/leader-access-1.0.json",
+        &nbsp;   "leader-reports-enabled": "true",
+        &nbsp;   "maintenance": "false",
+        &nbsp;   "maintenance-android": "false",
+        &nbsp;   "maintenance-ios": "false",
+        &nbsp;   "mediumPhoto": "{200,150};medium.jpg;enabled",
+        &nbsp;   "member-assignments": "https://www.lds.org/mobiledirectory/services/ludrs/1.1/mem/mobile/member-assignments",
+        &nbsp;   "members-moved-in": "https://www.lds.org/mls/mbr/services/report/members-moved-in/unit/%@/%d?lang=eng",
+        &nbsp;   "membership-record": "https://www.lds.org/mls/mbr/services/report/membership-record/%@?lang=eng",
+        &nbsp;   "membership-records": "https://www.lds.org/mls/mbr/services/report/membership-records?unitNumber=%@&lang=eng",
+        &nbsp;   "num_warnings_after_expired": "5",
+        &nbsp;   "organization-list-url": "http://tech.lds.org/mobile/ldstools/lists.json",
+        &nbsp;   "photo-base-url": "https://www.lds.org",
+        &nbsp;   "photo-delete-path": "/mobiledirectory/services/ludrs/1.1/photo/delete-photo-ml/%@/",
+        &nbsp;   "photo-upload-content-type": "application/octet-stream",
+        &nbsp;   "photo-upload-path": "/mobiledirectory/services/ludrs/1.1/photo/upload/%@/%@/%d/%d/%d",
+        &nbsp;   "photo-url": "https://www.lds.org/mobiledirectory/services/ludrs/1.1/photo/url/%@/%@",
+        &nbsp;   "privacy-url": "http://www.lds.org/legal/privacy?lang=eng",
+        &nbsp;   "response-timeout-seconds": "30,60,90",
+        &nbsp;   "retry-delay-ms": "500,4000,10000",
+        &nbsp;   "signout-url": "http://www.lds.org/signinout/?lang=eng&signmeout",
+        &nbsp;   "stake-leadership": "https://www.lds.org/mobiledirectory/services/ludrs/unit/stake-leadership-positions",
+        &nbsp;   "stake-units": "https://www.lds.org/mobiledirectory/services/ludrs/unit/current-user-stake-wards",
+        &nbsp;   "temple-recommend-status": "https://www.lds.org/mls/mbr/services/recommend/endowed-members?unitNumber=%@&lang=eng",
+        &nbsp;   "terms-url": "http://www.lds.org/legal/terms?lang=eng",
+        &nbsp;   "thumbnailPhoto": "{40,40};thumbnail.jpg;enabled",
+        &nbsp;   "timeout-seconds": "60",
+        &nbsp;   "unit-leadership": "https://www.lds.org/mobiledirectory/services/ludrs/1.1/unit/unit-leadershiplist/%@",
+        &nbsp;   "unit-leadership-new": "https://www.lds.org/mobiledirectory/services/ludrs/1.1/unit/unit-leadershiplist/%@",
+        &nbsp;   "unit-members-and-callings": "https://www.lds.org/mobiledirectory/services/ludrs/1.1/mem/mobile/member-detaillist-with-callings/%@",
+        &nbsp;   "unit-members-and-callings-v2": "https://www.lds.org/mobiledirectory/services/v2/ldstools/member-detaillist-with-callings/%@",
+        &nbsp;   "unit-membership": "https://www.lds.org/mobiledirectory/services/ludrs/1.1/mem/mobile/member-detaillist/%@",
+        &nbsp;   "unit-statistics": "https://www.lds.org/mls/mbr/services/report/unit-statistics?unitNumber=%@&lang=eng"
+        &nbsp; }
