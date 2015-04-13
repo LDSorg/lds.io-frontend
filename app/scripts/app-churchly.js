@@ -122,12 +122,12 @@ angular.module('yololiumApp', [
 
       })
 
-      .state('account', {
-        url: '/account/'
+      .state('playground', {
+        url: '/playground/'
       , views: {
           body: {
-            templateUrl: 'views/my-account.html'
-          , controller: 'MyAccountController as MAC'
+            templateUrl: 'views/playground.html'
+          , controller: 'PlaygroundController as PGC'
           }
         }
       })

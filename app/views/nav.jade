@@ -14,6 +14,8 @@
     #navbar-main.navbar-collapse.collapse(ng-class="!navCollapsed && 'in'")
       ul.nav.navbar-nav.navbar-right
         li
+          a.btn.btn-success(href="https://groups.google.com/forum/#!forum/lds-connect") Join the Mailing List
+        li
           a(ui-sref="api") API
         li(ng-show="NC.session.accounts.length")
           a(ui-sref="develop") Develop

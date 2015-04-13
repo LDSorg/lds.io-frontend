@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('yololiumApp')
-  .controller('MyAccountController', [
+  .controller('PlaygroundController', [
     '$window'
   , '$scope'
   , '$location'
@@ -202,6 +202,32 @@ angular.module('yololiumApp')
         scope.json.ward = result;
       }).catch(function (err) {
         scope.json.ward = err;
+      });
+    };
+    scope.api.stakePhotos = function (opts) {
+      if (!opts.show) {
+        scope.json.stakePhotos = null;
+        return;
+      }
+
+      scope.json.stakePhotos = "Loading... (generally takes 5 to 10 seconds)";
+      LdsApiRequest.stakePhotos(scope.selectedAccount, scope.stake.appScopedId).then(function (result) {
+        scope.json.stakePhotos = result;
+      }).catch(function (err) {
+        scope.json.stakePhotos = err;
+      });
+    };
+    scope.api.wardPhotos = function (opts) {
+      if (!opts.show) {
+        scope.json.wardPhotos = null;
+        return;
+      }
+
+      scope.json.wardPhotos = "Loading... (generally takes 5 to 10 seconds)";
+      LdsApiRequest.wardPhotos(scope.selectedAccount, scope.stake.appScopedId, scope.ward.appScopedId).then(function (result) {
+        scope.json.wardPhotos = result;
+      }).catch(function (err) {
+        scope.json.wardPhotos = err;
       });
     };
 

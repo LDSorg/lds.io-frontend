@@ -1,0 +1,223 @@
+.container
+  div.alert-info(ng-if="PGC.loading")
+    p(ng-if="!PGC.loadingBlink") Loading...
+
+  h2 Available Tokens
+  div(ng-repeat="login in PGC.session.logins")
+    span(ng-init="L = {};")
+    p
+      span Token: &#32;
+      code {{ login.token }}
+      span &#32; Expires At: &#32;
+      code {{ login.expiresAt }}
+      br
+      span Account ID: &#32;
+      code(ng-repeat="account in login.accounts") {{ account.appScopedId || account.id }}
+      br
+      span Granted Scope: &#32;
+      code todo
+      br
+      button.btn.btn-link(ng-show="!L.showJson" ng-click="L.showJson = true") show json
+      button.btn.btn-link(ng-show="L.showJson" ng-click="L.showJson = false") hide json
+      div(ng-if="L.showJson")
+        pre
+          code {{ login | json }}
+  h2 Available Accounts
+  .row
+    .col-sm-6.col-md-4(ng-repeat="account in PGC.accounts")
+      .thumbnail
+        img(
+          ng-src="{{ account.profile.me.photo }}"
+          ng-alt="{{ account.profile.me.name + ' ' + account.profile.me.surnames.join(' ') }}"
+        )
+        .caption
+          h3 {{ account.profile.me.name + ' ' + account.profile.me.surnames.join(' ') }}
+          p {{ account.profile.me.homeWardName }}
+          p {{ account.profile.me.homeStakeName }}
+          p
+            button.btn.btn-primary(
+              ng-if="account !== PGC.selectedAccount"
+              ng-click="PGC.selectedAccount = account; PGC.updateAccount();"
+              role="button"
+            ) Select
+            button.btn.btn-primary(
+              ng-if="account === PGC.selectedAccount"
+              ng-click="PGC.selectedAccount = account; PGC.updateAccount();"
+              role="button"
+              disabled="disabled"
+            ) Selected
+    .col-sm-6.col-md-4(ng-repeat="account in PGC.accounts")
+      .thumbnail
+        img(
+          src="https://ldsconnect.org/images/avatar-64px.png"
+          alt="Add User Account"
+          width="150"
+        )
+        //- TODO add by token also
+        .caption
+          h3 Add Another Account
+          p &nbsp;
+          p &nbsp;
+          p
+            button.btn.btn-success(
+              ng-click="PGC.switchUser()"
+              role="button"
+            ) Add Login
+
+  h2 Choose Stake and Ward
+  br
+  select.form-control(
+    ng-if="PGC.selectedAccount"
+    ng-options="stake as stake.comment for stake in PGC.selectedAccount.profile.me.stakes track by stake.appScopedId"
+    ng-model="PGC.stake"
+    ng-change="PGC.updateStake()"
+  )
+  select.form-control(
+    ng-if="PGC.stake"
+    ng-options="ward as ward.comment for ward in PGC.stake.wards track by ward.appScopedId"
+    ng-model="PGC.ward"
+    ng-change="PGC.updateWard()"
+  )
+
+  h2 Explore API
+
+  ul
+    li https://lds.io/api/ldsio/accounts
+    li https://lds.io/api/ldsio/&lt;accountId>/me
+    li https://lds.io/api/ldsio/&lt;accountId>/stakes/&lt;stakeId>
+    li https://lds.io/api/ldsio/&lt;accountId>/stakes/&lt;stakeId>/photos
+    li https://lds.io/api/ldsio/&lt;accountId>/stakes/&lt;stakeId>/wards/&lt;wardId>
+    li https://lds.io/api/ldsio/&lt;accountId>/stakes/&lt;stakeId>/wards/&lt;wardId>/photos
+    li https://lds.io/api/ldsio/&lt;accountId>/photos/individual/&lt;individualId>/&lt;date>/medium/&lt;whatever>.jpg
+    li https://lds.io/api/ldsio/&lt;accountId>/photos/family/&lt;homeId>/&lt;date>/medium/&lt;whatever>.jpg
+
+  //- TODO server version as well
+  p
+    .checkbox
+      label
+        input(type="checkbox" ng-model="PGC.camelCase" ng-init="PGC.camelCase = true")
+        span use Camel Case mode
+
+  // API::ACCOUNTS
+  div
+    h3
+      span User-Switching
+      span &#32;
+      small
+        a(ng-if="!PGC.json.accounts" href="" ng-click="PGC.api.accounts({ show: true })") show example
+        a(ng-if="PGC.json.accounts" href="" ng-click="PGC.api.accounts({ show: false })") hide example
+    p
+      code https://lds.io/api/ldsio/accounts
+    p.
+      First-Party apps (such as LDS Connect and LDS I/O) allow for multiple accounts to be tied to a single token.
+      As a Third-Party developer you do not need to be concerned with this functionality, however, it's useful
+      to know about for the purposes of the API Explorer and when working on LDS I/O.
+    pre
+      code.
+        curl -fsSL -X 'GET' "https://lds.io/api/ldsio/accounts{{ PGC.camelCase && '?camel=true' || '' }}" \
+        &nbsp; -H 'Authorization: Bearer {{ PGC.selectedAccount.token }}' \
+        &nbsp; -H 'X-Developer-Mode: true' \
+        &nbsp; | python -m json.tool
+    div(ng-if="PGC.json.accounts")
+      pre
+        code {{ PGC.json.accounts | json }}
+
+  // API::ME
+  div
+    h3
+      span User Details
+      span &#32;
+      small
+        a(ng-if="!PGC.json.me" href="" ng-click="PGC.api.me({ show: true })") show example
+        a(ng-if="PGC.json.me" href="" ng-click="PGC.api.me({ show: false })") hide example
+    p
+      code https://lds.io/api/ldsio/&lt;accountId>/me
+    pre
+      code.
+        curl -fsSL -X 'GET' "https://lds.io/api/ldsio/{{ PGC.selectedAccount.appScopedId }}/me{{ PGC.camelCase && '?camel=true' || '' }}" \
+        &nbsp; -H 'Authorization: Bearer {{ PGC.selectedAccount.token }}' \
+        &nbsp; -H 'X-Developer-Mode: true' \
+        &nbsp; | python -m json.tool
+    div(ng-if="PGC.json.me")
+      pre
+        code {{ PGC.json.me | json }}
+
+  // API::Stake
+  div
+    h3
+      span Directory: Stake Meetinghouse and Leadership
+      span &#32;
+      small
+        a(ng-if="!PGC.json.stake" href="" ng-click="PGC.api.stake({ show: true })") show example
+        a(ng-if="PGC.json.stake" href="" ng-click="PGC.api.stake({ show: false })") hide example
+    p
+      code https://lds.io/api/ldsio/&lt;accountId>/stakes/&lt;stakeId>
+    pre
+      code.
+        curl -fsSL -X 'GET' "https://lds.io/api/ldsio/{{ PGC.selectedAccount.appScopedId }}/stakes/{{ PGC.stake.appScopedId }}{{ PGC.camelCase && '?camel=true' || '' }}" \
+        &nbsp; -H 'Authorization: Bearer {{ PGC.selectedAccount.token }}' \
+        &nbsp; -H 'X-Developer-Mode: true' \
+        &nbsp; | python -m json.tool
+    div(ng-if="PGC.json.stake")
+      pre
+        code {{ PGC.json.stake | json }}
+
+  // API::Ward
+  div
+    h3
+      span Directory: Ward Meetinghouse, Members, and Callings
+      span &#32;
+      small
+        a(ng-if="!PGC.json.ward" href="" ng-click="PGC.api.ward({ show: true })") show example
+        a(ng-if="PGC.json.ward" href="" ng-click="PGC.api.ward({ show: false })") hide example
+    p
+      code https://lds.io/api/ldsio/&lt;accountId>/stakes/&lt;stakeId>/wards/&lt;wardId>
+    pre
+      code.
+        curl -fsSL -X 'GET' "https://lds.io/api/ldsio/{{ PGC.selectedAccount.appScopedId }}/stakes/{{ PGC.stake.appScopedId }}/wards/{{ PGC.ward.appScopedId }}{{ PGC.camelCase && '?camel=true' || '' }}" \
+        &nbsp; -H 'Authorization: Bearer {{ PGC.selectedAccount.token }}' \
+        &nbsp; -H 'X-Developer-Mode: true' \
+        &nbsp; | python -m json.tool
+    div(ng-if="PGC.json.ward")
+      pre
+        code {{ PGC.json.ward | json }}
+
+  // API::Ward::Photos
+  div
+    h3
+      span Photos: Ward Members and Families
+      span &#32;
+      small
+        a(ng-if="!PGC.json.wardPhotos" href="" ng-click="PGC.api.wardPhotos({ show: true })") show example
+        a(ng-if="PGC.json.wardPhotos" href="" ng-click="PGC.api.wardPhotos({ show: false })") hide example
+    p
+      code https://lds.io/api/ldsio/&lt;accountId>/stakes/&lt;stakeId>/wards/&lt;wardId>
+    pre
+      code.
+        curl -fsSL -X 'GET' "https://lds.io/api/ldsio/{{ PGC.selectedAccount.appScopedId }}/stakes/{{ PGC.stake.appScopedId }}/wards/{{ PGC.ward.appScopedId }}/photos{{ PGC.camelCase && '?camel=true' || '' }}" \
+        &nbsp; -H 'Authorization: Bearer {{ PGC.selectedAccount.token }}' \
+        &nbsp; -H 'X-Developer-Mode: true' \
+        &nbsp; | python -m json.tool
+    div(ng-if="PGC.json.wardPhotos")
+      pre
+        code {{ PGC.json.wardPhotos | json }}
+
+  // API::Stake::Photos
+  div
+    h3
+      span Photos: Stake Leadership
+      span &#32;
+      small
+        a(ng-if="!PGC.json.stakePhotos" href="" ng-click="PGC.api.stakePhotos({ show: true })") show example
+        a(ng-if="PGC.json.stakePhotos" href="" ng-click="PGC.api.stakePhotos({ show: false })") hide example
+    p
+      code https://lds.io/api/ldsio/&lt;accountId>/stakes/&lt;stakeId>/wards/&lt;wardId>
+    pre
+      code.
+        curl -fsSL -X 'GET' "https://lds.io/api/ldsio/{{ PGC.selectedAccount.appScopedId }}/stakes/{{ PGC.stake.appScopedId }}/photos{{ PGC.camelCase && '?camel=true' || '' }}" \
+        &nbsp; -H 'Authorization: Bearer {{ PGC.selectedAccount.token }}' \
+        &nbsp; -H 'X-Developer-Mode: true' \
+        &nbsp; | python -m json.tool
+    div(ng-if="PGC.json.stakePhotos")
+      pre
+        code {{ PGC.json.stakePhotos | json }}
