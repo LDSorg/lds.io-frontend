@@ -178,6 +178,32 @@ angular.module('yololiumApp')
         scope.json.me = err;
       });
     };
+    scope.api.stake = function (opts) {
+      if (!opts.show) {
+        scope.json.stake = null;
+        return;
+      }
+
+      scope.json.stake = "Loading...";
+      LdsApiRequest.stake(scope.selectedAccount, scope.stake.appScopedId).then(function (result) {
+        scope.json.stake = result;
+      }).catch(function (err) {
+        scope.json.stake = err;
+      });
+    };
+    scope.api.ward = function (opts) {
+      if (!opts.show) {
+        scope.json.ward = null;
+        return;
+      }
+
+      scope.json.ward = "Loading...";
+      LdsApiRequest.stake(scope.selectedAccount, scope.stake.appScopedId, scope.ward.appScopedId).then(function (result) {
+        scope.json.ward = result;
+      }).catch(function (err) {
+        scope.json.ward = err;
+      });
+    };
 
     LdsApiSession.checkSession().then(init, init).catch(init);
     LdsApiSession.onLogin($scope, init);

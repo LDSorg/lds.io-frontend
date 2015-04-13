@@ -138,4 +138,44 @@
       pre
         code {{ MAC.json.me | json }}
 
+  // API::Stake
+  div
+    h3
+      span /stakes/&lt;stakeId>
+      span &#32;
+      small
+        a(ng-if="!MAC.json.stake" href="" ng-click="MAC.api.stake({ show: true })") show example
+        a(ng-if="MAC.json.stake" href="" ng-click="MAC.api.stake({ show: false })") hide example
+    p
+      code https://lds.io/api/ldsio/&lt;accountId>/stakes/&lt;stakeId>
+    pre
+      code.
+        curl -fsSL -X 'GET' "https://lds.io/api/ldsio/{{ MAC.selectedAccount.appScopedId }}/stakes/{{ MAC.stake.appScopedId }}{{ MAC.camelCase && '?camel=true' || '' }}" \
+        &nbsp; -H 'Authorization: Bearer {{ MAC.selectedAccount.token }}' \
+        &nbsp; -H 'X-Developer-Mode: true' \
+        &nbsp; | python -m json.tool
+    div(ng-if="MAC.json.stake")
+      pre
+        code {{ MAC.json.stake | json }}
+
+  // API::Ward
+  div
+    h3
+      span /stakes/&lt;stakeId>/wards/&lt;wardId>
+      span &#32;
+      small
+        a(ng-if="!MAC.json.ward" href="" ng-click="MAC.api.ward({ show: true })") show example
+        a(ng-if="MAC.json.ward" href="" ng-click="MAC.api.ward({ show: false })") hide example
+    p
+      code https://lds.io/api/ldsio/&lt;accountId>/stakes/&lt;stakeId>/wards/&lt;wardId>
+    pre
+      code.
+        curl -fsSL -X 'GET' "https://lds.io/api/ldsio/{{ MAC.selectedAccount.appScopedId }}/stakes/{{ MAC.stake.appScopedId }}/wards/{{ MAC.ward.appScopedId }}{{ MAC.camelCase && '?camel=true' || '' }}" \
+        &nbsp; -H 'Authorization: Bearer {{ MAC.selectedAccount.token }}' \
+        &nbsp; -H 'X-Developer-Mode: true' \
+        &nbsp; | python -m json.tool
+    div(ng-if="MAC.json.ward")
+      pre
+        code {{ MAC.json.ward | json }}
+
   h3 (more in progress)
