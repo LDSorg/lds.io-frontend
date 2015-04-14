@@ -198,7 +198,7 @@ angular.module('yololiumApp')
       }
 
       scope.json.ward = "Loading...";
-      LdsApiRequest.stake(scope.selectedAccount, scope.stake.appScopedId, scope.ward.appScopedId).then(function (result) {
+      LdsApiRequest.ward(scope.selectedAccount, scope.stake.appScopedId, scope.ward.appScopedId).then(function (result) {
         scope.json.ward = result;
       }).catch(function (err) {
         scope.json.ward = err;
