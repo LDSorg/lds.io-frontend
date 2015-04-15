@@ -32,7 +32,7 @@ angular.module('myApp').controller('NavController', [
 
   NC.login = function (/*name*/) {
     console.log('nav login');
-    LdsApiSession.login({ scope: '*' }).then(function (session) {
+    LdsApiSession.login({ scope: '*', authorizationRedirect: true }).then(function (session) {
       return LdsApiRequest.profile(session, { expire: true }).then(function () {
         NC.session = NC.session;
       });
