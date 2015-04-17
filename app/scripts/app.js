@@ -31,9 +31,9 @@ angular.module('myApp').controller('NavController', [
   });
 
   NC.login = function (/*name*/) {
-    console.log('nav login');
-    LdsApiSession.login({ scope: '*' }).then(function (session) {
-      return LdsApiRequest.profile(session, { expire: true }).then(function () {
+    LdsApiSession.login({ scope: '*' /*, authorizationRedirect: true*/ }).then(function (/*session*/) {
+      var account = LdsApiSession.selectAccount();
+      return LdsApiRequest.api.profile(account, { expire: true }).then(function () {
         NC.session = NC.session;
       });
     }, function (err) {
@@ -84,11 +84,14 @@ angular.module('yololiumApp', [
                 return name.toLowerCase().replace(/[^\-\w]/, '').replace(/s$/, '');
               };
 
-              function prefetch(session) {
+              function prefetch(/*session*/) {
+                var account = LdsApiSession.selectAccount();
+                var accountApi = LdsApiRequest.create(account);
+
                 // Prefetching
-                return LdsApiRequest.profile(session).then(function (profile) {
-                  LdsApiRequest.stake(session, profile.homeStakeAppScopedId);
-                  LdsApiRequest.ward(session, profile.homeStakeAppScopedId, profile.homeWardAppScopedId);
+                return accountApi.profile().then(function (profile) {
+                  accountApi.stake(profile.me.homeStakeAppScopedId);
+                  accountApi.ward(profile.me.homeStakeAppScopedId, profile.me.homeWardAppScopedId);
                 });
               }
 
@@ -222,7 +225,7 @@ angular.module('yololiumApp', [
     appId: 'TEST_ID_beba4219ee9e9edac8a75237' // production server, test client
   //appId: 'TEST_ID_871a371debefb91c919ca848' // test server, test client
   , appVersion: '2.0.0-pre'
-  , invokeLogin: function (opts) {
+  , invokeLogin: function (/*opts*/) {
       //$window.alert("login modal not yet implemented");
       return $q.reject(new Error("login modal not implemented"));
       /*

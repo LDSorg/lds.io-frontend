@@ -17,7 +17,7 @@ angular.module('yololiumApp')
 
     function fetch(account) {
       return $http.get(
-        LdsApiConfig.providerUri + '/api/accounts/' + account.appScopedId + '/clients'
+        LdsApiConfig.apiBaseUri + '/api/accounts/' + account.appScopedId + '/clients'
       , { headers: { Authorization: 'Bearer ' + account.token } }
       ).then(function (resp) {
         if (!resp.data || resp.data.error) {
@@ -32,7 +32,7 @@ angular.module('yololiumApp')
       /* { name: ..., desc: ..., logo: ... } */
 
       return $http.post(
-        LdsApiConfig.providerUri + '/api/accounts/' + account.appScopedId + '/clients'
+        LdsApiConfig.apiBaseUri + '/api/accounts/' + account.appScopedId + '/clients'
       , app
       , { headers: { Authorization: 'Bearer ' + account.token } }
       ).then(function (resp) {
@@ -44,7 +44,7 @@ angular.module('yololiumApp')
       /* { name: ..., desc: ..., logo: ... } */
 
       return $http.post(
-        LdsApiConfig.providerUri + '/api/accounts/' + account.appScopedId + '/clients/' + id
+        LdsApiConfig.apiBaseUri + '/api/accounts/' + account.appScopedId + '/clients/' + id
       , app
       , { headers: { Authorization: 'Bearer ' + account.token } }
       ).then(function (resp) {
@@ -56,7 +56,7 @@ angular.module('yololiumApp')
       /* { name: ..., desc: ..., logo: ... } */
 
       return $http.delete(
-        LdsApiConfig.providerUri + '/api/accounts/' + account.appScopedId + '/clients/' + id
+        LdsApiConfig.apiBaseUri + '/api/accounts/' + account.appScopedId + '/clients/' + id
       , { headers: { Authorization: 'Bearer ' + account.token } }
       ).then(function (resp) {
         return resp.data;

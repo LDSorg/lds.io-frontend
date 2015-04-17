@@ -92,7 +92,7 @@ angular.module('yololiumApp')
 
     function init(session) {
       // returns selected account, only account, or most recently added account
-      account = LdsApiSession.selectAccount(session);
+      account = LdsApiSession.selectAccount();
 
       if (!session || !session.token) {
         $state.go('root');

@@ -5,20 +5,62 @@ angular.module('yololiumApp')
     '$window'
   , '$scope'
   , '$location'
+  , '$q'
   , '$http'
   , 'LdsApiConfig'
   , 'LdsApiSession'
   , 'LdsApiRequest'
-  , function ($window, $scope, $location, $http, LdsApiConfig, LdsApiSession, LdsApiRequest) {
+  , function ($window, $scope, $location, $q, $http, LdsApiConfig, LdsApiSession, LdsApiRequest) {
     var scope = this;
 
     function update() {
+      var promise;
+
+      scope.selectedAccount = LdsApiSession.selectAccount(scope.selectedAccount);
+
       // can't pass anything to ng-options via ng-change, hence using scope
       console.log('updateAccount', scope.selectedAccount);
       if ('new' === scope.selectedAccount.appScopedId || scope.selectedAccount.new) {
-        scope.showLoginModal();
-        return;
+        promise = scope.showLoginModal().then(function () {
+          // TODO get most recent (this account)
+          scope.selectedAccount = null;
+        });
+      } else {
+        promise = $q.when();
       }
+
+      // update doesn't return anything
+      console.log('[before]');
+      promise.then(function () {
+        console.log('[next] updateAccount', scope.selectedAccount);
+        return LdsApiRequest.accountsWithProfiles().then(function (accounts) {
+          console.log('accounts', accounts);
+          scope.accounts = accounts;
+
+          scope.accounts.forEach(function (account) {
+            console.log('[loop] account');
+            account.profile.me.photo = LdsApiRequest.api.photoUrl(account, account.profile.me.photos[0], 'medium');
+          });
+
+          // updates active account in session
+          // TODO don't clone the clone
+          scope.selectedAccount = LdsApiSession.selectAccount(scope.selectedAccount);
+          console.log('scope.selectedAccount');
+
+          // select same in-memory account object
+          scope.accounts.some(function (account) {
+            if (scope.selectedAccount.appScopedId === account.appScopedId) {
+              scope.selectedAccount = account;
+              return true;
+            }
+          });
+
+          console.log('scope.selectedAccount', scope.selectedAccount);
+          if (scope.selectedAccount) {
+            scope.pickAnyStake();
+          }
+        });
+      });
     }
 
     scope.profiles = [];
@@ -36,29 +78,8 @@ angular.module('yololiumApp')
       }
 
       scope.session = session;
-      //scope.accounts = session.accounts;
-      scope.account = LdsApiSession.selectAccount(session);
 
-      scope.accounts = [];
-      return LdsApiRequest.getAccountSummaries(session, scope.accounts).then(function () {
-        var currentAccount;
-
-        scope.accounts.forEach(function (account) {
-          console.log('account', account);
-          account.profile.me.photo = LdsApiRequest.photoUrl(account, account.profile.me.photos[0], 'medium');
-        });
-
-        currentAccount = LdsApiSession.selectAccount(session);
-        scope.accounts.forEach(function (account) {
-          if (currentAccount.appScopedId === account.appScopedId) {
-            scope.selectedAccount = account;
-          }
-        });
-
-        if (scope.selectedAccount) {
-          scope.pickAnyStake();
-        }
-      });
+      update();
     }
 
     scope.pickAnyStake = function () {
@@ -172,7 +193,7 @@ angular.module('yololiumApp')
       }
 
       scope.json.me = "Loading...";
-      LdsApiRequest.me(scope.selectedAccount).then(function (result) {
+      LdsApiRequest.api.me(scope.selectedAccount).then(function (result) {
         scope.json.me = result;
       }).catch(function (err) {
         scope.json.me = err;
@@ -185,7 +206,7 @@ angular.module('yololiumApp')
       }
 
       scope.json.stake = "Loading...";
-      LdsApiRequest.stake(scope.selectedAccount, scope.stake.appScopedId).then(function (result) {
+      LdsApiRequest.api.stake(scope.selectedAccount, scope.stake.appScopedId).then(function (result) {
         scope.json.stake = result;
       }).catch(function (err) {
         scope.json.stake = err;
@@ -198,7 +219,7 @@ angular.module('yololiumApp')
       }
 
       scope.json.ward = "Loading...";
-      LdsApiRequest.ward(scope.selectedAccount, scope.stake.appScopedId, scope.ward.appScopedId).then(function (result) {
+      LdsApiRequest.api.ward(scope.selectedAccount, scope.stake.appScopedId, scope.ward.appScopedId).then(function (result) {
         scope.json.ward = result;
       }).catch(function (err) {
         scope.json.ward = err;
@@ -211,7 +232,7 @@ angular.module('yololiumApp')
       }
 
       scope.json.stakePhotos = "Loading... (generally takes 5 to 10 seconds)";
-      LdsApiRequest.stakePhotos(scope.selectedAccount, scope.stake.appScopedId).then(function (result) {
+      LdsApiRequest.api.stakePhotos(scope.selectedAccount, scope.stake.appScopedId).then(function (result) {
         scope.json.stakePhotos = result;
       }).catch(function (err) {
         scope.json.stakePhotos = err;
@@ -224,7 +245,7 @@ angular.module('yololiumApp')
       }
 
       scope.json.wardPhotos = "Loading... (generally takes 5 to 10 seconds)";
-      LdsApiRequest.wardPhotos(scope.selectedAccount, scope.stake.appScopedId, scope.ward.appScopedId).then(function (result) {
+      LdsApiRequest.api.wardPhotos(scope.selectedAccount, scope.stake.appScopedId, scope.ward.appScopedId).then(function (result) {
         scope.json.wardPhotos = result;
       }).catch(function (err) {
         scope.json.wardPhotos = err;
@@ -252,7 +273,7 @@ angular.module('yololiumApp')
       copy.days_ago = d - ((params.days_ago || scope.days_ago) * 24 * 60 * 60 * 1000);
       copy.days_from_now = d + ((params.days_from_now || scope.days_from_now) * 24 * 60 * 60 * 1000);
 
-      LdsApiRequest.raw(scope.selectedAccount, url, copy).then(function (result) {
+      LdsApiRequest.api.raw(scope.selectedAccount, url, copy).then(function (result) {
         scope.json.raw = result;
       }).catch(function (err) {
         scope.json.raw = err;
@@ -267,7 +288,7 @@ angular.module('yololiumApp')
       var mobileApiUrl = 'https://tech.lds.org/mobile/ldstools/config.json';
       var params = {};
       scope.json.rawMobileApi = "Loading...";
-      LdsApiRequest.raw(scope.selectedAccount, mobileApiUrl, params).then(function (result) {
+      LdsApiRequest.api.raw(scope.selectedAccount, mobileApiUrl, params).then(function (result) {
         scope.json.rawMobileApi = result;
       }).catch(function (err) {
         scope.json.rawMobileApi = err;
