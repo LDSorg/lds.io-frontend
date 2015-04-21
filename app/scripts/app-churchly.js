@@ -213,9 +213,16 @@ angular.module('yololiumApp', [
   , '$q'
   , '$http'
   , '$modal'
+  , 'Oauth3'
   , 'LdsApi'
   , 'LdsApiSession'
-  , function ($rootScope, $timeout, $q, $http, $modal, LdsApi, LdsApiSession) {
+  , function ($rootScope, $timeout, $q, $http, $modal, Oauth3, LdsApi, LdsApiSession) {
+
+  Oauth3.discover("https://ldsconnect.org").then(function () {
+    console.log("I'm ready to handle login click events for https://ldsconnect.org");
+  }, function () {
+    window.alert("https://ldsconnect.org does not support oauth3 or is currently unavailable");
+  });
 
   return LdsApi.init({
     // TODO dedicated root app

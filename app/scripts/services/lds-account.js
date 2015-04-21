@@ -73,7 +73,7 @@ angular.module('yololiumApp')
 
     me.getCode = function (account, type, node) {
       return $http.post(
-        LdsApiConfig.providerUri + '/api/ldsio/' + account.appScopedId + '/verify/code'
+        LdsApiConfig.apiBaseUri + '/api/ldsio/' + account.appScopedId + '/verify/code'
       , { type: type
         , node: node
         }
@@ -88,7 +88,7 @@ angular.module('yololiumApp')
 
     me.validateCode = function (account, type, node, uuid, code) {
       return $http.post(
-        LdsApiConfig.providerUri + '/api/ldsio/' + account.appScopedId + '/verify/code/validate'
+        LdsApiConfig.apiBaseUri + '/api/ldsio/' + account.appScopedId + '/verify/code/validate'
       , { type: type
         , node: node
         , uuid: uuid

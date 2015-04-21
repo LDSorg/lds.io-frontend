@@ -40,8 +40,10 @@ angular.module('yololiumApp')
       scope.account = LdsApiSession.selectAccount(session);
 
       scope.accounts = [];
-      return LdsApiRequest.getAccountSummaries(session, scope.accounts).then(function () {
+      return LdsApiRequest.accountsWithProfiles(scope.accounts).then(function () {
         var currentAccount;
+
+        //scope.accounts = accounts;
 
         scope.accounts.forEach(function (account) {
           console.log('account', account);
