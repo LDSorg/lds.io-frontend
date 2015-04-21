@@ -5,20 +5,63 @@ angular.module('yololiumApp')
     '$window'
   , '$scope'
   , '$location'
+  , '$q'
   , '$http'
   , 'LdsApiConfig'
   , 'LdsApiSession'
   , 'LdsApiRequest'
-  , function ($window, $scope, $location, $http, LdsApiConfig, LdsApiSession, LdsApiRequest) {
+  , function ($window, $scope, $location, $q, $http, LdsApiConfig, LdsApiSession, LdsApiRequest) {
     var scope = this;
 
     function update() {
+      var promise;
+
+      scope.selectedAccount = LdsApiSession.selectAccount(scope.selectedAccount);
+
       // can't pass anything to ng-options via ng-change, hence using scope
       console.log('updateAccount', scope.selectedAccount);
       if ('new' === scope.selectedAccount.appScopedId || scope.selectedAccount.new) {
-        scope.showLoginModal();
-        return;
+        promise = scope.showLoginModal().then(function () {
+          // TODO get most recent (this account)
+          scope.selectedAccount = null;
+        });
+      } else {
+        promise = $q.when();
       }
+
+
+      // update doesn't return anything
+      console.log('[before]');
+      promise.then(function () {
+        console.log('[next] updateAccount', scope.selectedAccount);
+        return LdsApiRequest.accountsWithProfiles().then(function (accounts) {
+          console.log('accounts', accounts);
+          scope.accounts = accounts;
+
+          scope.accounts.forEach(function (account) {
+            console.log('[loop] account');
+            account.profile.me.photo = LdsApiRequest.photoUrl(account, account.profile.me.photos[0], 'medium');
+          });
+
+          // updates active account in session
+          // TODO don't clone the clone
+          scope.selectedAccount = LdsApiSession.selectAccount(scope.selectedAccount);
+          console.log('scope.selectedAccount');
+
+          // select same in-memory account object
+          scope.accounts.some(function (account) {
+            if (scope.selectedAccount.appScopedId === account.appScopedId) {
+              scope.selectedAccount = account;
+              return true;
+            }
+          });
+
+          console.log('scope.selectedAccount', scope.selectedAccount);
+          if (scope.selectedAccount) {
+            scope.pickAnyStake();
+          }
+        });
+      });
     }
 
     scope.profiles = [];
@@ -36,31 +79,8 @@ angular.module('yololiumApp')
       }
 
       scope.session = session;
-      //scope.accounts = session.accounts;
-      scope.account = LdsApiSession.selectAccount(session);
 
-      scope.accounts = [];
-      return LdsApiRequest.accountsWithProfiles(scope.accounts).then(function () {
-        var currentAccount;
-
-        //scope.accounts = accounts;
-
-        scope.accounts.forEach(function (account) {
-          console.log('account', account);
-          account.profile.me.photo = LdsApiRequest.photoUrl(account, account.profile.me.photos[0], 'medium');
-        });
-
-        currentAccount = LdsApiSession.selectAccount(session);
-        scope.accounts.forEach(function (account) {
-          if (currentAccount.appScopedId === account.appScopedId) {
-            scope.selectedAccount = account;
-          }
-        });
-
-        if (scope.selectedAccount) {
-          scope.pickAnyStake();
-        }
-      });
+      update();
     }
 
     scope.pickAnyStake = function () {
@@ -200,7 +220,7 @@ angular.module('yololiumApp')
       }
 
       scope.json.ward = "Loading...";
-      LdsApiRequest.stake(scope.selectedAccount, scope.stake.appScopedId, scope.ward.appScopedId).then(function (result) {
+      LdsApiRequest.ward(scope.selectedAccount, scope.stake.appScopedId, scope.ward.appScopedId).then(function (result) {
         scope.json.ward = result;
       }).catch(function (err) {
         scope.json.ward = err;

@@ -108,45 +108,63 @@ lds-dev-backend/
 │       ├── my-server.crt.pem
 │       └── my-server.key.pem
 ├── public -> frontend/app
+|
+|
+|
 └── frontend
-    ├── package.json
-    ├── bower.json
-    ├── install-min.bash
-    └── app
-        ├── 404.html
-        ├── bower_components
-        ├── favicon.ico
-        ├── fonts
-        ├── images
-        ├── index.html
-        ├── oauth2-close.html
-        ├── robots.txt
-        ├── scripts
-        │   ├── app-churchly.js
-        │   ├── client-config.js
-        │   ├── controllers
-        │   │   ├── account.js
-        │   │   ├── lds-account.js
-        │   │   ├── nav.js
-        │   │   ├── oauthclients.js
-        │   │   └── verify-contact-details.js
-        │   └── services
-        │       ├── lds-account.js
-        │       ├── st-account.js
-        │       ├── st-api.js
-        │       ├── st-login.js
-        │       ├── st-oauth-providers.js
-        │       ├── st-oauthclients.js
-        │       └── st-session.js
-        ├── styles
-        │   ├── bootstrap.cerulean.min.css
-        │   ├── bootstrap-social.min.css
-        │   ├── font-awesome.min.css
-        │   └── style.less
-        └── views
-            ├── account.jade
-            ├── lds-account.jade
-            ├── nav.jade
-            ├── oauthclients.jade
-            └── verify-contact-details.jade
+    ├── index.html
+    ├── oauth3.html -> bower_components/oauth3/oauth3.html
+    ├── bower_components
+    │   ├── oauth3
+    │   └── angular-lds-io
+    ├── scripts
+    │   ├── app.js
+    │   ├── client-config.js -> client-config.sample.js
+    │   ├── client-config.sample.js
+    │   ├── controllers
+    │   │   ├── nav.js
+    │   │   ├── oauthclients.js
+    │   │   ├── playground.js
+    │   │   └── verify-contact-details.js
+    │   └── services
+    │       ├── lds-account.js
+    │       ├── st-api.js
+    │       └── st-oauthclients.js
+    ├── views
+    |   ├── api.jade
+    |   ├── nav.jade
+    |   ├── oauthclients.jade
+    |   ├── playground.jade
+    |   └── verify-contact-details.jade
+    |
+    |
+    |
+    ├── favicon.ico
+    ├── robots.txt
+    ├── styles
+    │   ├── auth-modal.css
+    │   ├── bootstrap-social.css
+    │   ├── bootstrap-social.min.css
+    │   ├── bootstrap.cerulean.min.css
+    │   ├── bootstrap.cosmo.min.css
+    │   ├── bootstrap.flatly.min.css
+    │   ├── bootstrap.spacelab.min.css
+    │   ├── bootstrap.min.css
+    │   ├── card.css
+    │   ├── font-awesome.css
+    │   ├── font-awesome.min.css
+    │   ├── social-buttons-3.css
+    │   └── style.css
+    ├── fonts
+    │   ├── FontAwesome.otf
+    │   ├── fontawesome-webfont.eot
+    │   ├── fontawesome-webfont.svg
+    │   ├── fontawesome-webfont.ttf
+    │   ├── fontawesome-webfont.woff
+    │   └── fontawesome-webfont.woff2
+    └── images
+        ├── lds-connect-logo-inverse-32px.png
+        ├── ldsconnect-app-256.png
+        ├── moroni-128px.png
+        └── moroni.png
 ```
