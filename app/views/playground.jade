@@ -1,4 +1,9 @@
-.container
+.container(ng-if="!PGC.session.logins.length")
+  br
+  h2 Please login to continue.
+  p The API Playground will allow you to explore using real data from your account.
+.container(ng-if="PGC.session.logins.length")
+  br
   div.alert-info(ng-if="PGC.loading")
     p(ng-if="!PGC.loadingBlink") Loading...
 
@@ -95,8 +100,8 @@
   p
     .checkbox
       label
-        input(type="checkbox" ng-model="PGC.camelCase" ng-init="PGC.camelCase = true")
-        span use Camel Case mode
+        input(type="checkbox" ng-model="PGC.serverMode" ng-init="PGC.serverMode = true")
+        span use Server mode
 
   // API::ACCOUNTS
   div
@@ -114,7 +119,7 @@
       to know about for the purposes of the API Explorer and when working on LDS I/O.
     pre
       code.
-        curl -fsSL -X 'GET' "https://lds.io/api/ldsio/accounts{{ PGC.camelCase && '?camel=true' || '' }}" \
+        curl -fsSL -X 'GET' "https://lds.io/api/ldsio/accounts{{ PGC.serverMode && '?server=true' || '' }}" \
         &nbsp; -H 'Authorization: Bearer {{ PGC.selectedAccount.token }}' \
         &nbsp; -H 'X-Developer-Mode: true' \
         &nbsp; | python -m json.tool
@@ -134,7 +139,7 @@
       code https://lds.io/api/ldsio/&lt;accountId>/me
     pre
       code.
-        curl -fsSL -X 'GET' "https://lds.io/api/ldsio/{{ PGC.selectedAccount.appScopedId }}/me{{ PGC.camelCase && '?camel=true' || '' }}" \
+        curl -fsSL -X 'GET' "https://lds.io/api/ldsio/{{ PGC.selectedAccount.appScopedId }}/me{{ PGC.serverMode && '?server=true' || '' }}" \
         &nbsp; -H 'Authorization: Bearer {{ PGC.selectedAccount.token }}' \
         &nbsp; -H 'X-Developer-Mode: true' \
         &nbsp; | python -m json.tool
@@ -154,7 +159,7 @@
       code https://lds.io/api/ldsio/&lt;accountId>/stakes/&lt;stakeId>
     pre
       code.
-        curl -fsSL -X 'GET' "https://lds.io/api/ldsio/{{ PGC.selectedAccount.appScopedId }}/stakes/{{ PGC.stake.appScopedId }}{{ PGC.camelCase && '?camel=true' || '' }}" \
+        curl -fsSL -X 'GET' "https://lds.io/api/ldsio/{{ PGC.selectedAccount.appScopedId }}/stakes/{{ PGC.stake.appScopedId }}{{ PGC.serverMode && '?server=true' || '' }}" \
         &nbsp; -H 'Authorization: Bearer {{ PGC.selectedAccount.token }}' \
         &nbsp; -H 'X-Developer-Mode: true' \
         &nbsp; | python -m json.tool
@@ -174,7 +179,7 @@
       code https://lds.io/api/ldsio/&lt;accountId>/stakes/&lt;stakeId>/wards/&lt;wardId>
     pre
       code.
-        curl -fsSL -X 'GET' "https://lds.io/api/ldsio/{{ PGC.selectedAccount.appScopedId }}/stakes/{{ PGC.stake.appScopedId }}/wards/{{ PGC.ward.appScopedId }}{{ PGC.camelCase && '?camel=true' || '' }}" \
+        curl -fsSL -X 'GET' "https://lds.io/api/ldsio/{{ PGC.selectedAccount.appScopedId }}/stakes/{{ PGC.stake.appScopedId }}/wards/{{ PGC.ward.appScopedId }}{{ PGC.serverMode && '?server=true' || '' }}" \
         &nbsp; -H 'Authorization: Bearer {{ PGC.selectedAccount.token }}' \
         &nbsp; -H 'X-Developer-Mode: true' \
         &nbsp; | python -m json.tool
@@ -194,7 +199,7 @@
       code https://lds.io/api/ldsio/&lt;accountId>/stakes/&lt;stakeId>/wards/&lt;wardId>
     pre
       code.
-        curl -fsSL -X 'GET' "https://lds.io/api/ldsio/{{ PGC.selectedAccount.appScopedId }}/stakes/{{ PGC.stake.appScopedId }}/wards/{{ PGC.ward.appScopedId }}/photos{{ PGC.camelCase && '?camel=true' || '' }}" \
+        curl -fsSL -X 'GET' "https://lds.io/api/ldsio/{{ PGC.selectedAccount.appScopedId }}/stakes/{{ PGC.stake.appScopedId }}/wards/{{ PGC.ward.appScopedId }}/photos{{ PGC.serverMode && '?server=true' || '' }}" \
         &nbsp; -H 'Authorization: Bearer {{ PGC.selectedAccount.token }}' \
         &nbsp; -H 'X-Developer-Mode: true' \
         &nbsp; | python -m json.tool
@@ -214,7 +219,7 @@
       code https://lds.io/api/ldsio/&lt;accountId>/stakes/&lt;stakeId>/wards/&lt;wardId>
     pre
       code.
-        curl -fsSL -X 'GET' "https://lds.io/api/ldsio/{{ PGC.selectedAccount.appScopedId }}/stakes/{{ PGC.stake.appScopedId }}/photos{{ PGC.camelCase && '?camel=true' || '' }}" \
+        curl -fsSL -X 'GET' "https://lds.io/api/ldsio/{{ PGC.selectedAccount.appScopedId }}/stakes/{{ PGC.stake.appScopedId }}/photos{{ PGC.serverMode && '?server=true' || '' }}" \
         &nbsp; -H 'Authorization: Bearer {{ PGC.selectedAccount.token }}' \
         &nbsp; -H 'X-Developer-Mode: true' \
         &nbsp; | python -m json.tool
@@ -321,6 +326,11 @@
       li
         a(
           href=""
+          ng-click="PGC.raw.url = 'https://www.lds.org/mobiledirectory/services/ludrs/1.1/mem/mobile/member-assignments'; PGC.api.raw(PGC.raw.url, PGC.raw, { show: true })"
+        ) https://www.lds.org/mobiledirectory/services/ludrs/1.1/mem/mobile/member-assignments 
+      li
+        a(
+          href=""
           ng-click="PGC.raw.url = 'https://www.lds.org/mobilecalendar/services/lucrs/cal/subscribed'; PGC.api.raw(PGC.raw.url, PGC.raw, { show: true })"
         ) https://www.lds.org/mobilecalendar/services/lucrs/cal/subscribed
       li
@@ -328,6 +338,16 @@
           href=""
           ng-click="PGC.raw.url = 'https://www.lds.org/mobilecalendar/services/lucrs/evt/calendar/:days_ago-:days_from_now'; PGC.api.raw(PGC.raw.url, PGC.raw, { show: true })"
         ) https://www.lds.org/mobilecalendar/services/lucrs/evt/calendar/:days_ago-:days_from_now
+      li
+        a(
+          href=""
+          ng-click="PGC.raw.url = 'https://www.lds.org/mobiledirectory/services/ludrs/1.1/photo/url/:individual_id/individual'; PGC.api.raw(PGC.raw.url, PGC.raw, { show: true })"
+        ) https://www.lds.org/mobiledirectory/services/ludrs/1.1/photo/url/:individual_id/individual
+      li
+        a(
+          href=""
+          ng-click="PGC.raw.url = 'https://www.lds.org/mobiledirectory/services/ludrs/1.1/photo/url/:household_id/household'; PGC.api.raw(PGC.raw.url, PGC.raw, { show: true })"
+        ) https://www.lds.org/mobiledirectory/services/ludrs/1.1/photo/url/:household_id/household
       li
         a(
           href=""
@@ -343,7 +363,7 @@
 
     pre
       code.
-        curl -fsSL -X 'GET' "https://lds.io/api/ldsio/{{ PGC.selectedAccount.appScopedId }}/debug/raw?url={{ PGC.encodeURIComponent(PGC.raw.url) }}{{ PGC.camelCase && '&camel=true' || '' }}" \
+        curl -fsSL -X 'GET' "https://lds.io/api/ldsio/{{ PGC.selectedAccount.appScopedId }}/debug/raw?url={{ PGC.encodeURIComponent(PGC.raw.url) }}{{ PGC.serverMode && '&server=true' || '' }}" \
         &nbsp; -H 'Authorization: Bearer {{ PGC.selectedAccount.token }}' \
         &nbsp; -H 'X-Developer-Mode: true' \
         &nbsp; | python -m json.tool

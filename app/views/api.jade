@@ -2,7 +2,7 @@
   .row
     .col-md-12
 
-      h1 LDS API v2.0.0-rc6
+      h1 LDS API v2.0.1
 
       h2 API Overview
       pre
@@ -28,98 +28,37 @@
         li <a href="https://github.com/LDSorg/lds.io-frontend/issues">Report Browser Bugs on Github</a>
 
       h3 Getting Started
-      p.
-        You will interact with LDS I/O primary through two OAuth2 strategies.
-      h4 Browser / Client-side Authentication
       p
-        strong OAuth2 Implicit Grant Strategy
-      p.
-        The primary authentication and api access strategy takes place entirely in the browser.
-      p.
-        This allows your app to stay within the guidelines of the LDS.org privacy policy, as your
-        app never gets any personal data, it is delivered directly to the user's browser without
-        touching your server.
-      p
-        strong Zero-Config Demos
+        span See &#32;
+        a(href="https://github.com/LDSorg/choose-your-own-adventure" target="lds-api-adventure") Choose your own LDS API Adventure
+        span &#32; for quick start demos with
       ul
-        li 
-          a(
-            href="https://github.com/LDSorg/frontend-oauth2-browser-jquery-example"
-            target="implicit-jquery-seed"
-          ) Browser-Only jQuery Seed Project (Implicit Grant Strategy)
+        li Angular
+        li jQuery
+        li node
+        li ruby
 
-      pre
-        code.
-          //
-          // Usage
-          //
-          1. Copy <a href="https://ldsconnect.org/oauth-close.html"
-              >oauth-close.html</a> into the root of your project
-
-          2. Create a token handler (this is called by oauth-close.html)
-
-              window.completeLogin = function (name, url) {
-                var match;
-                var token;
-
-                match = url.match(/(^|\#|\?|\&)access_token=([^\&]+)(\&|$)/);
-                if (!match || !match[2]) {
-                  window.alert("looks like the login failed");
-                  return;
-                }
-
-                token = match[2];
-
-                testAccessToken(token);
-              };
-
-          3. Open a the login dialog
-
-              var myAppDomain = 'https://local.ldsconnect.org:8043';
-              var myAppId = 'TEST_ID_9e78b54c44a8746a5727c972';
-              var requestedScope = ['me'];
-
-              var url = 'https://lds.io/api/oauth3/dialog/authorize'
-                + '?response_type=token'
-                + '&client_id=' + myAppId
-                + '&redirect_uri=' + myAppDomain + '/oauth-close.html?type=/auth/ldsconnect/callback/'
-                + '&scope=' + encodeURIComponent(requestedScope.join(' '))
-                + '&state=' + Math.random().toString().replace(/^0./, '')
-                ;
-
-              // NOTE: this currently redirects to lds.io, which is techie,
-              // but will redirect to ldsconnect.org, which is non-techie,
-              // in the near future
-              window.open(url, 'ldsconnectLogin', 'height=720,width=620')
-
-      h4 OAuth2 Server / Browser (in-progress)
+      h3 JavaScript APIs
       p
-        strong OAuth2 Authorization Code Strategy
-      p.
-        For convenience, you are allowed to authenticate via LDS I/O with your server and
-        retrieve anonymized identifiers which are scoped to your app.
-      p.
-        You may not, however, retrieve personally identifiable or sensitive data via the server APIs.
-      p
-        strong Zero-Config Demos
-        span &nbsp;
+        a(href="https://github.com/LDSorg/lds-api-js" target="lds-api-js") https://github.com/LDSorg/lds-api-js
+      p There is a single JavaScript library that includes everything you need for
       ul
-        li 
-          a(
-            href="https://github.com/LDSorg/backend-oauth2-node-passport-example"
-            target="node-passport-seed"
-          ) node.js passport Seed Project (Authorization Code Strategy)
-          ul
-            li
-              a(
-                href="https://github.com/LDSorg/passport-lds-io"
-                target="node-passport-npm"
-              ) passport-lds-io (node passport plugin)
+        li authentication
+        li API calls
+        li caching
+        li local storage
+
+      p It includes wrappers for
+      ul
         li
-          a(
-            href="https://github.com/LDSorg/frontend-oauth2-browser-jquery-example"
-            target="server-jquery-seed"
-          ) jQuery Seed Project (Authorization Code Strategy)
+          a(href="https://github.com/LDSorg/lds-api-js/blob/master/README.jquery.md" target="jquery-lds-io") jQuery
+        li
+          a(href="https://github.com/LDSorg/lds-api-js/blob/master/README.angular.md" target="angular-lds-io") AngularJS
+
+      p Check it out:
+      ul
+        li
+          a(href="https://github.com/LDSorg/lds-api-js" target="lds-api-js") https://github.com/LDSorg/lds-api-js
 
       h2 OAuth3
 
@@ -173,6 +112,8 @@
         li
           span Profile URL:  
           a(href="https://graph.facebook.com/me") https://graph.facebook.com/me
+
+      p To implement a strategy you would have to go dig into documentation to learn whether to use a GET or POST and which parameters are required or optional, etc.
 
       h3 Why oauth3.json?
       p
