@@ -49,10 +49,12 @@
         <div id="navbar-main" ng-class="!navCollapsed &amp;&amp; 'in'" class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
             <li><a ui-sref="api">API</a></li>
-            <li><a
+            <!--<li><a
               href="https://github.com/LDSorg/lds.io-backend/issues"
               target="github-issues-ldsio-backend"
-              >Issues on Github</a></li>
+              >Issues on Github</a></li>-->
+              <!-- Place this tag where you want the button to render. -->
+<li><a aria-label="Issue LDSorg/lds.io-backend on GitHub" data-count-aria-label="# issues on GitHub" data-count-api="/repos/LDSorg/lds.io-backend#open_issues_count" data-style="mega" data-icon="octicon-issue-opened" href="https://github.com/LDSorg/lds.io-backend/issues" class="github-button">Issue</a></li>
             <li ng-show="NC.session.accounts.length"><a ui-sref="playground">Playground</a></li>
             <li ng-show="NC.session.accounts.length"><a ui-sref="develop">My Apps</a></li>
             <li ng-show="!NC.session.accounts.length"><a href="" ng-click="NC.showLoginModal()">Login</a></li>
